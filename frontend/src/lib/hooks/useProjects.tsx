@@ -1,32 +1,21 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { projectsService } from '../services/projects.service'
+import {
+  projectsService,
+  type UpsertProjectTranslationDto,
+} from '../services/projects.service'
 import { queryClient } from '../tanstack/query-client'
 import type { Project } from '../types/projects'
 
-/** Fetch all projects */
-export const useProjects = () => {
+export const useProjects = (lang?: string) => {
   return useQuery<Project[]>({
-    queryKey: ['projects'],
+    queryKey: ['projects', lang],
     queryFn: async () => {
-      const response = await projectsService.getAll()
+      const response = await projectsService.getAll(lang)
       return response.data
     },
   })
 }
 
-/** Fetch single project by ID */
-export const useProject = (id: number) => {
-  return useQuery<Project>({
-    queryKey: ['projects', id],
-    queryFn: async () => {
-      const response = await projectsService.getById(id)
-      return response.data
-    },
-    enabled: !!id,
-  })
-}
-
-/** Create new project */
 export const useCreateProject = () => {
   return useMutation({
     mutationFn: async (data: FormData) => {
@@ -39,21 +28,18 @@ export const useCreateProject = () => {
   })
 }
 
-/** Update existing project - id in FormData */
 export const useUpdateProject = () => {
   return useMutation({
-    mutationFn: async (data: FormData) => {
-      const response = await projectsService.updateProject(data)
+    mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
+      const response = await projectsService.updateProject(id, data)
       return response.data
     },
-    onSuccess: data => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
-      queryClient.invalidateQueries({ queryKey: ['projects', data.id] })
     },
   })
 }
 
-/** Delete project - id in body */
 export const useDeleteProject = () => {
   return useMutation({
     mutationFn: async (id: number) => {
@@ -61,6 +47,53 @@ export const useDeleteProject = () => {
       return response.data
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    },
+  })
+}
+
+export const useProjectTranslations = (id: number) => {
+  return useQuery({
+    queryKey: ['projects', id, 'translations'],
+    queryFn: async () => {
+      const response = await projectsService.getTranslations(id)
+      return response.data
+    },
+    enabled: !!id,
+  })
+}
+
+export const useUpsertProjectTranslation = () => {
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: number
+      data: UpsertProjectTranslationDto
+    }) => {
+      const response = await projectsService.upsertTranslation(id, data)
+      return response.data
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['projects', variables.id, 'translations'],
+      })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    },
+  })
+}
+
+export const useDeleteProjectTranslation = () => {
+  return useMutation({
+    mutationFn: async ({ id, language }: { id: number; language: string }) => {
+      const response = await projectsService.deleteTranslation(id, language)
+      return response.data
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['projects', variables.id, 'translations'],
+      })
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })

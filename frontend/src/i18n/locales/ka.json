@@ -1,0 +1,58 @@
+{
+  "common": {
+    "loading": "იტვირთება...",
+    "error": "შეცდომა",
+    "success": "წარმატება",
+    "cancel": "გაუქმება",
+    "save": "შენახვა",
+    "delete": "წაშლა",
+    "edit": "რედაქტირება",
+    "add": "დამატება",
+    "search": "ძიება",
+    "noResults": "შედეგები არ მოიძებნა"
+  },
+  "nav": {
+    "home": "მთავარი",
+    "projects": "პროექტები",
+    "partners": "პარტნიორები",
+    "about": "ჩვენ შესახებ",
+    "contact": "კონტაქტი"
+  },
+  "projects": {
+    "title": "პროექტები",
+    "addProject": "პროექტის დამატება",
+    "editProject": "პროექტის რედაქტირება",
+    "deleteProject": "პროექტის წაშლა",
+    "projectName": "პროექტის სახელი",
+    "projectLocation": "პროექტის მდებარეობა",
+    "partner": "პარტნიორი",
+    "image": "სურათი",
+    "translations": "თარგმანები",
+    "details": "დეტალები",
+    "noProjects": "პროექტები არ არის",
+    "createSuccess": "პროექტი წარმატებით შეიქმნა",
+    "updateSuccess": "პროექტი წარმატებით განახლდა",
+    "deleteSuccess": "პროექტი წარმატებით წაიშალა",
+    "deleteConfirm": "დარწმუნებული ხართ, რომ გსურთ პროექტის წაშლა?"
+  },
+  "partners": {
+    "title": "პარტნიორები",
+    "addPartner": "პარტნიორის დამატება",
+    "editPartner": "პარტნიორის რედაქტირება",
+    "deletePartner": "პარტნიორის წაშლა",
+    "companyName": "კომპანიის სახელი",
+    "noPartners": "პარტნიორები არ არის",
+    "createSuccess": "პარტნიორი წარმატებით შეიქმნა",
+    "updateSuccess": "პარტნიორი წარმატებით განახლდა",
+    "deleteSuccess": "პარტნიორი წარმატებით წაიშალა"
+  },
+  "translations": {
+    "addTranslation": "თარგმანის დამატება",
+    "editTranslation": "თარგმანის რედაქტირება",
+    "deleteTranslation": "თარგმანის წაშლა",
+    "language": "ენა",
+    "existingTranslations": "არსებული თარგმანები",
+    "noTranslations": "თარგმანები ჯერ არ არის",
+    "saveTranslation": "თარგმანის შენახვა"
+  }
+}

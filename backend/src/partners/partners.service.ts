@@ -96,7 +96,7 @@ export class PartnersService {
       throw new NotFoundException(`Partner with ID "${partnerId}" not found`);
     }
 
-    const translation = await this.prismaService.parnterTranslations.upsert({
+    const translation = await this.prismaService.partnerTranslations.upsert({
       where: {
         partnerId_language: {
           partnerId,
@@ -132,7 +132,7 @@ export class PartnersService {
   }
 
   async deleteTranslation(partnerId: number, language: string) {
-    const translation = await this.prismaService.parnterTranslations.findUnique(
+    const translation = await this.prismaService.partnerTranslations.findUnique(
       {
         where: {
           partnerId_language: {
@@ -149,7 +149,7 @@ export class PartnersService {
       );
     }
 
-    await this.prismaService.parnterTranslations.delete({
+    await this.prismaService.partnerTranslations.delete({
       where: {
         partnerId_language: {
           partnerId,

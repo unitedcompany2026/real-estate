@@ -1,10 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { LogIn, LogOut, UserPlus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { useCurrentUser, useSignOut } from '@/lib/hooks/useAuth'
 import { ROUTES } from '@/constants/routes'
+import { LanguageSwitcher } from '../shared/language-switcher/LanguageSwitcher'
 
 export const Header = () => {
+  const { t } = useTranslation()
   const { data: user, isLoading } = useCurrentUser()
   const signOut = useSignOut()
   const navigate = useNavigate()
@@ -33,25 +36,25 @@ export const Header = () => {
             to={ROUTES.PARTNERS}
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
-            Partners
+            {t('nav.partners')}
           </Link>
           <Link
             to={ROUTES.ALL_PROJECTS}
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
-            All Projects
+            {t('nav.allProjects')}
           </Link>
           <Link
             to={ROUTES.PROPERTY}
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
-            Property
+            {t('nav.property')}
           </Link>
           <Link
             to={ROUTES.CONTACT}
             className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
-            Contact
+            {t('nav.contact')}
           </Link>
         </nav>
 
@@ -73,7 +76,7 @@ export const Header = () => {
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">
-                  {signOut.isPending ? 'Signing out...' : 'Logout'}
+                  {signOut.isPending ? t('auth.signingOut') : t('auth.logout')}
                 </span>
               </Button>
             </div>
@@ -88,7 +91,7 @@ export const Header = () => {
                 className="gap-2"
               >
                 <LogIn className="h-4 w-4" />
-                <span>Sign In</span>
+                <span>{t('auth.signIn')}</span>
               </Button>
               <Button
                 size="sm"
@@ -96,10 +99,12 @@ export const Header = () => {
                 className="gap-2"
               >
                 <UserPlus className="h-4 w-4" />
-                <span>Sign Up</span>
+                <span>{t('auth.signUp')}</span>
               </Button>
             </div>
           )}
+
+          <LanguageSwitcher />
         </div>
       </div>
     </header>

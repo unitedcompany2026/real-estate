@@ -1,40 +1,49 @@
-import { API_ENDPOINTS } from '@/constants/api'
+import type { Project, ProjectTranslation } from '../types/projects'
 import { api } from '../api/api'
-import type { Project } from '../types/projects'
+import { API_ENDPOINTS } from '@/constants/api'
+
+export interface UpsertProjectTranslationDto {
+  language: string
+  projectName: string
+  projectLocation: string
+}
 
 export const projectsService = {
-  /** Get all projects */
-  getAll: () => {
-    return api.get<Project[]>(API_ENDPOINTS.PROJECTS.PROJECTS)
-  },
+  getAll: (lang?: string) =>
+    api.get<Project[]>(API_ENDPOINTS.PROJECTS.PROJECTS, {
+      params: { lang },
+    }),
 
-  /** Get single project by ID */
-  getById: (id: number) => {
-    return api.get<Project>(`${API_ENDPOINTS.PROJECTS.PROJECTS}/${id}`)
-  },
-
-  /** Create new project */
-  createProject: (data: FormData) => {
-    return api.post<Project>(API_ENDPOINTS.PROJECTS.PROJECTS, data, {
+  createProject: (data: FormData) =>
+    api.post<Project>(API_ENDPOINTS.PROJECTS.PROJECTS, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    })
-  },
+    }),
 
-  /** Update existing project - id in FormData body */
-  updateProject: (data: FormData) => {
-    return api.patch<Project>(API_ENDPOINTS.PROJECTS.PROJECTS, data, {
+  updateProject: (id: number, data: FormData) =>
+    api.patch<Project>(API_ENDPOINTS.PROJECTS.PROJECT_BY_ID(id), data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    })
-  },
+    }),
 
-  /** Delete project - id in body */
-  deleteProject: (id: number) => {
-    return api.delete<{ message: string }>(API_ENDPOINTS.PROJECTS.PROJECTS, {
-      data: { id },
-    })
-  },
+  deleteProject: (id: number) =>
+    api.delete<{ message: string; id: number }>(
+      API_ENDPOINTS.PROJECTS.PROJECT_BY_ID(id)
+    ),
+
+  getTranslations: (id: number) =>
+    api.get<ProjectTranslation[]>(API_ENDPOINTS.PROJECTS.TRANSLATIONS(id)),
+
+  upsertTranslation: (id: number, data: UpsertProjectTranslationDto) =>
+    api.patch<ProjectTranslation>(
+      API_ENDPOINTS.PROJECTS.TRANSLATIONS(id),
+      data
+    ),
+
+  deleteTranslation: (id: number, language: string) =>
+    api.delete<{ message: string }>(
+      API_ENDPOINTS.PROJECTS.TRANSLATION_BY_LANGUAGE(id, language)
+    ),
 }

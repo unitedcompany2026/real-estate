@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import PartnerCard from '@/components/pages/partners/PartnerCard'
 import { usePartners } from '@/lib/hooks/usePartners'
-import { Link } from 'react-router-dom'
 
 export default function Partners() {
-  const { data: companies, isLoading, error } = usePartners()
+  const { t, i18n } = useTranslation()
+  const { data: companies, isLoading, error } = usePartners(i18n.language)
 
   if (isLoading) {
     return (
@@ -11,7 +13,7 @@ export default function Partners() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl text-center sm:text-4xl font-bold text-gray-800 mb-2">
-              Construction Partners
+              {t('partners.title')}
             </h1>
           </div>
           <div className="flex justify-center items-center py-12">
@@ -28,13 +30,11 @@ export default function Partners() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl text-center sm:text-4xl font-bold text-gray-800 mb-2">
-              Construction Partners
+              {t('partners.title')}
             </h1>
           </div>
           <div className="text-center py-12">
-            <p className="text-red-500 text-lg">
-              Error loading partners. Please try again later.
-            </p>
+            <p className="text-red-500 text-lg">{t('partners.errorLoading')}</p>
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@ export default function Partners() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl text-center sm:text-4xl font-bold text-gray-800 mb-2">
-            Construction Partners
+            {t('partners.title')}
           </h1>
         </div>
 
@@ -59,7 +59,9 @@ export default function Partners() {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-gray-500 text-lg">No partners found</p>
+              <p className="text-gray-500 text-lg">
+                {t('partners.noPartners')}
+              </p>
             </div>
           )}
         </div>

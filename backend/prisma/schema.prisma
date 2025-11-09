@@ -7,47 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
- 
-
-
 model Partners {
   id          Int      @id @default(autoincrement())
   companyName String   @map("company_name") @unique
-  image String?      
+  image       String?      
   createdAt   DateTime @map("created_at") @default(now())
 
-  projects Projects[]
-  translations ParnterTranslations[]
+  projects     Projects[]
+  translations PartnerTranslations[]
 
   @@map("partners")
 }
 
-
 model Projects { 
-  id  Int  @id @default(autoincrement())
-  projectName String @map("project_name") @unique
-  projectLocation String @map("project-location")
-  image String?
-  createdAt   DateTime @map("created_at") @default(now())
-  partnerId       Int
-  partner         Partners   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  id              Int      @id @default(autoincrement())
+  projectName     String   @map("project_name") @unique
+  projectLocation String   @map("project_location")
+  image           String?
+  createdAt       DateTime @map("created_at") @default(now())
+  partnerId       Int      @map("partner_id")
+  
+  partner      Partners              @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  translations ProjectTranslations[]
   
   @@map("projects")
-
 }
 
-
-model ParnterTranslations{ 
-  id Int  @id @default(autoincrement())
-  partnerId Int @map("partner_id")
-  language String
+model PartnerTranslations { 
+  id          Int    @id @default(autoincrement())
+  partnerId   Int    @map("partner_id")
+  language    String
   companyName String @map("company_name")
 
-  partner Partners @relation(fields: [partnerId], references: [id], onDelete: Cascade )
+  partner Partners @relation(fields: [partnerId], references: [id], onDelete: Cascade)
 
   @@unique([partnerId, language])
   @@map("partner_translations")
 }
 
+model ProjectTranslations {
+  id              Int    @id @default(autoincrement())
+  projectId       Int    @map("project_id")
+  language        String
+  projectName     String @map("project_name")
+  projectLocation String @map("project_location")
 
+  project Projects @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, language])
+  @@map("project_translations")
+}

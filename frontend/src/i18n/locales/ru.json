@@ -1,0 +1,58 @@
+{
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успех",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "search": "Поиск",
+    "noResults": "Результаты не найдены"
+  },
+  "nav": {
+    "home": "Главная",
+    "projects": "Проекты",
+    "partners": "Партнеры",
+    "about": "О нас",
+    "contact": "Контакты"
+  },
+  "projects": {
+    "title": "Проекты",
+    "addProject": "Добавить проект",
+    "editProject": "Редактировать проект",
+    "deleteProject": "Удалить проект",
+    "projectName": "Название проекта",
+    "projectLocation": "Местоположение проекта",
+    "partner": "Партнер",
+    "image": "Изображение",
+    "translations": "Переводы",
+    "details": "Детали",
+    "noProjects": "Проектов нет",
+    "createSuccess": "Проект успешно создан",
+    "updateSuccess": "Проект успешно обновлен",
+    "deleteSuccess": "Проект успешно удален",
+    "deleteConfirm": "Вы уверены, что хотите удалить этот проект?"
+  },
+  "partners": {
+    "title": "Партнеры",
+    "addPartner": "Добавить партнера",
+    "editPartner": "Редактировать партнера",
+    "deletePartner": "Удалить партнера",
+    "companyName": "Название компании",
+    "noPartners": "Партнеров нет",
+    "createSuccess": "Партнер успешно создан",
+    "updateSuccess": "Партнер успешно обновлен",
+    "deleteSuccess": "Партнер успешно удален"
+  },
+  "translations": {
+    "addTranslation": "Добавить перевод",
+    "editTranslation": "Редактировать перевод",
+    "deleteTranslation": "Удалить перевод",
+    "language": "Язык",
+    "existingTranslations": "Существующие переводы",
+    "noTranslations": "Переводов пока нет",
+    "saveTranslation": "Сохранить перевод"
+  }
+}

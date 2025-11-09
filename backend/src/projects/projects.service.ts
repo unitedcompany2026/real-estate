@@ -1,29 +1,41 @@
+import { PrismaService } from '@/prisma/prisma.service';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
 import { CreateProjectDto } from './dto/CreateProject.dto';
 import { FileUtils } from '@/common/utils/file.utils';
 import { UpdateProjectDto } from './dto/UpdateProject.dto';
-import { Projects } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll(): Promise<Projects[]> {
-    return this.prismaService.projects.findMany({
-      include: { partner: true },
+  async findAll(lang: string = 'en') {
+    const projects = await this.prismaService.projects.findMany({
+      include: {
+        partner: true,
+        translations: {
+          where: { language: lang },
+          take: 1,
+        },
+      },
     });
+
+    return projects.map((project) => ({
+      id: project.id,
+      projectName: project.translations[0]?.projectName || project.projectName,
+      projectLocation:
+        project.translations[0]?.projectLocation || project.projectLocation,
+      image: project.image,
+      createdAt: project.createdAt,
+      partner: project.partner,
+    }));
   }
 
-  async createProject(
-    dto: CreateProjectDto,
-    file?: Express.Multer.File,
-  ): Promise<Projects> {
+  async createProject(dto: CreateProjectDto, image?: Express.Multer.File) {
     await this.validatePartnerExists(dto.partnerId);
 
     const existingProject = await this.prismaService.projects.findUnique({
@@ -31,85 +43,164 @@ export class ProjectsService {
     });
 
     if (existingProject) {
-      throw new ConflictException('Project with this name already exists');
+      throw new ConflictException(
+        `Project "${dto.projectName}" already exists`,
+      );
     }
 
-    const imagePath = file
-      ? FileUtils.generateImageUrl(file, 'projects')
-      : null;
-
-    return this.prismaService.projects.create({
+    const project = await this.prismaService.projects.create({
       data: {
         projectName: dto.projectName,
         projectLocation: dto.projectLocation,
-        image: imagePath,
-        partner: {
-          connect: { id: dto.partnerId },
-        },
+        image: image ? FileUtils.generateImageUrl(image, 'projects') : null,
+        partnerId: dto.partnerId,
       },
-      include: { partner: true },
+      include: {
+        partner: true,
+      },
     });
+
+    return project;
   }
 
   async updateProject(
+    id: number,
     dto: UpdateProjectDto,
-    file?: Express.Multer.File,
-  ): Promise<Projects> {
-    const existingProject = await this.prismaService.projects.findUnique({
-      where: { id: dto.id }, // Changed from dto.partnerId
+    image?: Express.Multer.File,
+  ) {
+    const project = await this.prismaService.projects.findUnique({
+      where: { id },
     });
 
-    if (!existingProject) {
-      throw new NotFoundException('Project does not exist');
+    if (!project) {
+      throw new NotFoundException(`Project with ID "${id}" not found`);
     }
 
     if (dto.partnerId) {
       await this.validatePartnerExists(dto.partnerId);
     }
 
-    let imagePath = existingProject.image;
-    if (file) {
-      imagePath = FileUtils.generateImageUrl(file, 'projects');
-      if (existingProject.image) {
-        FileUtils.deleteFile(existingProject.image);
+    let imagePath = project.image;
+
+    if (image) {
+      if (imagePath) {
+        await FileUtils.deleteFile(imagePath);
       }
+      imagePath = FileUtils.generateImageUrl(image, 'projects');
     }
 
-    const updateData: any = {
-      ...(dto.projectName && { projectName: dto.projectName }),
-      ...(dto.projectLocation && { projectLocation: dto.projectLocation }),
-      image: imagePath,
-    };
-
-    if (dto.partnerId) {
-      updateData.partner = {
-        connect: { id: dto.partnerId },
-      };
-    }
-
-    // ✅ FIXED: Use dto.id instead of dto.partnerId
-    return this.prismaService.projects.update({
-      where: { id: dto.id }, // Changed from dto.partnerId
-      data: updateData,
-      include: { partner: true },
+    const updatedProject = await this.prismaService.projects.update({
+      where: { id },
+      data: {
+        ...(dto.projectName && { projectName: dto.projectName }),
+        ...(dto.projectLocation && { projectLocation: dto.projectLocation }),
+        ...(dto.partnerId && { partnerId: dto.partnerId }),
+        image: imagePath,
+      },
+      include: {
+        partner: true,
+      },
     });
+
+    return updatedProject;
   }
 
-  async deleteProject(projectId: number): Promise<{ message: string }> {
-    const existingProject = await this.prismaService.projects.findUnique({
+  async upsertTranslation(
+    projectId: number,
+    language: string,
+    projectName: string,
+    projectLocation: string,
+  ) {
+    const project = await this.prismaService.projects.findUnique({
       where: { id: projectId },
     });
 
-    if (!existingProject) {
-      throw new NotFoundException('Project does not exist');
+    if (!project) {
+      throw new NotFoundException(`Project with ID "${projectId}" not found`);
     }
 
-    if (existingProject.image) {
-      FileUtils.deleteFile(existingProject.image);
+    const translation = await this.prismaService.projectTranslations.upsert({
+      where: {
+        projectId_language: {
+          projectId,
+          language,
+        },
+      },
+      update: {
+        projectName,
+        projectLocation,
+      },
+      create: {
+        projectId,
+        language,
+        projectName,
+        projectLocation,
+      },
+    });
+
+    return translation;
+  }
+
+  async getTranslations(projectId: number) {
+    const project = await this.prismaService.projects.findUnique({
+      where: { id: projectId },
+      include: {
+        translations: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with ID "${projectId}" not found`);
+    }
+
+    return project.translations;
+  }
+
+  async deleteTranslation(projectId: number, language: string) {
+    const translation = await this.prismaService.projectTranslations.findUnique(
+      {
+        where: {
+          projectId_language: {
+            projectId,
+            language,
+          },
+        },
+      },
+    );
+
+    if (!translation) {
+      throw new NotFoundException(
+        `Translation for language "${language}" not found`,
+      );
+    }
+
+    await this.prismaService.projectTranslations.delete({
+      where: {
+        projectId_language: {
+          projectId,
+          language,
+        },
+      },
+    });
+
+    return { message: 'Translation deleted successfully' };
+  }
+
+  async deleteProject(id: number) {
+    const project = await this.prismaService.projects.findUnique({
+      where: { id },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with ID "${id}" not found`);
+    }
+
+    if (project.image) {
+      await FileUtils.deleteFile(project.image);
     }
 
     await this.prismaService.projects.delete({
-      where: { id: projectId },
+      where: { id },
     });
 
     return { message: 'Project deleted successfully' };
@@ -121,7 +212,9 @@ export class ProjectsService {
     });
 
     if (!partner) {
-      throw new BadRequestException('Partner does not exist');
+      throw new BadRequestException(
+        `Partner with ID "${partnerId}" does not exist`,
+      );
     }
   }
 }

@@ -1,80 +1,93 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import {
-  usePartners,
-  useCreatePartner,
-  useUpdatePartner,
-  useDeletePartner,
-} from '@/lib/hooks/usePartners'
+import { usePartners, useDeletePartner } from '@/lib/hooks/usePartners'
 import { Button } from '@/components/ui/button'
-import CreatePartnerModal from '@/components/pages/admin/partners/CreatePartnerModal'
-import AdminPartnerCard from '@/components/pages/admin/partners/AdminPartnerCard'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
-const API_URL = 'http://localhost:3000'
-
-interface Partner {
-  id: number
-  companyName: string
-  image: string | null
-  createdAt: string
-}
+import type { Partner } from '@/lib/types/partners'
+import { CreatePartner } from './CreatePartner'
+import { EditPartner } from './EditPartner'
+import { AdminPartnerCard } from './AdminPartnerCard'
 
 export default function PartnersPanel() {
-  const { data: partners, isLoading, error } = usePartners()
-  const createPartner = useCreatePartner()
-  const updatePartner = useUpdatePartner()
+  const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
+  const [currentLang, setCurrentLang] = useState('en')
+
+  const { data: partners, isLoading, error } = usePartners(currentLang)
   const deletePartner = useDeletePartner()
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-  const [editingPartner, setEditingPartner] = useState<Partner | null>(null)
+  const handleEdit = (partner: Partner) => {
+    setSelectedPartner(partner)
+    setView('edit')
+  }
 
-  const handleSavePartner = async (data: FormData): Promise<void> => {
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this partner?')) return
+
     try {
-      if (editingPartner) {
-        // ✅ Update mode - add id to FormData
-        data.append('id', editingPartner.id.toString())
-        await updatePartner.mutateAsync(data)
-      } else {
-        // ✅ Create mode - no id needed
-        await createPartner.mutateAsync(data)
-      }
-      setIsModalOpen(false)
-      setEditingPartner(null)
-    } catch (err) {
-      console.error('Error saving partner:', err)
+      await deletePartner.mutateAsync(id)
+    } catch (error: any) {
+      alert(
+        error.response?.data?.message ||
+          error.message ||
+          'Failed to delete partner'
+      )
     }
   }
 
-  const handleEdit = (partner: Partner): void => {
-    setEditingPartner(partner)
-    setIsModalOpen(true)
+  const handleBack = () => {
+    setView('list')
+    setSelectedPartner(null)
   }
 
-  const handleDelete = async (partnerId: number): Promise<void> => {
-    if (window.confirm('Are you sure you want to delete this partner?')) {
-      try {
-        await deletePartner.mutateAsync(partnerId)
-      } catch (err) {
-        console.error('Error deleting partner:', err)
-      }
-    }
+  if (view === 'create') {
+    return <CreatePartner onBack={handleBack} onSuccess={handleBack} />
   }
 
-  const handleAddNew = (): void => {
-    setEditingPartner(null)
-    setIsModalOpen(true)
+  if (view === 'edit' && selectedPartner) {
+    return (
+      <EditPartner
+        partner={selectedPartner}
+        onBack={handleBack}
+        onSuccess={handleBack}
+      />
+    )
   }
 
   return (
-    <>
+    <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Construction Partners
-        </h2>
-        <Button onClick={handleAddNew} className="flex items-center gap-2">
-          <Plus className="w-5 h-5" />
-          Add Partner
-        </Button>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Construction Partners
+          </h2>
+          <p className="text-gray-600 mt-1">
+            Manage your construction partners and translations
+          </p>
+        </div>
+        <div className="flex gap-3 items-center">
+          <Select value={currentLang} onValueChange={setCurrentLang}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="ka">Georgian</SelectItem>
+              <SelectItem value="ru">Russian</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setView('create')}>
+            <Plus className="w-5 h-5 mr-2" />
+            Add Partner
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -88,13 +101,12 @@ export default function PartnersPanel() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {partners && partners.length > 0 ? (
-            partners.map((partner: Partner) => (
+            partners.map(partner => (
               <AdminPartnerCard
                 key={partner.id}
                 partner={partner}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                apiUrl={API_URL}
               />
             ))
           ) : (
@@ -104,14 +116,6 @@ export default function PartnersPanel() {
           )}
         </div>
       )}
-
-      <CreatePartnerModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSave={handleSavePartner}
-        isSubmitting={createPartner.isPending || updatePartner.isPending}
-        editingPartner={editingPartner}
-      />
-    </>
+    </div>
   )
 }

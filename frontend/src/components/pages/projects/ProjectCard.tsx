@@ -11,15 +11,21 @@ import {
 interface ProjectCardProps {
   project: {
     id: number
-    name: string
-    images: string[]
+    name?: string
+    projectName?: string
+    images?: string[]
+    projectImages?: string[]
     location?: string
+    projectLocation?: string
     status?: string
     year?: string
     type?: string
-    companyName?: string // Optional: show company name for multi-partner views
+    partner?: {
+      companyName?: string
+    }
+    companyName?: string
   }
-  variant?: 'partner' | 'project' // Switch between partner card style and project card style
+  variant?: 'partner' | 'project'
   onViewDetails?: () => void
 }
 
@@ -30,17 +36,23 @@ const ProjectCard = ({
 }: ProjectCardProps) => {
   const [currentImage, setCurrentImage] = useState(0)
 
+  // Handle different property names
+  const projectName = project.name || project.projectName || 'Untitled Project'
+  const projectImages = project.images || project.projectImages || []
+  const projectLocation = project.location || project.projectLocation
+  const companyName = project.companyName || project.partner?.companyName
+
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setCurrentImage(prev => (prev + 1) % project.images.length)
+    setCurrentImage(prev => (prev + 1) % projectImages.length)
   }
 
   const prevImage = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setCurrentImage(
-      prev => (prev - 1 + project.images.length) % project.images.length
+      prev => (prev - 1 + projectImages.length) % projectImages.length
     )
   }
 
@@ -66,13 +78,13 @@ const ProjectCard = ({
       >
         <div className="relative h-72 overflow-hidden rounded-lg group">
           <img
-            src={project.images[currentImage] || '/placeholder.svg'}
-            alt={project.name}
+            src={projectImages[currentImage] || '/placeholder.svg'}
+            alt={projectName}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
           {/* Image Navigation */}
-          {project.images.length > 1 && (
+          {projectImages.length > 1 && (
             <>
               <button
                 onClick={prevImage}
@@ -88,7 +100,7 @@ const ProjectCard = ({
               </button>
 
               <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-                {currentImage + 1}/{project.images.length}
+                {currentImage + 1}/{projectImages.length}
               </div>
             </>
           )}
@@ -108,12 +120,10 @@ const ProjectCard = ({
         <div className="p-2 sm:p-3 flex justify-between items-center">
           <div>
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors">
-              {project.name}
+              {projectName}
             </h3>
-            {project.companyName && (
-              <p className="text-xs text-gray-500 mt-1">
-                {project.companyName}
-              </p>
+            {companyName && (
+              <p className="text-xs text-gray-500 mt-1">{companyName}</p>
             )}
           </div>
           <div className="bg-gray-200 rounded-full p-2 hover:bg-blue-900 transition-colors group/icon">
@@ -129,12 +139,12 @@ const ProjectCard = ({
     <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
       <div className="relative h-64 overflow-hidden group">
         <img
-          src={project.images[currentImage] || '/placeholder.svg'}
-          alt={project.name}
+          src={projectImages[currentImage] || '/placeholder.svg'}
+          alt={projectName}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {project.images.length > 1 && (
+        {projectImages.length > 1 && (
           <>
             <button
               onClick={prevImage}
@@ -150,7 +160,7 @@ const ProjectCard = ({
             </button>
 
             <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-              {currentImage + 1}/{project.images.length}
+              {currentImage + 1}/{projectImages.length}
             </div>
           </>
         )}
@@ -167,19 +177,19 @@ const ProjectCard = ({
       </div>
 
       <div className="p-5">
-        <h3 className="text-xl font-bold text-gray-800 mb-3">{project.name}</h3>
+        <h3 className="text-xl font-bold text-gray-800 mb-3">{projectName}</h3>
 
-        {project.companyName && (
+        {companyName && (
           <div className="mb-3 text-sm text-gray-500 font-medium">
-            by {project.companyName}
+            by {companyName}
           </div>
         )}
 
         <div className="space-y-2">
-          {project.location && (
+          {projectLocation && (
             <div className="flex items-center text-gray-600 text-sm">
               <MapPin className="w-4 h-4 mr-2 text-blue-900" />
-              <span>{project.location}</span>
+              <span>{projectLocation}</span>
             </div>
           )}
 
@@ -198,12 +208,14 @@ const ProjectCard = ({
           )}
         </div>
 
-        <button
-          onClick={onViewDetails}
-          className="mt-4 w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium"
-        >
-          View Details
-        </button>
+        {onViewDetails && (
+          <button
+            onClick={onViewDetails}
+            className="mt-4 w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition-colors font-medium"
+          >
+            View Details
+          </button>
+        )}
       </div>
     </div>
   )

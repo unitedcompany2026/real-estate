@@ -1,112 +1,70 @@
-import { useState } from 'react'
-import { Building2, MapPin, Users, Pencil, Trash2 } from 'lucide-react'
+import { Edit, Trash2, ImageIcon, MapPin, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import type { Project } from '@/lib/types/projects'
 
-interface Partner {
-  id: number
-  companyName: string
-  image: string | null
-  createdAt: string
-}
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-interface Project {
-  id: number
-  projectName: string
-  projectLocation: string
-  image: string | null
-  partnerId: number
-  partner?: Partner
-  createdAt: string
-}
-
-interface AdminProjectCardProps {
+interface ProjectCardProps {
   project: Project
   onEdit: (project: Project) => void
-  onDelete: (projectId: number) => void
-  apiUrl?: string
+  onDelete: (id: number) => void
 }
 
-export default function AdminProjectCard({
+export function AdminProjectCard({
   project,
   onEdit,
   onDelete,
-  apiUrl = 'http://localhost:3000',
-}: AdminProjectCardProps) {
-  const [imageError, setImageError] = useState<boolean>(false)
-
-  const getImageUrl = (imagePath: string | null): string | null => {
-    if (!imagePath) return null
-    return imagePath.startsWith('http') ? imagePath : `${apiUrl}${imagePath}`
-  }
-
-  const handleDelete = (): void => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      onDelete(project.id)
-    }
-  }
-
-  const imageUrl = getImageUrl(project.image)
+}: ProjectCardProps) {
+  const imageUrl = project.image ? `${API_URL}/${project.image}` : null
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative h-48 bg-gray-100">
-        {imageUrl && !imageError ? (
+      <div className="h-48 bg-gray-100 flex items-center justify-center">
+        {imageUrl ? (
           <img
             src={imageUrl}
             alt={project.projectName}
-            className="w-full h-full object-cover"
-            onError={() => setImageError(true)}
-            loading="lazy"
+            className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            <p>Image not available</p>
-          </div>
+          <ImageIcon className="w-16 h-16 text-gray-400" />
         )}
       </div>
       <CardContent className="p-4">
-        <div className="flex items-start gap-2 mb-2">
-          <Building2 className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0" />
-          <h3 className="text-lg font-semibold text-gray-800 flex-1">
-            {project.projectName}
-          </h3>
-        </div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          {project.projectName}
+        </h3>
 
-        <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
-          <MapPin className="w-4 h-4 flex-shrink-0" />
-          <span>{project.projectLocation}</span>
-        </div>
-
-        {project.partner && (
-          <div className="flex items-center gap-2 mb-3 text-sm text-blue-600">
-            <Users className="w-4 h-4 flex-shrink-0" />
-            <span className="font-medium">{project.partner.companyName}</span>
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-sm text-gray-600">
+            <MapPin className="w-4 h-4 mr-2" />
+            {project.projectLocation}
           </div>
-        )}
+
+          {project.partner && (
+            <div className="flex items-center text-sm text-gray-600">
+              <Building2 className="w-4 h-4 mr-2" />
+              {project.partner.companyName}
+            </div>
+          )}
+        </div>
 
         <p className="text-xs text-gray-500 mb-4">
-          Added: {new Date(project.createdAt).toLocaleDateString()}
+          Created: {new Date(project.createdAt).toLocaleDateString()}
         </p>
 
         <div className="flex gap-2">
           <Button
             variant="outline"
-            size="sm"
             onClick={() => onEdit(project)}
-            className="flex-1 flex items-center justify-center gap-1"
+            className="flex-1"
           >
-            <Pencil className="w-3 h-3" />
+            <Edit className="w-4 h-4 mr-2" />
             Edit
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDelete}
-            className="flex-1 flex items-center justify-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 className="w-3 h-3" />
-            Delete
+          <Button variant="destructive" onClick={() => onDelete(project.id)}>
+            <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       </CardContent>

@@ -10,7 +10,7 @@ export class FileUtils {
       return null;
     }
 
-    return `/uploads/${folder}/${file.filename}`;
+    return `uploads/${folder}/${file.filename}`;
   }
 
   static async deleteFile(relativePath: string) {
