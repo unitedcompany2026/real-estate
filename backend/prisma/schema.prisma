@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+ 
+
+
+model Partners {
+  id          Int      @id @default(autoincrement())
+  companyName String   @map("company_name") @unique
+  image String?      
+  createdAt   DateTime @map("created_at") @default(now())
+
+  projects Projects[]
+  translations ParnterTranslations[]
+
+  @@map("partners")
+}
+
+
+model Projects { 
+  id  Int  @id @default(autoincrement())
+  projectName String @map("project_name") @unique
+  projectLocation String @map("project-location")
+  image String?
+  createdAt   DateTime @map("created_at") @default(now())
+  partnerId       Int
+  partner         Partners   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  
+  @@map("projects")
+
+}
+
+
+model ParnterTranslations{ 
+  id Int  @id @default(autoincrement())
+  partnerId Int @map("partner_id")
+  language String
+  companyName String @map("company_name")
+
+  partner Partners @relation(fields: [partnerId], references: [id], onDelete: Cascade )
+
+  @@unique([partnerId, language])
+  @@map("partner_translations")
+}
+
+
