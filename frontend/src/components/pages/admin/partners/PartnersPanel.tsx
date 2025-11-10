@@ -62,19 +62,19 @@ export default function PartnersPanel() {
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+        <div className="space-y-2 flex-1">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
             Construction Partners
-          </h2>
-          <p className="text-gray-600 mt-1">
+          </h1>
+          <p className="text-base text-muted-foreground">
             Manage your construction partners and translations
           </p>
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Select value={currentLang} onValueChange={setCurrentLang}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
             <SelectContent>
@@ -83,20 +83,25 @@ export default function PartnersPanel() {
               <SelectItem value="ru">Russian</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={() => setView('create')}>
-            <Plus className="w-5 h-5 mr-2" />
+          <Button
+            onClick={() => setView('create')}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="w-4 h-4 mr-2" />
             Add Partner
           </Button>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+        <div className="flex justify-center items-center py-24">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
       ) : error ? (
-        <div className="text-center py-12 text-red-500">
-          Error loading partners. Please try again.
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center">
+          <p className="text-destructive font-medium">
+            Error loading partners. Please try again.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,8 +115,13 @@ export default function PartnersPanel() {
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              No partners found. Add your first partner!
+            <div className="col-span-full rounded-lg border border-dashed border-border bg-muted/30 p-12 text-center">
+              <p className="text-muted-foreground font-medium">
+                No partners found
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Add your first partner to get started
+              </p>
             </div>
           )}
         </div>

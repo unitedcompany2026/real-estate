@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react'
 import {
@@ -86,17 +88,26 @@ export function ProjectTranslationsManager({
   }
 
   if (isLoading) {
-    return <div className="text-center py-4">Loading translations...</div>
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        Loading translations...
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h4 className="font-semibold text-gray-700">Existing Translations</h4>
+        <h4 className="font-semibold text-lg text-foreground">
+          Existing Translations
+        </h4>
         <Button
-          variant="outline"
-          size="sm"
           onClick={() => setIsAdding(!isAdding)}
+          className={
+            isAdding
+              ? 'bg-gray-500 hover:bg-gray-600'
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
+          }
         >
           {isAdding ? (
             <>
@@ -113,125 +124,154 @@ export function ProjectTranslationsManager({
       </div>
 
       {isAdding && (
-        <Card>
+        <Card className="border-blue-200 bg-blue-50">
           <CardContent className="pt-6 space-y-4">
-            <div>
-              <Label>Language</Label>
-              <Select
-                value={newTranslation.language}
-                onValueChange={value =>
-                  setNewTranslation({ ...newTranslation, language: value })
-                }
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-base font-medium">Language</Label>
+                <Select
+                  value={newTranslation.language}
+                  onValueChange={value =>
+                    setNewTranslation({ ...newTranslation, language: value })
+                  }
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languageOptions.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-base font-medium">Project Name</Label>
+                <Input
+                  type="text"
+                  value={newTranslation.projectName}
+                  onChange={e =>
+                    setNewTranslation({
+                      ...newTranslation,
+                      projectName: e.target.value,
+                    })
+                  }
+                  placeholder="Enter translated project name"
+                  className="mt-2"
+                />
+              </div>
+              <div>
+                <Label className="text-base font-medium">
+                  Project Location
+                </Label>
+                <Input
+                  type="text"
+                  value={newTranslation.projectLocation}
+                  onChange={e =>
+                    setNewTranslation({
+                      ...newTranslation,
+                      projectLocation: e.target.value,
+                    })
+                  }
+                  placeholder="Enter translated project location"
+                  className="mt-2"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button
+                onClick={() => handleSaveTranslation(false)}
+                disabled={upsertTranslation.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {languageOptions.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Save className="w-4 h-4 mr-2" />
+                Save Translation
+              </Button>
+              <Button variant="outline" onClick={() => setIsAdding(false)}>
+                Cancel
+              </Button>
             </div>
-            <div>
-              <Label>Project Name</Label>
-              <Input
-                type="text"
-                value={newTranslation.projectName}
-                onChange={e =>
-                  setNewTranslation({
-                    ...newTranslation,
-                    projectName: e.target.value,
-                  })
-                }
-                placeholder="Enter translated project name"
-              />
-            </div>
-            <div>
-              <Label>Project Location</Label>
-              <Input
-                type="text"
-                value={newTranslation.projectLocation}
-                onChange={e =>
-                  setNewTranslation({
-                    ...newTranslation,
-                    projectLocation: e.target.value,
-                  })
-                }
-                placeholder="Enter translated project location"
-              />
-            </div>
-            <Button
-              onClick={() => handleSaveTranslation(false)}
-              disabled={upsertTranslation.isPending}
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Translation
-            </Button>
           </CardContent>
         </Card>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {translations.length === 0 ? (
-          <p className="text-gray-500 text-sm text-center py-4">
+          <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
             No translations yet
-          </p>
+          </div>
         ) : (
           translations.map((translation: ProjectTranslation) => (
-            <Card key={translation.language}>
-              <CardContent className="pt-6">
+            <Card key={translation.language} className="overflow-hidden">
+              <CardContent className="p-6">
                 {editingTranslation?.language === translation.language ? (
                   <div className="space-y-4">
-                    <div>
-                      <Label>Language</Label>
-                      <Input
-                        type="text"
-                        value={editingTranslation.language}
-                        disabled
-                        className="bg-gray-100 text-gray-600"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium">Language</Label>
+                        <Input
+                          type="text"
+                          value={editingTranslation.language}
+                          disabled
+                          className="bg-muted text-muted-foreground mt-2"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label>Project Name</Label>
-                      <Input
-                        type="text"
-                        value={editingTranslation.projectName}
-                        onChange={e =>
-                          setEditingTranslation({
-                            ...editingTranslation,
-                            projectName: e.target.value,
-                          })
-                        }
-                        placeholder="Enter translated project name"
-                      />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium">
+                          Project Name
+                        </Label>
+                        <Input
+                          type="text"
+                          value={editingTranslation.projectName}
+                          onChange={e =>
+                            setEditingTranslation({
+                              ...editingTranslation,
+                              projectName: e.target.value,
+                            })
+                          }
+                          placeholder="Enter translated project name"
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">
+                          Project Location
+                        </Label>
+                        <Input
+                          type="text"
+                          value={editingTranslation.projectLocation}
+                          onChange={e =>
+                            setEditingTranslation({
+                              ...editingTranslation,
+                              projectLocation: e.target.value,
+                            })
+                          }
+                          placeholder="Enter translated project location"
+                          className="mt-2"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label>Project Location</Label>
-                      <Input
-                        type="text"
-                        value={editingTranslation.projectLocation}
-                        onChange={e =>
-                          setEditingTranslation({
-                            ...editingTranslation,
-                            projectLocation: e.target.value,
-                          })
-                        }
-                        placeholder="Enter translated project location"
-                      />
-                    </div>
-                    <div className="flex gap-2">
+
+                    <div className="flex gap-2 pt-2">
                       <Button
                         onClick={() => handleSaveTranslation(true)}
                         disabled={upsertTranslation.isPending}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Save
                       </Button>
                       <Button
-                        variant="secondary"
+                        variant="outline"
                         onClick={() => setEditingTranslation(null)}
                       >
                         Cancel
@@ -240,23 +280,25 @@ export function ProjectTranslationsManager({
                   </div>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <div>
-                        <span className="font-medium text-gray-700">
-                          {translation.language.toUpperCase()}
-                        </span>
+                    <div className="space-y-2">
+                      <div className="font-semibold text-blue-600">
+                        {translation.language.toUpperCase()}
                       </div>
-                      <div className="text-sm">
-                        <span className="text-gray-500">Name:</span>{' '}
-                        <span className="text-gray-700">
-                          {translation.projectName}
-                        </span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-gray-500">Location:</span>{' '}
-                        <span className="text-gray-700">
-                          {translation.projectLocation}
-                        </span>
+                      <div className="text-sm space-y-1">
+                        <div>
+                          <span className="text-muted-foreground">Name:</span>{' '}
+                          <span className="text-foreground font-medium">
+                            {translation.projectName}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">
+                            Location:
+                          </span>{' '}
+                          <span className="text-foreground font-medium">
+                            {translation.projectLocation}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -264,8 +306,9 @@ export function ProjectTranslationsManager({
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingTranslation(translation)}
+                        className="text-blue-600 hover:bg-blue-50"
                       >
-                        <Edit className="w-4 h-4 text-blue-500" />
+                        <Edit className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -273,8 +316,9 @@ export function ProjectTranslationsManager({
                         onClick={() =>
                           handleDeleteTranslation(translation.language)
                         }
+                        className="text-red-500 hover:bg-red-50"
                       >
-                        <Trash2 className="w-4 h-4 text-red-500" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>

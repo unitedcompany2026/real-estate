@@ -1,11 +1,14 @@
+'use client'
+
+import type React from 'react'
+
 import { useState } from 'react'
-import { X, Upload, Save, ImageIcon, Languages, Building } from 'lucide-react'
+import { X, Upload, Save } from 'lucide-react'
 import { useUpdateProject } from '@/lib/hooks/useProjects'
 import { usePartners } from '@/lib/hooks/usePartners'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
   SelectContent,
@@ -36,6 +39,9 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
   const [projectLocation, setProjectLocation] = useState(
     project.projectLocation || ''
   )
+  const [activeSection, setActiveSection] = useState<
+    'details' | 'image' | 'translations'
+  >('details')
 
   const updateProject = useUpdateProject()
   const { data: partners } = usePartners('en')
@@ -63,7 +69,6 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
       data.append('projectLocation', projectLocation)
     }
 
-    // Only submit if there are changes
     if (
       imageFile ||
       (partnerId && partnerId !== project.partnerId?.toString()) ||
@@ -84,137 +89,194 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     projectLocation !== project.projectLocation
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-800">
-          Edit Project: {project.projectName}
-        </h3>
-        <Button variant="ghost" size="icon" onClick={onBack}>
+    <div className="bg-background rounded-lg border border-border shadow-sm p-8">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground tracking-tight">
+            Edit Project
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {project.projectName}
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="h-10 w-10"
+        >
           <X className="w-5 h-5" />
         </Button>
       </div>
 
-      <Tabs defaultValue="details" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="details">
-            <Building className="w-4 h-4 mr-2" />
-            Details
-          </TabsTrigger>
-          <TabsTrigger value="image">
-            <ImageIcon className="w-4 h-4 mr-2" />
-            Image
-          </TabsTrigger>
-          <TabsTrigger value="translations">
-            <Languages className="w-4 h-4 mr-2" />
-            Translations
-          </TabsTrigger>
-        </TabsList>
+      <div className="flex gap-2 mb-8 border-b border-border pb-0">
+        <button
+          onClick={() => setActiveSection('details')}
+          className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+            activeSection === 'details'
+              ? 'border-foreground text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Details
+        </button>
+        <button
+          onClick={() => setActiveSection('image')}
+          className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+            activeSection === 'image'
+              ? 'border-foreground text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Upload className="w-4 h-4 inline mr-2" />
+          Image
+        </button>
+        <button
+          onClick={() => setActiveSection('translations')}
+          className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+            activeSection === 'translations'
+              ? 'border-foreground text-foreground'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          🌐 Translations
+        </button>
+      </div>
 
-        <TabsContent value="details" className="space-y-4">
-          <div>
-            <Label htmlFor="projectLocation">Project Location</Label>
-            <Input
-              id="projectLocation"
-              type="text"
-              value={projectLocation}
-              onChange={e => setProjectLocation(e.target.value)}
-              placeholder="Enter project location"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="partnerId">Partner</Label>
-            <Select value={partnerId} onValueChange={setPartnerId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select partner" />
-              </SelectTrigger>
-              <SelectContent>
-                {partners?.map(partner => (
-                  <SelectItem key={partner.id} value={partner.id.toString()}>
-                    {partner.companyName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex gap-3">
-            <Button
-              onClick={handleSubmit}
-              disabled={updateProject.isPending || !hasChanges}
-              className="flex-1"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateProject.isPending ? 'Updating...' : 'Update Details'}
-            </Button>
-            <Button variant="secondary" onClick={onBack}>
-              Cancel
-            </Button>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="image" className="space-y-4">
-          <div>
-            <Label>Project Image</Label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors relative">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-h-48 mx-auto rounded"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={() => {
-                      setImageFile(null)
-                      setImagePreview(
-                        project.image ? `${API_URL}/${project.image}` : null
-                      )
-                    }}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ) : (
-                <div>
-                  <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">
-                    Click to upload new image
-                  </p>
-                </div>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+      <div className="space-y-6">
+        {activeSection === 'details' && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="projectLocation"
+                className="text-sm font-medium text-foreground"
+              >
+                Project Location
+              </Label>
+              <Input
+                id="projectLocation"
+                type="text"
+                value={projectLocation}
+                onChange={e => setProjectLocation(e.target.value)}
+                placeholder="e.g., Downtown District"
+                className="bg-background border-border"
               />
             </div>
-          </div>
 
-          <div className="flex gap-3">
-            <Button
-              onClick={handleSubmit}
-              disabled={updateProject.isPending || !imageFile}
-              className="flex-1"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateProject.isPending ? 'Updating...' : 'Update Image'}
-            </Button>
-            <Button variant="secondary" onClick={onBack}>
-              Cancel
-            </Button>
-          </div>
-        </TabsContent>
+            <div className="space-y-2">
+              <Label
+                htmlFor="partnerId"
+                className="text-sm font-medium text-foreground"
+              >
+                Partner
+              </Label>
+              <Select value={partnerId} onValueChange={setPartnerId}>
+                <SelectTrigger className="bg-background border-border">
+                  <SelectValue placeholder="Select partner" />
+                </SelectTrigger>
+                <SelectContent>
+                  {partners?.map(partner => (
+                    <SelectItem key={partner.id} value={partner.id.toString()}>
+                      {partner.companyName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        <TabsContent value="translations">
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={handleSubmit}
+                disabled={updateProject.isPending || !hasChanges}
+                className="flex-1"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {updateProject.isPending ? 'Updating...' : 'Update Details'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="px-6 bg-transparent"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'image' && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-foreground">
+                Project Image
+              </Label>
+              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-foreground/40 transition-colors relative bg-muted/30">
+                {imagePreview ? (
+                  <div className="relative inline-block">
+                    <img
+                      src={imagePreview || '/placeholder.svg'}
+                      alt="Preview"
+                      className="max-h-48 rounded-md border border-border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 h-8 w-8"
+                      onClick={() => {
+                        setImageFile(null)
+                        setImagePreview(
+                          project.image ? `${API_URL}/${project.image}` : null
+                        )
+                      }}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="py-2">
+                    <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+                    <p className="text-sm font-medium text-foreground">
+                      Click to upload new image
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      PNG, JPG up to 5MB
+                    </p>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={handleSubmit}
+                disabled={updateProject.isPending || !imageFile}
+                className="flex-1"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {updateProject.isPending ? 'Updating...' : 'Update Image'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="px-6 bg-transparent"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'translations' && (
           <ProjectTranslationsManager projectId={project.id} />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   )
 }

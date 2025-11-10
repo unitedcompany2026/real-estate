@@ -1,4 +1,8 @@
-import { useState, useEffect } from 'react'
+'use client'
+
+import type React from 'react'
+
+import { useState } from 'react'
 import { X, Upload, Save } from 'lucide-react'
 import { useCreateProject } from '@/lib/hooks/useProjects'
 import { usePartners } from '@/lib/hooks/usePartners'
@@ -77,17 +81,32 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-800">Create New Project</h3>
-        <Button variant="ghost" size="icon" onClick={onBack}>
+    <div className="bg-background rounded-lg border border-border shadow-sm p-8">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground tracking-tight">
+            Create Project
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Add a new project to your portfolio
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="h-10 w-10"
+        >
           <X className="w-5 h-5" />
         </Button>
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="projectName">
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label
+            htmlFor="projectName"
+            className="text-sm font-medium text-foreground"
+          >
             Project Name <span className="text-red-500">*</span>
           </Label>
           <Input
@@ -97,16 +116,21 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
             onChange={e =>
               setFormData({ ...formData, projectName: e.target.value })
             }
-            placeholder="Enter project name"
-            className={errors.projectName ? 'border-red-500' : ''}
+            placeholder="e.g., Modern Office Building"
+            className={`bg-background border ${errors.projectName ? 'border-red-500' : 'border-border'}`}
           />
           {errors.projectName && (
-            <p className="text-red-500 text-sm mt-1">{errors.projectName}</p>
+            <p className="text-red-500 text-sm font-medium">
+              {errors.projectName}
+            </p>
           )}
         </div>
 
-        <div>
-          <Label htmlFor="projectLocation">
+        <div className="space-y-2">
+          <Label
+            htmlFor="projectLocation"
+            className="text-sm font-medium text-foreground"
+          >
             Project Location <span className="text-red-500">*</span>
           </Label>
           <Input
@@ -116,18 +140,21 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
             onChange={e =>
               setFormData({ ...formData, projectLocation: e.target.value })
             }
-            placeholder="Enter project location"
-            className={errors.projectLocation ? 'border-red-500' : ''}
+            placeholder="e.g., Downtown District"
+            className={`bg-background border ${errors.projectLocation ? 'border-red-500' : 'border-border'}`}
           />
           {errors.projectLocation && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-500 text-sm font-medium">
               {errors.projectLocation}
             </p>
           )}
         </div>
 
-        <div>
-          <Label htmlFor="partnerId">
+        <div className="space-y-2">
+          <Label
+            htmlFor="partnerId"
+            className="text-sm font-medium text-foreground"
+          >
             Partner <span className="text-red-500">*</span>
           </Label>
           <Select
@@ -136,8 +163,10 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
               setFormData({ ...formData, partnerId: value })
             }
           >
-            <SelectTrigger className={errors.partnerId ? 'border-red-500' : ''}>
-              <SelectValue placeholder="Select partner" />
+            <SelectTrigger
+              className={`bg-background border ${errors.partnerId ? 'border-red-500' : 'border-border'}`}
+            >
+              <SelectValue placeholder="Select a partner" />
             </SelectTrigger>
             <SelectContent>
               {partners?.map(partner => (
@@ -148,25 +177,29 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
             </SelectContent>
           </Select>
           {errors.partnerId && (
-            <p className="text-red-500 text-sm mt-1">{errors.partnerId}</p>
+            <p className="text-red-500 text-sm font-medium">
+              {errors.partnerId}
+            </p>
           )}
         </div>
 
-        <div>
-          <Label>Project Image</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors relative">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground">
+            Project Image
+          </Label>
+          <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-foreground/40 transition-colors relative bg-muted/30">
             {imagePreview ? (
-              <div className="relative">
+              <div className="relative inline-block">
                 <img
-                  src={imagePreview}
+                  src={imagePreview || '/placeholder.svg'}
                   alt="Preview"
-                  className="max-h-48 mx-auto rounded"
+                  className="max-h-48 rounded-md border border-border"
                 />
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
-                  className="absolute top-2 right-2"
+                  className="absolute -top-2 -right-2 h-8 w-8"
                   onClick={() => {
                     setImageFile(null)
                     setImagePreview(null)
@@ -176,12 +209,14 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
                 </Button>
               </div>
             ) : (
-              <div>
-                <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">
+              <div className="py-2">
+                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground">
                   Click to upload or drag and drop
                 </p>
-                <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  PNG, JPG up to 5MB
+                </p>
               </div>
             )}
             <input
@@ -194,12 +229,14 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
         </div>
 
         {errors.submit && (
-          <Alert variant="destructive">
-            <AlertDescription>{errors.submit}</AlertDescription>
+          <Alert variant="destructive" className="border-red-200 bg-red-50">
+            <AlertDescription className="text-red-800">
+              {errors.submit}
+            </AlertDescription>
           </Alert>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 pt-4">
           <Button
             onClick={handleSubmit}
             disabled={createProject.isPending}
@@ -208,7 +245,11 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
             <Save className="w-4 h-4 mr-2" />
             {createProject.isPending ? 'Creating...' : 'Create Project'}
           </Button>
-          <Button variant="secondary" onClick={onBack}>
+          <Button
+            variant="outline"
+            onClick={onBack}
+            className="px-6 bg-transparent"
+          >
             Cancel
           </Button>
         </div>

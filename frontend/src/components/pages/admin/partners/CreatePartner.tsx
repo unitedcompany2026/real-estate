@@ -1,3 +1,7 @@
+'use client'
+
+import type React from 'react'
+
 import { useState } from 'react'
 import { X, Upload, Save } from 'lucide-react'
 import { useCreatePartner } from '@/lib/hooks/usePartners'
@@ -56,17 +60,32 @@ export function CreatePartner({ onBack, onSuccess }: CreatePartnerProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-800">Create New Partner</h3>
-        <Button variant="ghost" size="icon" onClick={onBack}>
+    <div className="bg-background rounded-lg border border-border shadow-sm p-8">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground tracking-tight">
+            Create Partner
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Add a new partner with logo and details
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="h-10 w-10"
+        >
           <X className="w-5 h-5" />
         </Button>
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="companyName">
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label
+            htmlFor="companyName"
+            className="text-sm font-medium text-foreground"
+          >
             Company Name <span className="text-red-500">*</span>
           </Label>
           <Input
@@ -76,29 +95,33 @@ export function CreatePartner({ onBack, onSuccess }: CreatePartnerProps) {
             onChange={e =>
               setFormData({ ...formData, companyName: e.target.value })
             }
-            placeholder="Enter company name"
-            className={errors.companyName ? 'border-red-500' : ''}
+            placeholder="e.g., Acme Corporation"
+            className={`bg-background border ${errors.companyName ? 'border-red-500' : 'border-border'}`}
           />
           {errors.companyName && (
-            <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>
+            <p className="text-red-500 text-sm font-medium">
+              {errors.companyName}
+            </p>
           )}
         </div>
 
-        <div>
-          <Label>Company Logo</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors relative">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-foreground">
+            Company Logo
+          </Label>
+          <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-foreground/40 transition-colors relative bg-muted/30">
             {imagePreview ? (
-              <div className="relative">
+              <div className="relative inline-block">
                 <img
-                  src={imagePreview}
+                  src={imagePreview || '/placeholder.svg'}
                   alt="Preview"
-                  className="max-h-48 mx-auto rounded"
+                  className="max-h-48 rounded-md border border-border"
                 />
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
-                  className="absolute top-2 right-2"
+                  className="absolute -top-2 -right-2 h-8 w-8"
                   onClick={() => {
                     setImageFile(null)
                     setImagePreview(null)
@@ -108,12 +131,14 @@ export function CreatePartner({ onBack, onSuccess }: CreatePartnerProps) {
                 </Button>
               </div>
             ) : (
-              <div>
-                <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">
+              <div className="py-2">
+                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground">
                   Click to upload or drag and drop
                 </p>
-                <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  PNG, JPG up to 5MB
+                </p>
               </div>
             )}
             <input
@@ -126,12 +151,14 @@ export function CreatePartner({ onBack, onSuccess }: CreatePartnerProps) {
         </div>
 
         {errors.submit && (
-          <Alert variant="destructive">
-            <AlertDescription>{errors.submit}</AlertDescription>
+          <Alert variant="destructive" className="border-red-200 bg-red-50">
+            <AlertDescription className="text-red-800">
+              {errors.submit}
+            </AlertDescription>
           </Alert>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 pt-4">
           <Button
             onClick={handleSubmit}
             disabled={createPartner.isPending}
@@ -140,7 +167,11 @@ export function CreatePartner({ onBack, onSuccess }: CreatePartnerProps) {
             <Save className="w-4 h-4 mr-2" />
             {createPartner.isPending ? 'Creating...' : 'Create Partner'}
           </Button>
-          <Button variant="secondary" onClick={onBack}>
+          <Button
+            variant="outline"
+            onClick={onBack}
+            className="px-6 bg-transparent"
+          >
             Cancel
           </Button>
         </div>

@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useProjects, useDeleteProject } from '@/lib/hooks/useProjects'
@@ -62,12 +64,12 @@ export default function ProjectsPanel() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-800">
+          <h2 className="text-4xl font-bold text-foreground">
             Construction Projects
           </h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-2">
             Manage your construction projects and translations
           </p>
         </div>
@@ -82,7 +84,10 @@ export default function ProjectsPanel() {
               <SelectItem value="ru">Russian</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={() => setView('create')}>
+          <Button
+            onClick={() => setView('create')}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
             <Plus className="w-5 h-5 mr-2" />
             Add Project
           </Button>
@@ -91,7 +96,7 @@ export default function ProjectsPanel() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
         </div>
       ) : error ? (
         <div className="text-center py-12 text-red-500">
@@ -109,7 +114,7 @@ export default function ProjectsPanel() {
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-12 text-gray-500">
+            <div className="col-span-full text-center py-12 text-muted-foreground">
               No projects found. Add your first project!
             </div>
           )}
