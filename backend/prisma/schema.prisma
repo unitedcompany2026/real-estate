@@ -10,7 +10,7 @@ datasource db {
 model Partners {
   id          Int      @id @default(autoincrement())
   companyName String   @map("company_name") @unique
-  image       String?      
+  image       String?
   createdAt   DateTime @map("created_at") @default(now())
 
   projects     Projects[]
@@ -19,21 +19,38 @@ model Partners {
   @@map("partners")
 }
 
-model Projects { 
+model Projects {
   id              Int      @id @default(autoincrement())
   projectName     String   @map("project_name") @unique
   projectLocation String   @map("project_location")
   image           String?
   createdAt       DateTime @map("created_at") @default(now())
   partnerId       Int      @map("partner_id")
-  
+
   partner      Partners              @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   translations ProjectTranslations[]
-  
+  apartments   Apartments[]
+
   @@map("projects")
 }
 
-model PartnerTranslations { 
+model Apartments {
+  id          Int      @id @default(autoincrement())
+  room        Int
+  area        Int
+  floor       Int
+  totalFloors Int      @map("total_floors")
+  images      String[] // Array of image URLs
+  createdAt   DateTime @map("created_at") @default(now())
+  projectId   Int      @map("project_id")
+
+  project      Projects                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  translations ApartmentTranslations[]
+
+  @@map("apartments")
+}
+
+model PartnerTranslations {
   id          Int    @id @default(autoincrement())
   partnerId   Int    @map("partner_id")
   language    String
@@ -56,4 +73,16 @@ model ProjectTranslations {
 
   @@unique([projectId, language])
   @@map("project_translations")
+}
+
+model ApartmentTranslations {
+  id          Int    @id @default(autoincrement())
+  apartmentId Int    @map("apartment_id")
+  language    String
+  description String?
+
+  apartment Apartments @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@unique([apartmentId, language])
+  @@map("apartment_translations")
 }

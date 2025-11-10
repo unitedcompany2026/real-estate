@@ -1,0 +1,185 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApartmentsService } from './apartments.service';
+import { CreateApartmentDto } from './dto/CreateApartment.dto';
+import { UpdateApartmentDto } from './dto/UpdateApartment.dto';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { multerConfig } from '../common/config/multer.config';
+import { UpsertApartmentTranslationDto } from './dto/UpsertApartmentTranslation.dto';
+
+@ApiTags('Apartments')
+@Controller('apartments')
+export class ApartmentsController {
+  constructor(private readonly apartmentsService: ApartmentsService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all apartments' })
+  @ApiQuery({
+    name: 'lang',
+    required: false,
+    description: 'Language code (e.g., en, ka, ru)',
+    example: 'en',
+  })
+  @ApiQuery({
+    name: 'projectId',
+    required: false,
+    description: 'Filter by project ID',
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Apartments retrieved successfully',
+  })
+  async findAll(
+    @Query('lang') lang?: string,
+    @Query('projectId', new ParseIntPipe({ optional: true }))
+    projectId?: number,
+  ) {
+    return this.apartmentsService.findAll(lang || 'en', projectId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get apartment by ID' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiQuery({
+    name: 'lang',
+    required: false,
+    description: 'Language code (e.g., en, ka, ru)',
+    example: 'en',
+  })
+  @ApiResponse({ status: 200, description: 'Apartment retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Apartment not found' })
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('lang') lang?: string,
+  ) {
+    return this.apartmentsService.findOne(id, lang || 'en');
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Create a new apartment' })
+  @ApiResponse({ status: 201, description: 'Apartment created successfully' })
+  @ApiResponse({ status: 404, description: 'Project not found' })
+  @UseInterceptors(FilesInterceptor('images', 10, multerConfig('apartments')))
+  @ApiBody({ type: CreateApartmentDto })
+  async createApartment(
+    @Body() dto: CreateApartmentDto,
+    @UploadedFiles() images?: Express.Multer.File[],
+  ) {
+    return this.apartmentsService.createApartment(dto, images);
+  }
+
+  @Patch(':id')
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Update an apartment' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Apartment updated successfully' })
+  @ApiResponse({ status: 404, description: 'Apartment not found' })
+  @UseInterceptors(FilesInterceptor('images', 10, multerConfig('apartments')))
+  @ApiBody({
+    type: UpdateApartmentDto,
+    description: 'Apartment update data',
+  })
+  async updateApartment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateApartmentDto,
+    @UploadedFiles() images?: Express.Multer.File[],
+  ) {
+    return this.apartmentsService.updateApartment(id, dto, images);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete an apartment' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Apartment deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Apartment not found' })
+  async deleteApartment(@Param('id', ParseIntPipe) id: number) {
+    return this.apartmentsService.deleteApartment(id);
+  }
+
+  @Delete(':id/images/:imageIndex')
+  @ApiOperation({ summary: 'Delete a specific image from apartment' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiParam({ name: 'imageIndex', description: 'Image index', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Image deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Apartment or image not found' })
+  async deleteImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('imageIndex', ParseIntPipe) imageIndex: number,
+  ) {
+    return this.apartmentsService.deleteImage(id, imageIndex);
+  }
+
+  @Get(':id/translations')
+  @ApiOperation({ summary: 'Get all translations for an apartment' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiResponse({
+    status: 200,
+    description: 'Translations retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Apartment not found' })
+  async getTranslations(@Param('id', ParseIntPipe) id: number) {
+    return this.apartmentsService.getTranslations(id);
+  }
+
+  @Patch(':id/translations')
+  @ApiOperation({ summary: 'Add or update a translation' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiResponse({
+    status: 200,
+    description: 'Translation added/updated successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Apartment not found' })
+  @ApiBody({ type: UpsertApartmentTranslationDto })
+  async upsertTranslation(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpsertApartmentTranslationDto,
+  ) {
+    return this.apartmentsService.upsertTranslation(
+      id,
+      dto.language,
+      dto.description,
+    );
+  }
+
+  @Delete(':id/translations/:language')
+  @ApiOperation({ summary: 'Delete a specific translation' })
+  @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
+  @ApiParam({
+    name: 'language',
+    description: 'Language code (e.g., ka, ru)',
+    example: 'ka',
+  })
+  @ApiResponse({ status: 200, description: 'Translation deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Translation not found' })
+  async deleteTranslation(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('language') language: string,
+  ) {
+    return this.apartmentsService.deleteTranslation(id, language);
+  }
+}
