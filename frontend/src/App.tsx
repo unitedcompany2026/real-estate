@@ -5,6 +5,7 @@ import { QueryProvider } from './providers/QueryProvider'
 import { Header } from './components/header/Header'
 import { AppRoutes } from './routes/AppRoutes'
 import { queryClient } from './lib/tanstack/query-client'
+import Footer from './components/footer/Footer'
 
 export const App = () => {
   return (
@@ -22,6 +23,7 @@ export const App = () => {
         <QueryProvider>
           <Header />
           <AppRoutes />
+          <Footer />
         </QueryProvider>
       </BrowserRouter>
     </ErrorBoundary>

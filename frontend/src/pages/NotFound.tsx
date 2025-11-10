@@ -1,5 +1,5 @@
+import { ROUTES } from '@/constants/routes'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '@/constants'
 
 const NotFound = () => {
   return (

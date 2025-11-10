@@ -9,14 +9,17 @@
     "edit": "Edit",
     "add": "Add",
     "search": "Search",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "seeAll": "See All"
   },
   "nav": {
     "home": "Home",
     "projects": "Projects",
     "partners": "Partners",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "allProjects": "All Projects",
+    "property": "Property"
   },
   "projects": {
     "title": "Projects",
