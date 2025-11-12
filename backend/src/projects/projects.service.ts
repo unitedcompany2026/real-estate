@@ -8,6 +8,7 @@ import {
 import { CreateProjectDto } from './dto/CreateProject.dto';
 import { FileUtils } from '@/common/utils/file.utils';
 import { UpdateProjectDto } from './dto/UpdateProject.dto';
+import { LANGUAGES } from '@/common/constants/language';
 
 @Injectable()
 export class ProjectsService {
@@ -72,6 +73,18 @@ export class ProjectsService {
       include: {
         partner: true,
       },
+    });
+
+    // 👇 Create default translations for all languages
+
+    await this.prismaService.projectTranslations.createMany({
+      data: LANGUAGES.map((lang) => ({
+        projectId: project.id,
+        language: lang,
+        projectName: lang === 'ka' ? dto.projectName : '',
+        projectLocation: lang === 'ka' ? dto.projectLocation : '',
+      })),
+      skipDuplicates: true,
     });
 
     return project;

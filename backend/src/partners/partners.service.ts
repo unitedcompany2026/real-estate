@@ -7,6 +7,7 @@ import { UpdatePartnerDto } from './dto/UpdatePartner.dto';
 import { CreatePartnerDto } from './dto/CreatePartner.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FileUtils } from '@/common/utils/file.utils';
+import { LANGUAGES } from '@/common/constants/language';
 
 @Injectable()
 export class PartnersService {
@@ -22,13 +23,12 @@ export class PartnersService {
       },
     });
 
-    // Return partners with translation as a single object (not array)
     return partners.map((partner) => ({
       id: partner.id,
       companyName: partner.companyName,
       image: partner.image,
       createdAt: partner.createdAt,
-      translation: partner.translations[0] || null, // Single translation object
+      translation: partner.translations[0] || null,
     }));
   }
 
@@ -48,6 +48,15 @@ export class PartnersService {
         companyName: dto.companyName,
         image: image ? FileUtils.generateImageUrl(image, 'partners') : null,
       },
+    });
+
+    await this.prismaService.partnerTranslations.createMany({
+      data: LANGUAGES.map((lang) => ({
+        partnerId: partner.id,
+        language: lang,
+        companyName: lang === 'ka' ? dto.companyName : '',
+      })),
+      skipDuplicates: true,
     });
 
     return partner;
@@ -175,7 +184,6 @@ export class PartnersService {
       throw new NotFoundException(`Partner with ID "${id}" not found`);
     }
 
-    // Check if partner has any projects
     if (partner.projects && partner.projects.length > 0) {
       throw new ConflictException(
         `Cannot delete partner "${partner.companyName}" because it has ${partner.projects.length} associated project(s). Please delete or reassign the projects first.`,

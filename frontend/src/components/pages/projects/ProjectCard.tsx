@@ -1,53 +1,8 @@
 import { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 
-interface ProjectCardProps {
-  project: {
-    id: number
-    projectName?: string
-    image?: string
-    partner?: {
-      companyName?: string
-      translation?: {
-        companyName?: string
-      }
-    }
-    translation?: {
-      projectName?: string
-      projectLocation?: string
-    }
-  }
-  currentLanguage?: string
-  onViewDetails?: () => void
-}
-
-const ProjectCard = ({
-  project,
-  currentLanguage = 'en',
-  onViewDetails,
-}: ProjectCardProps) => {
+const ProjectCard = ({ project }: any) => {
   const [imageError, setImageError] = useState(false)
-
-  // Get translated project name
-  const getTranslatedProjectName = () => {
-    // Check for translation object first (new backend structure)
-    if (project.translation?.projectName) {
-      return project.translation.projectName
-    }
-    // Fallback to original name
-    return project.projectName || 'Untitled Project'
-  }
-
-  // Get translated company name
-  const getTranslatedCompanyName = () => {
-    if (project.partner?.translation?.companyName) {
-      return project.partner.translation.companyName
-    }
-    return project.partner?.companyName
-  }
-
-  const projectName = getTranslatedProjectName()
-  const companyName = getTranslatedCompanyName()
 
   const getImageUrl = (imagePath?: string) => {
     if (!imagePath) return '/placeholder.svg'
@@ -61,12 +16,18 @@ const ProjectCard = ({
 
   const projectImage = getImageUrl(project.image)
 
+  const projectName =
+    project?.translation?.projectName ||
+    project?.projectName ||
+    'Unnamed Project'
+
+  const partnerName =
+    project?.partner?.translation?.companyName ||
+    project?.partner?.companyName ||
+    ''
+
   return (
-    <div
-      className="bg-white rounded-xl border border-gray-300   
-                 transition-all duration-300 h-full p-2 cursor-pointer"
-      onClick={onViewDetails}
-    >
+    <div className="bg-white rounded-xl border border-gray-300 transition-all duration-300 h-full p-2 cursor-pointer">
       <div className="relative h-72 overflow-hidden rounded-lg">
         {!imageError ? (
           <img
@@ -100,8 +61,8 @@ const ProjectCard = ({
           <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors">
             {projectName}
           </h3>
-          {companyName && (
-            <p className="text-xs text-gray-500 mt-1">{companyName}</p>
+          {partnerName && (
+            <p className="text-xs text-gray-500 mt-1">{partnerName}</p>
           )}
         </div>
         <div className="bg-gray-200 rounded-full p-2 hover:bg-blue-900 transition-colors">
