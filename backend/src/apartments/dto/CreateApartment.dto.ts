@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class CreateApartmentDto {
   @ApiProperty()
@@ -15,6 +16,10 @@ export class CreateApartmentDto {
 
   @ApiProperty()
   projectId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  description?: string;
 
   @ApiPropertyOptional({
     type: 'array',

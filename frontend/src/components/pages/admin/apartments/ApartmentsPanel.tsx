@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useApartments, useDeleteApartment } from '@/lib/hooks/useApartments'
@@ -16,14 +14,12 @@ import type { Apartment } from '@/lib/types/apartments'
 import { CreateApartment } from './CreateApartment'
 import { EditApartment } from './EditApartment'
 import { AdminApartmentCard } from './AdminApartmentCard'
- 
 
 export default function ApartmentsPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(
     null
   )
-  const [currentLang, setCurrentLang] = useState('en')
   const [selectedProjectId, setSelectedProjectId] = useState<
     number | undefined
   >(undefined)
@@ -32,8 +28,8 @@ export default function ApartmentsPanel() {
     data: apartments,
     isLoading,
     error,
-  } = useApartments(currentLang, selectedProjectId)
-  const { data: projects } = useProjects('en')
+  } = useApartments(undefined, selectedProjectId) // default language only
+  const { data: projects } = useProjects() // default language only
   const deleteApartment = useDeleteApartment()
 
   const handleEdit = (apartment: Apartment) => {
@@ -80,9 +76,7 @@ export default function ApartmentsPanel() {
       <div className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-4xl font-bold text-foreground">Apartments</h2>
-          <p className="text-muted-foreground mt-2">
-            Manage your apartments and translations
-          </p>
+          <p className="text-muted-foreground mt-2">Manage your apartments</p>
         </div>
         <div className="flex gap-3 items-center">
           <Select
@@ -103,16 +97,7 @@ export default function ApartmentsPanel() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={currentLang} onValueChange={setCurrentLang}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="ka">Georgian</SelectItem>
-              <SelectItem value="ru">Russian</SelectItem>
-            </SelectContent>
-          </Select>
+
           <Button
             onClick={() => setView('create')}
             className="bg-blue-600 hover:bg-blue-700 text-white"

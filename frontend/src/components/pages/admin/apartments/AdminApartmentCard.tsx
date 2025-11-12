@@ -92,7 +92,7 @@ export function AdminApartmentCard({
             Edit
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             onClick={() => onDelete(apartment.id)}
             size="icon"
             className="h-10 w-10"

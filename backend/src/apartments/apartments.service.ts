@@ -7,6 +7,7 @@ import { UpdateApartmentDto } from './dto/UpdateApartment.dto';
 import { CreateApartmentDto } from './dto/CreateApartment.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FileUtils } from '@/common/utils/file.utils';
+import { LANGUAGES } from '@/common/constants/language';
 
 @Injectable()
 export class ApartmentsService {
@@ -93,7 +94,7 @@ export class ApartmentsService {
       );
     }
 
-    // Generate image URLs and filter out any nulls
+    // Generate image URLs
     const imageUrls = images
       ? images
           .map((image) => FileUtils.generateImageUrl(image, 'apartments'))
@@ -109,15 +110,15 @@ export class ApartmentsService {
         images: imageUrls,
         projectId: dto.projectId,
       },
-      include: {
-        project: {
-          select: {
-            id: true,
-            projectName: true,
-            projectLocation: true,
-          },
-        },
-      },
+    });
+
+    await this.prismaService.apartmentTranslations.createMany({
+      data: LANGUAGES.map((lang) => ({
+        apartmentId: apartment.id,
+        language: lang,
+        description: lang === 'en' ? dto.description || '' : '',
+      })),
+      skipDuplicates: true,
     });
 
     return apartment;

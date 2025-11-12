@@ -2,14 +2,6 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { usePartners, useDeletePartner } from '@/lib/hooks/usePartners'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-
 import type { Partner } from '@/lib/types/partners'
 import { CreatePartner } from './CreatePartner'
 import { EditPartner } from './EditPartner'
@@ -18,9 +10,8 @@ import { AdminPartnerCard } from './AdminPartnerCard'
 export default function PartnersPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
-  const [currentLang, setCurrentLang] = useState('en')
 
-  const { data: partners, isLoading, error } = usePartners(currentLang)
+  const { data: partners, isLoading, error } = usePartners() // default language
   const deletePartner = useDeletePartner()
 
   const handleEdit = (partner: Partner) => {
@@ -68,21 +59,8 @@ export default function PartnersPanel() {
           <h1 className="text-4xl font-bold tracking-tight text-foreground">
             Construction Partners
           </h1>
-          <p className="text-base text-muted-foreground">
-            Manage your construction partners and translations
-          </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-          <Select value={currentLang} onValueChange={setCurrentLang}>
-            <SelectTrigger className="w-full sm:w-[160px]">
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="ka">Georgian</SelectItem>
-              <SelectItem value="ru">Russian</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex gap-3 w-full sm:w-auto">
           <Button
             onClick={() => setView('create')}
             className="w-full sm:w-auto"

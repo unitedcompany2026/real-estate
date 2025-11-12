@@ -1,30 +1,19 @@
 import { useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, MapPin } from 'lucide-react'
+import { getImageUrl } from '@/lib/utils/image-utils'
 
 const ProjectCard = ({ project }: any) => {
   const [imageError, setImageError] = useState(false)
 
-  const getImageUrl = (imagePath?: string) => {
-    if (!imagePath) return '/placeholder.svg'
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath
-    }
-    const apiUrl = 'http://localhost:3000'
-    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`
-    return `${apiUrl}${cleanPath}`
+  const getTranslatedValue = (field: string) => {
+    return project?.translation?.[field] || project?.[field] || ''
   }
 
   const projectImage = getImageUrl(project.image)
-
-  const projectName =
-    project?.translation?.projectName ||
-    project?.projectName ||
-    'Unnamed Project'
-
+  const projectName = getTranslatedValue('projectName')
+  const projectLocation = getTranslatedValue('projectLocation')
   const partnerName =
-    project?.partner?.translation?.companyName ||
-    project?.partner?.companyName ||
-    ''
+    project?.partner?.translation?.companyName || project?.partner?.companyName
 
   return (
     <div className="bg-white rounded-xl border border-gray-300 transition-all duration-300 h-full p-2 cursor-pointer">
@@ -56,17 +45,29 @@ const ProjectCard = ({ project }: any) => {
         )}
       </div>
 
-      <div className="p-2 sm:p-3 flex justify-between items-center">
-        <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors">
-            {projectName}
-          </h3>
-          {partnerName && (
-            <p className="text-xs text-gray-500 mt-1">{partnerName}</p>
-          )}
-        </div>
-        <div className="bg-gray-200 rounded-full p-2 hover:bg-blue-900 transition-colors">
-          <ArrowUpRight className="w-4 h-4 text-gray-700 hover:text-white transition-colors" />
+      <div className="p-2 sm:p-3">
+        <div className="flex justify-between items-start gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors">
+              {projectName}
+            </h3>
+            {projectLocation && (
+              <div className="flex items-center gap-1 mt-1">
+                <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                <p className="text-xs text-gray-500 truncate">
+                  {projectLocation}
+                </p>
+              </div>
+            )}
+            {partnerName && (
+              <p className="text-xs text-gray-500 mt-1 truncate">
+                {partnerName}
+              </p>
+            )}
+          </div>
+          <div className="bg-gray-200 rounded-full p-2 hover:bg-blue-900 transition-colors flex-shrink-0">
+            <ArrowUpRight className="w-4 h-4 text-gray-700 hover:text-white transition-colors" />
+          </div>
         </div>
       </div>
     </div>

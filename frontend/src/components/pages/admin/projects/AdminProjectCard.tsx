@@ -63,7 +63,7 @@ export function AdminProjectCard({
             Edit
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             onClick={() => onDelete(project.id)}
             size="icon"
             className="h-10 w-10"

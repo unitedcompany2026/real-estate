@@ -75,14 +75,12 @@ export class ProjectsService {
       },
     });
 
-    // 👇 Create default translations for all languages
-
     await this.prismaService.projectTranslations.createMany({
       data: LANGUAGES.map((lang) => ({
         projectId: project.id,
         language: lang,
-        projectName: lang === 'ka' ? dto.projectName : '',
-        projectLocation: lang === 'ka' ? dto.projectLocation : '',
+        projectName: lang === 'en' ? dto.projectName : '',
+        projectLocation: lang === 'en' ? dto.projectLocation : '',
       })),
       skipDuplicates: true,
     });

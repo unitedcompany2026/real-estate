@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/utils/image-utils'
 import { useState } from 'react'
 
 interface PartnerCardProps {
@@ -14,28 +15,8 @@ interface PartnerCardProps {
 const PartnerCard = ({ company }: PartnerCardProps) => {
   const [imageError, setImageError] = useState(false)
 
-  // Get translated company name
-  const getTranslatedCompanyName = () => {
-    if (company.translation?.companyName) {
-      return company.translation.companyName
-    }
-    return company.companyName
-  }
-
-  const displayName = getTranslatedCompanyName()
-
-  const getImageUrl = (imagePath: string) => {
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath
-    }
-    const apiUrl = 'http://localhost:3000'
-    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`
-    return `${apiUrl}${cleanPath}`
-  }
-
-  const imageUrl = company.image
-    ? getImageUrl(company.image)
-    : '/placeholder.svg'
+  const displayName = company.translation?.companyName || company.companyName
+  const imageUrl = getImageUrl(company.image)
 
   return (
     <div className="flex flex-col items-center group cursor-pointer">

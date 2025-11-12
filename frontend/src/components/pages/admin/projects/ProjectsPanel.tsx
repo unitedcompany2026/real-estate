@@ -1,27 +1,17 @@
-'use client'
-
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useProjects, useDeleteProject } from '@/lib/hooks/useProjects'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import type { Project } from '@/lib/types/projects'
-import { EditProject } from './EditProject'
 import { CreateProject } from './CreateProject'
+import { EditProject } from './EditProject'
 import { AdminProjectCard } from './AdminProjectCard'
 
 export default function ProjectsPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [currentLang, setCurrentLang] = useState('en')
 
-  const { data: projects, isLoading, error } = useProjects(currentLang)
+  const { data: projects, isLoading, error } = useProjects() // default language only
   const deleteProject = useDeleteProject()
 
   const handleEdit = (project: Project) => {
@@ -70,20 +60,10 @@ export default function ProjectsPanel() {
             Construction Projects
           </h2>
           <p className="text-muted-foreground mt-2">
-            Manage your construction projects and translations
+            Manage your construction projects
           </p>
         </div>
         <div className="flex gap-3 items-center">
-          <Select value={currentLang} onValueChange={setCurrentLang}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="ka">Georgian</SelectItem>
-              <SelectItem value="ru">Russian</SelectItem>
-            </SelectContent>
-          </Select>
           <Button
             onClick={() => setView('create')}
             className="bg-blue-600 hover:bg-blue-700 text-white"

@@ -54,7 +54,7 @@ export class PartnersService {
       data: LANGUAGES.map((lang) => ({
         partnerId: partner.id,
         language: lang,
-        companyName: lang === 'ka' ? dto.companyName : '',
+        companyName: lang === 'en' ? dto.companyName : '',
       })),
       skipDuplicates: true,
     });
