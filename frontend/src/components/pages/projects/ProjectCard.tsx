@@ -4,23 +4,50 @@ import { ArrowUpRight } from 'lucide-react'
 interface ProjectCardProps {
   project: {
     id: number
-    name?: string
     projectName?: string
     image?: string
-    projectImage?: string
     partner?: {
       companyName?: string
+      translation?: {
+        companyName?: string
+      }
     }
-    companyName?: string
+    translation?: {
+      projectName?: string
+      projectLocation?: string
+    }
   }
+  currentLanguage?: string
   onViewDetails?: () => void
 }
 
-const ProjectCard = ({ project, onViewDetails }: ProjectCardProps) => {
+const ProjectCard = ({
+  project,
+  currentLanguage = 'en',
+  onViewDetails,
+}: ProjectCardProps) => {
   const [imageError, setImageError] = useState(false)
 
-  const projectName = project.name || project.projectName || 'Untitled Project'
-  const companyName = project.companyName || project.partner?.companyName
+  // Get translated project name
+  const getTranslatedProjectName = () => {
+    // Check for translation object first (new backend structure)
+    if (project.translation?.projectName) {
+      return project.translation.projectName
+    }
+    // Fallback to original name
+    return project.projectName || 'Untitled Project'
+  }
+
+  // Get translated company name
+  const getTranslatedCompanyName = () => {
+    if (project.partner?.translation?.companyName) {
+      return project.partner.translation.companyName
+    }
+    return project.partner?.companyName
+  }
+
+  const projectName = getTranslatedProjectName()
+  const companyName = getTranslatedCompanyName()
 
   const getImageUrl = (imagePath?: string) => {
     if (!imagePath) return '/placeholder.svg'
@@ -32,11 +59,11 @@ const ProjectCard = ({ project, onViewDetails }: ProjectCardProps) => {
     return `${apiUrl}${cleanPath}`
   }
 
-  const projectImage = getImageUrl(project.image || project.projectImage)
+  const projectImage = getImageUrl(project.image)
 
   return (
     <div
-      className="bg-white rounded-xl border-2 border-blue-300   
+      className="bg-white rounded-xl border border-gray-300   
                  transition-all duration-300 h-full p-2 cursor-pointer"
       onClick={onViewDetails}
     >
@@ -47,6 +74,7 @@ const ProjectCard = ({ project, onViewDetails }: ProjectCardProps) => {
             alt={projectName}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             onError={() => setImageError(true)}
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-200">

@@ -17,11 +17,29 @@ export default function AllProjects() {
   const [selectedStatus, setSelectedStatus] = useState<string>('All')
   const [showFilters, setShowFilters] = useState(false)
 
-  // Extract unique values for filters
+  // Get translated partner names for filters
+  const getTranslatedPartnerName = (partner: any) => {
+    if (!partner) return null
+
+    if (partner.translations && partner.translations.length > 0) {
+      const translation = partner.translations.find(
+        (t: any) => t.language === i18n.language
+      )
+      if (translation?.companyName) {
+        return translation.companyName
+      }
+    }
+    return partner.companyName
+  }
+
   const partners = [
     'All',
     ...Array.from(
-      new Set(allProjects.map(p => p.partner?.companyName).filter(Boolean))
+      new Set(
+        allProjects
+          .map(p => getTranslatedPartnerName(p.partner))
+          .filter(Boolean)
+      )
     ),
   ]
 
@@ -48,9 +66,9 @@ export default function AllProjects() {
 
   // Filter projects
   const filteredProjects = allProjects.filter(project => {
+    const translatedPartnerName = getTranslatedPartnerName(project.partner)
     const matchesPartner =
-      selectedPartner === 'All' ||
-      project.partner?.companyName === selectedPartner
+      selectedPartner === 'All' || translatedPartnerName === selectedPartner
     const matchesCity =
       selectedCity === 'All' || project.projectLocation?.includes(selectedCity)
     // const matchesStatus =
@@ -161,7 +179,9 @@ export default function AllProjects() {
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
-                        {(partner ?? 'All') === 'All' ? t('projects.all') : partner ?? ''}
+                        {(partner ?? 'All') === 'All'
+                          ? t('projects.all')
+                          : (partner ?? '')}
                       </button>
                     ))}
                   </div>
@@ -231,7 +251,11 @@ export default function AllProjects() {
         {filteredProjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredProjects.map(project => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                currentLanguage={i18n.language}
+              />
             ))}
           </div>
         ) : (

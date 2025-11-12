@@ -16,7 +16,14 @@ export class ProjectsService {
   async findAll(lang: string = 'en') {
     const projects = await this.prismaService.projects.findMany({
       include: {
-        partner: true,
+        partner: {
+          include: {
+            translations: {
+              where: { language: lang },
+              take: 1,
+            },
+          },
+        },
         translations: {
           where: { language: lang },
           take: 1,
@@ -26,12 +33,19 @@ export class ProjectsService {
 
     return projects.map((project) => ({
       id: project.id,
-      projectName: project.translations[0]?.projectName || project.projectName,
-      projectLocation:
-        project.translations[0]?.projectLocation || project.projectLocation,
+      projectName: project.projectName,
+      projectLocation: project.projectLocation,
       image: project.image,
       createdAt: project.createdAt,
-      partner: project.partner,
+      translation: project.translations[0] || null,
+      partner: project.partner
+        ? {
+            id: project.partner.id,
+            companyName: project.partner.companyName,
+            image: project.partner.image,
+            translation: project.partner.translations[0] || null,
+          }
+        : null,
     }));
   }
 

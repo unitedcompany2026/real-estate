@@ -22,11 +22,13 @@ export class PartnersService {
       },
     });
 
+    // Return partners with translation as a single object (not array)
     return partners.map((partner) => ({
       id: partner.id,
-      companyName: partner.translations[0]?.companyName || partner.companyName,
+      companyName: partner.companyName,
       image: partner.image,
       createdAt: partner.createdAt,
+      translation: partner.translations[0] || null, // Single translation object
     }));
   }
 

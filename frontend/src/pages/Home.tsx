@@ -3,8 +3,10 @@ import { usePartners } from '@/lib/hooks/usePartners'
 import { useProjects } from '@/lib/hooks/useProjects'
 import PartnersCarousel from '@/components/pages/home/PartnerCarousel'
 import ProjectsCarousel from '@/components/pages/home/ProjectsCarousel'
-import QuestionSection from '@/components/pages/home/QuestionSection'
 import PropertyCarousel from '@/components/pages/home/PropertyCarousel'
+import SuggestSection from '@/components/pages/home/SuggestionsSection'
+import FeaturesSection from '@/components/pages/home/FeaturesSection'
+import Cover from '@/components/pages/home/Cover'
 
 const HomePage = () => {
   const { i18n } = useTranslation()
@@ -17,22 +19,9 @@ const HomePage = () => {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* <Cover /> */}
+      <Cover />
       <PropertyCarousel />
-      {/* Partners Carousel */}
-      {partnersLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-        </div>
-      ) : (
-        partners && (
-          <section className=" px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24">
-            <PartnersCarousel companies={partners} />{' '}
-          </section>
-        )
-      )}
 
-      {/* Projects Carousel */}
       {projectsLoading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
@@ -44,7 +33,20 @@ const HomePage = () => {
           </section>
         )
       )}
-      <QuestionSection />
+      <FeaturesSection />
+
+      <SuggestSection />
+      {partnersLoading ? (
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      ) : (
+        partners && (
+          <section className=" px-6 sm:px-8 md:px-12 lg:px-16 xl:px-24">
+            <PartnersCarousel companies={partners} />{' '}
+          </section>
+        )
+      )}
     </main>
   )
 }

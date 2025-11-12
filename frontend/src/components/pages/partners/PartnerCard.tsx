@@ -5,11 +5,24 @@ interface PartnerCardProps {
     id: number
     companyName: string
     image: string
+    translation?: {
+      companyName?: string
+    }
   }
 }
 
 const PartnerCard = ({ company }: PartnerCardProps) => {
   const [imageError, setImageError] = useState(false)
+
+  // Get translated company name
+  const getTranslatedCompanyName = () => {
+    if (company.translation?.companyName) {
+      return company.translation.companyName
+    }
+    return company.companyName
+  }
+
+  const displayName = getTranslatedCompanyName()
 
   const getImageUrl = (imagePath: string) => {
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
@@ -35,7 +48,7 @@ const PartnerCard = ({ company }: PartnerCardProps) => {
           {!imageError ? (
             <img
               src={imageUrl}
-              alt={company.companyName}
+              alt={displayName}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               onError={() => setImageError(true)}
               loading="lazy"
@@ -60,7 +73,7 @@ const PartnerCard = ({ company }: PartnerCardProps) => {
         </div>
       </div>
       <h3 className="text-base sm:text-lg font-semibold text-gray-800 text-center group-hover:text-blue-900 transition-colors">
-        {company.companyName}
+        {displayName}
       </h3>
     </div>
   )
