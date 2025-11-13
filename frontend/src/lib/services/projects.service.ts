@@ -1,18 +1,17 @@
-// services/projects.service.ts
-import type { Project, ProjectTranslation } from '../types/projects'
+import type {
+  Project,
+  ProjectFilters,
+  ProjectTranslation,
+  ProjectsResponse,
+  UpsertProjectTranslationDto,
+} from '../types/projects'
 import { api } from '../api/api'
 import { API_ENDPOINTS } from '@/constants/api'
 
-export interface UpsertProjectTranslationDto {
-  language: string
-  projectName: string
-  projectLocation: string
-}
-
 export const projectsService = {
-  getAll: (lang?: string) =>
-    api.get<Project[]>(API_ENDPOINTS.PROJECTS.PROJECTS, {
-      params: { lang },
+  getAll: (filters?: ProjectFilters) =>
+    api.get<ProjectsResponse>(API_ENDPOINTS.PROJECTS.PROJECTS, {
+      params: filters,
     }),
 
   getById: (id: number, lang?: string) =>

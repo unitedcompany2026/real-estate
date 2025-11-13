@@ -1,17 +1,18 @@
-// hooks/useProjects.ts
 import { useMutation, useQuery } from '@tanstack/react-query'
-import {
-  projectsService,
-  type UpsertProjectTranslationDto,
-} from '../services/projects.service'
 import { queryClient } from '../tanstack/query-client'
-import type { Project } from '../types/projects'
+import type {
+  Project,
+  ProjectFilters,
+  ProjectsResponse,
+  UpsertProjectTranslationDto,
+} from '../types/projects'
+import { projectsService } from '../services/projects.service'
 
-export const useProjects = (lang?: string) => {
-  return useQuery<Project[]>({
-    queryKey: ['projects', lang],
+export const useProjects = (filters?: ProjectFilters) => {
+  return useQuery<ProjectsResponse>({
+    queryKey: ['projects', filters],
     queryFn: async () => {
-      const response = await projectsService.getAll(lang)
+      const response = await projectsService.getAll(filters)
       return response.data
     },
   })

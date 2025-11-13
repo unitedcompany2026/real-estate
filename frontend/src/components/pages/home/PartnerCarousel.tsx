@@ -24,7 +24,7 @@ const PartnersCarousel = ({ companies }: PartnersCarouselProps) => {
   }
 
   return (
-    <div className="py-8">
+    <div className="py-16">
       <div className="w-full">
         <div className="flex justify-between items-center px-4">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">

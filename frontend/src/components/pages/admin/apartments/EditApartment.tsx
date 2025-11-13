@@ -56,8 +56,8 @@ export function EditApartment({
 
   const updateApartment = useUpdateApartment()
   const deleteImage = useDeleteApartmentImage()
-  const { data: projects } = useProjects('en')
-
+  const { data: projectsResponse } = useProjects()
+  const projects = projectsResponse?.data || []
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
@@ -287,7 +287,7 @@ export function EditApartment({
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent>
-                  {projects?.map(project => (
+                  {projects.map(project => (
                     <SelectItem key={project.id} value={project.id.toString()}>
                       {project.projectName}
                     </SelectItem>
@@ -303,7 +303,7 @@ export function EditApartment({
               >
                 Description
               </Label>
-                  <Textarea
+              <Textarea
                 id="description"
                 value={description}
                 onChange={e => setDescription(e.target.value)}

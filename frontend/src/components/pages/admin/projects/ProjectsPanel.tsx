@@ -2,17 +2,19 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useProjects, useDeleteProject } from '@/lib/hooks/useProjects'
 import { Button } from '@/components/ui/button'
-import type { Project } from '@/lib/types/projects'
 import { CreateProject } from './CreateProject'
 import { EditProject } from './EditProject'
 import { AdminProjectCard } from './AdminProjectCard'
+import type { Project } from '@/lib/types/projects'
 
 export default function ProjectsPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
-  const { data: projects, isLoading, error } = useProjects() // default language only
+  const { data: projectsResponse, isLoading, error } = useProjects()
   const deleteProject = useDeleteProject()
+
+  const projects = projectsResponse?.data || []
 
   const handleEdit = (project: Project) => {
     setSelectedProject(project)
@@ -84,7 +86,7 @@ export default function ProjectsPanel() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects && projects.length > 0 ? (
+          {projects.length > 0 ? (
             projects.map(project => (
               <AdminProjectCard
                 key={project.id}

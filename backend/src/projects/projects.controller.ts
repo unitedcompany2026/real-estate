@@ -35,16 +35,73 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all projects' })
+  @ApiOperation({ summary: 'Get all projects with filters and pagination' })
   @ApiQuery({
     name: 'lang',
     required: false,
     description: 'Language code (e.g., en, ka, ru)',
     example: 'en',
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    example: 1,
+    type: 'number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    example: 9,
+    type: 'number',
+  })
+  @ApiQuery({
+    name: 'location',
+    required: false,
+    description: 'Filter by project location',
+    example: 'Batumi',
+  })
+  @ApiQuery({
+    name: 'priceFrom',
+    required: false,
+    description: 'Minimum price filter',
+    example: 50000,
+    type: 'number',
+  })
+  @ApiQuery({
+    name: 'priceTo',
+    required: false,
+    description: 'Maximum price filter',
+    example: 200000,
+    type: 'number',
+  })
+  @ApiQuery({
+    name: 'partnerId',
+    required: false,
+    description: 'Filter by partner ID',
+    example: 1,
+    type: 'number',
+  })
   @ApiResponse({ status: 200, description: 'Projects retrieved successfully' })
-  async findAll(@Query('lang') lang?: string) {
-    return this.projectsService.findAll(lang || 'en');
+  async findAll(
+    @Query('lang') lang?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('location') location?: string,
+    @Query('priceFrom') priceFrom?: string,
+    @Query('priceTo') priceTo?: string,
+    @Query('partnerId') partnerId?: string,
+  ) {
+    return this.projectsService.findAll({
+      lang: lang || 'en',
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+      location,
+      priceFrom: priceFrom ? parseFloat(priceFrom) : undefined,
+      priceTo: priceTo ? parseFloat(priceTo) : undefined,
+      partnerId: partnerId ? parseInt(partnerId, 10) : undefined,
+    });
   }
 
   @Get(':id')

@@ -13,29 +13,30 @@ const HomePage = () => {
   const { data: partners, isLoading: partnersLoading } = usePartners(
     i18n.language
   )
-  const { data: projects, isLoading: projectsLoading } = useProjects(
-    i18n.language
-  )
+  const { data: projectsResponse, isLoading: projectsLoading } = useProjects({
+    lang: i18n.language,
+  })
 
   return (
     <main className="min-h-screen  ">
       <Cover />
       <PropertyCarousel />
+      <SuggestSection />
 
       {projectsLoading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
         </div>
       ) : (
-        projects && (
+        projectsResponse && (
           <section className=" px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20">
-            <ProjectsCarousel projects={projects} />
+            <ProjectsCarousel projectsResponse={projectsResponse} />
           </section>
         )
       )}
+
       <FeaturesSection />
 
-      <SuggestSection />
       {partnersLoading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>

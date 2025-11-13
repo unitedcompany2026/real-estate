@@ -8,30 +8,18 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import ProjectCard from '../projects/ProjectCard'
+import type { ProjectsResponse } from '@/lib/types/projects'
 
 interface ProjectsCarouselProps {
-  projects: Array<{
-    id: number
-    name?: string
-    projectName?: string
-    images?: string[]
-    projectImages?: string[]
-    location?: string
-    projectLocation?: string
-    status?: string
-    year?: string
-    type?: string
-    partner?: {
-      companyName?: string
-    }
-    companyName?: string
-  }>
+  projectsResponse?: ProjectsResponse
 }
 
-const ProjectsCarousel = ({ projects }: ProjectsCarouselProps) => {
+const ProjectsCarousel = ({ projectsResponse }: ProjectsCarouselProps) => {
   const { t } = useTranslation()
 
-  if (!projects || projects.length === 0) {
+  const projects = projectsResponse?.data || []
+
+  if (projects.length === 0) {
     return null
   }
 

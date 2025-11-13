@@ -1,9 +1,7 @@
-'use client'
-
 import type React from 'react'
 
 import { useState } from 'react'
-import { X, Upload, Save, ImagePlus } from 'lucide-react'
+import { X, Save, ImagePlus } from 'lucide-react'
 import { useCreateApartment } from '@/lib/hooks/useApartments'
 import { useProjects } from '@/lib/hooks/useProjects'
 import { Button } from '@/components/ui/button'
@@ -39,8 +37,8 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const createApartment = useCreateApartment()
-  const { data: projects } = useProjects('en')
-
+  const { data: projectsResponse } = useProjects()
+  const projects = projectsResponse?.data || []
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
@@ -251,7 +249,7 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
               <SelectValue placeholder="Select a project" />
             </SelectTrigger>
             <SelectContent>
-              {projects?.map(project => (
+              {projects.map(project => (
                 <SelectItem key={project.id} value={project.id.toString()}>
                   {project.projectName}
                 </SelectItem>

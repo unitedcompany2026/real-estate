@@ -10,12 +10,69 @@ import { FileUtils } from '@/common/utils/file.utils';
 import { UpdateProjectDto } from './dto/UpdateProject.dto';
 import { LANGUAGES } from '@/common/constants/language';
 
+interface FindAllParams {
+  lang?: string;
+  page?: number;
+  limit?: number;
+  location?: string;
+  priceFrom?: number;
+  priceTo?: number;
+  partnerId?: number;
+}
+
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll(lang: string = 'en') {
+  async findAll(params: FindAllParams = {}) {
+    const {
+      lang = 'en',
+      page = 1,
+      limit = 9,
+      location,
+      priceFrom,
+      priceTo,
+      partnerId,
+    } = params;
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Build where clause for filters
+    const where: any = {};
+
+    if (location) {
+      where.projectLocation = {
+        contains: location,
+        mode: 'insensitive',
+      };
+    }
+
+    if (priceFrom !== undefined || priceTo !== undefined) {
+      where.priceFrom = {};
+      if (priceFrom !== undefined) {
+        where.priceFrom.gte = priceFrom;
+      }
+      if (priceTo !== undefined) {
+        where.priceFrom.lte = priceTo;
+      }
+    }
+
+    if (partnerId) {
+      where.partnerId = partnerId;
+    }
+
+    // Get total count for pagination
+    const total = await this.prismaService.projects.count({ where });
+
+    // Get paginated projects
     const projects = await this.prismaService.projects.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         partner: {
           include: {
@@ -32,7 +89,7 @@ export class ProjectsService {
       },
     });
 
-    return projects.map((project) => ({
+    const mappedProjects = projects.map((project) => ({
       id: project.id,
       projectName: project.projectName,
       projectLocation: project.projectLocation,
@@ -53,6 +110,18 @@ export class ProjectsService {
           }
         : null,
     }));
+
+    return {
+      data: mappedProjects,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findOne(id: number, lang: string = 'en') {

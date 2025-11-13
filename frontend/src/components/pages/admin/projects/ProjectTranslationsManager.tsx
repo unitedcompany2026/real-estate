@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent } from '@/components/ui/card'
-import type { UpsertProjectTranslationDto } from '@/lib/services/projects.service'
+import type { UpsertProjectTranslationDto } from '@/lib/types/projects'
 
 interface ProjectTranslationsManagerProps {
   projectId: number

@@ -20,17 +20,17 @@ export default function ApartmentsPanel() {
   const [selectedApartment, setSelectedApartment] = useState<Apartment | null>(
     null
   )
-  const [selectedProjectId, setSelectedProjectId] = useState<
-    number | undefined
-  >(undefined)
+  const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>(undefined)
 
   const {
     data: apartments,
     isLoading,
     error,
   } = useApartments(undefined, selectedProjectId) // default language only
-  const { data: projects } = useProjects() // default language only
+  const { data: projectsResponse } = useProjects() // default language only
   const deleteApartment = useDeleteApartment()
+
+  const projects = projectsResponse?.data || []
 
   const handleEdit = (apartment: Apartment) => {
     setSelectedApartment(apartment)
@@ -90,7 +90,7 @@ export default function ApartmentsPanel() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Projects</SelectItem>
-              {projects?.map(project => (
+              {projects.map(project => (
                 <SelectItem key={project.id} value={project.id.toString()}>
                   {project.projectName}
                 </SelectItem>

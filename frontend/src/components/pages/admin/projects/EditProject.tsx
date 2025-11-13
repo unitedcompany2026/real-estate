@@ -36,6 +36,9 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
   )
   const [galleryFiles, setGalleryFiles] = useState<File[]>([])
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([])
+  const [deletedGalleryIndices, setDeletedGalleryIndices] = useState<number[]>(
+    []
+  )
   const [partnerId, setPartnerId] = useState(
     project.partnerId ? project.partnerId.toString() : ''
   )
@@ -92,78 +95,85 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     setGalleryPreviews(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleDeleteExistingGalleryImage = async (index: number) => {
-    if (!window.confirm('Are you sure you want to delete this gallery image?'))
-      return
+  const markExistingGalleryImageForDeletion = (index: number) => {
+    setDeletedGalleryIndices(prev => [...prev, index])
+  }
 
-    try {
-      await deleteGalleryImage.mutateAsync({
-        id: project.id,
-        imageIndex: index,
-      })
-      onSuccess()
-    } catch (error) {
-      console.error('Error deleting gallery image:', error)
-    }
+  const undoDeleteExistingGalleryImage = (index: number) => {
+    setDeletedGalleryIndices(prev => prev.filter(i => i !== index))
   }
 
   const handleSubmit = async () => {
-    const data = new FormData()
-
-    if (imageFile) {
-      data.append('image', imageFile)
-    }
-    if (partnerId && partnerId !== project.partnerId?.toString()) {
-      data.append('partnerId', partnerId)
-    }
-    if (projectLocation !== project.projectLocation) {
-      data.append('projectLocation', projectLocation)
-    }
-    if (priceFrom !== (project.priceFrom?.toString() || '')) {
-      data.append('priceFrom', priceFrom)
-    }
-    if (
-      deliveryDate !==
-      (project.deliveryDate ? project.deliveryDate.split('T')[0] : '')
-    ) {
-      data.append('deliveryDate', deliveryDate)
-    }
-    if (numFloors !== (project.numFloors?.toString() || '')) {
-      data.append('numFloors', numFloors)
-    }
-    if (numApartments !== (project.numApartments?.toString() || '')) {
-      data.append('numApartments', numApartments)
-    }
-
-    galleryFiles.forEach(file => {
-      data.append('gallery', file)
-    })
-
-    // Check if there are any changes
-    const hasChanges =
-      imageFile ||
-      galleryFiles.length > 0 ||
-      (partnerId && partnerId !== project.partnerId?.toString()) ||
-      projectLocation !== project.projectLocation ||
-      priceFrom !== (project.priceFrom?.toString() || '') ||
-      deliveryDate !==
-        (project.deliveryDate ? project.deliveryDate.split('T')[0] : '') ||
-      numFloors !== (project.numFloors?.toString() || '') ||
-      numApartments !== (project.numApartments?.toString() || '')
-
-    if (hasChanges) {
-      try {
-        await updateProject.mutateAsync({ id: project.id, data })
-        onSuccess()
-      } catch (error) {
-        console.error('Error updating project:', error)
+    try {
+      // First, delete marked gallery images
+      if (deletedGalleryIndices.length > 0) {
+        for (const index of deletedGalleryIndices) {
+          await deleteGalleryImage.mutateAsync({
+            id: project.id,
+            imageIndex: index,
+          })
+        }
       }
+
+      // Then update other fields
+      const data = new FormData()
+
+      if (imageFile) {
+        data.append('image', imageFile)
+      }
+      if (partnerId && partnerId !== project.partnerId?.toString()) {
+        data.append('partnerId', partnerId)
+      }
+      if (projectLocation !== project.projectLocation) {
+        data.append('projectLocation', projectLocation)
+      }
+      if (priceFrom !== (project.priceFrom?.toString() || '')) {
+        data.append('priceFrom', priceFrom)
+      }
+      if (
+        deliveryDate !==
+        (project.deliveryDate ? project.deliveryDate.split('T')[0] : '')
+      ) {
+        data.append('deliveryDate', deliveryDate)
+      }
+      if (numFloors !== (project.numFloors?.toString() || '')) {
+        data.append('numFloors', numFloors)
+      }
+      if (numApartments !== (project.numApartments?.toString() || '')) {
+        data.append('numApartments', numApartments)
+      }
+
+      galleryFiles.forEach(file => {
+        data.append('gallery', file)
+      })
+
+      // Check if there are any changes to update
+      const hasUpdateChanges =
+        imageFile ||
+        galleryFiles.length > 0 ||
+        (partnerId && partnerId !== project.partnerId?.toString()) ||
+        projectLocation !== project.projectLocation ||
+        priceFrom !== (project.priceFrom?.toString() || '') ||
+        deliveryDate !==
+          (project.deliveryDate ? project.deliveryDate.split('T')[0] : '') ||
+        numFloors !== (project.numFloors?.toString() || '') ||
+        numApartments !== (project.numApartments?.toString() || '')
+
+      if (hasUpdateChanges) {
+        await updateProject.mutateAsync({ id: project.id, data })
+      }
+
+      onSuccess()
+    } catch (error) {
+      console.error('Error updating project:', error)
+      alert('Failed to update project. Please try again.')
     }
   }
 
   const hasChanges =
     imageFile ||
     galleryFiles.length > 0 ||
+    deletedGalleryIndices.length > 0 ||
     (partnerId && partnerId !== project.partnerId?.toString()) ||
     projectLocation !== project.projectLocation ||
     priceFrom !== (project.priceFrom?.toString() || '') ||
@@ -171,6 +181,12 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
       (project.deliveryDate ? project.deliveryDate.split('T')[0] : '') ||
     numFloors !== (project.numFloors?.toString() || '') ||
     numApartments !== (project.numApartments?.toString() || '')
+
+  // Filter out deleted images from display
+  const displayGallery =
+    project.gallery?.filter(
+      (_, index) => !deletedGalleryIndices.includes(index)
+    ) || []
 
   return (
     <div className="bg-background rounded-lg border border-border shadow-sm p-8">
@@ -224,7 +240,7 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
           }`}
         >
           <ImageIcon className="w-4 h-4 inline mr-2" />
-          Gallery ({project.gallery?.length || 0})
+          Gallery ({displayGallery.length + galleryFiles.length})
         </button>
         <button
           onClick={() => setActiveSection('translations')}
@@ -237,6 +253,14 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
           🌐 Translations
         </button>
       </div>
+
+      {hasChanges && (
+        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <p className="text-sm text-amber-800 dark:text-amber-200">
+            You have unsaved changes. Click "Save Changes" to apply them.
+          </p>
+        </div>
+      )}
 
       <div className="space-y-6">
         {activeSection === 'details' && (
@@ -355,7 +379,7 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 className="flex-1"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {updateProject.isPending ? 'Updating...' : 'Update Details'}
+                {updateProject.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
               <Button
                 variant="outline"
@@ -420,11 +444,11 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
             <div className="flex gap-3 pt-4">
               <Button
                 onClick={handleSubmit}
-                disabled={updateProject.isPending || !imageFile}
+                disabled={updateProject.isPending || !hasChanges}
                 className="flex-1"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {updateProject.isPending ? 'Updating...' : 'Update Image'}
+                {updateProject.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
               <Button
                 variant="outline"
@@ -445,25 +469,55 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
               </Label>
               {project.gallery && project.gallery.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {project.gallery.map((img, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={`${API_URL}/${img}`}
-                        alt={`Gallery ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-md border border-border"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleDeleteExistingGalleryImage(index)}
-                        disabled={deleteGalleryImage.isPending}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                  {project.gallery.map((img, index) => {
+                    const isMarkedForDeletion =
+                      deletedGalleryIndices.includes(index)
+                    return (
+                      <div key={index} className="relative group">
+                        <div
+                          className={`relative ${isMarkedForDeletion ? 'opacity-40' : ''}`}
+                        >
+                          <img
+                            src={`${API_URL}/${img}`}
+                            alt={`Gallery ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-md border border-border"
+                          />
+                          {isMarkedForDeletion && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+                              <span className="text-white text-xs font-medium">
+                                Marked for deletion
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        {isMarkedForDeletion ? (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="absolute top-2 right-2 h-8 text-xs"
+                            onClick={() =>
+                              undoDeleteExistingGalleryImage(index)
+                            }
+                          >
+                            Undo
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() =>
+                              markExistingGalleryImageForDeletion(index)
+                            }
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
@@ -522,11 +576,11 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
             <div className="flex gap-3 pt-4">
               <Button
                 onClick={handleSubmit}
-                disabled={updateProject.isPending || galleryFiles.length === 0}
+                disabled={updateProject.isPending || !hasChanges}
                 className="flex-1"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {updateProject.isPending ? 'Updating...' : 'Add Gallery Images'}
+                {updateProject.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
               <Button
                 variant="outline"

@@ -26,3 +26,31 @@ export interface Project {
     translation?: any | null
   } | null
 }
+
+export interface ProjectsResponse {
+  data: Project[]
+  meta: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPreviousPage: boolean
+  }
+}
+
+export interface UpsertProjectTranslationDto {
+  language: string
+  projectName: string
+  projectLocation: string
+}
+
+export interface ProjectFilters {
+  lang?: string
+  page?: number
+  limit?: number
+  location?: string
+  priceFrom?: number
+  priceTo?: number
+  partnerId?: number
+}

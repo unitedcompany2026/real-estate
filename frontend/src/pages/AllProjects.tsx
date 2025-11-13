@@ -1,15 +1,34 @@
 import { useTranslation } from 'react-i18next'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import ProjectCard from '@/components/pages/projects/ProjectCard'
+
 import { useProjects } from '@/lib/hooks/useProjects'
+import Pagination from '@/components/shared/pagination/Pagination'
 
 export default function AllProjects() {
   const { t, i18n } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const page = parseInt(searchParams.get('page') || '1', 10)
+
   const {
-    data: allProjects = [],
+    data: projectsResponse,
     isLoading,
     error,
-  } = useProjects(i18n.language)
+  } = useProjects({
+    lang: i18n.language,
+    page: page,
+    limit: 8,
+  })
+
+  const projects = projectsResponse?.data || []
+  const meta = projectsResponse?.meta
+
+  const handlePageChange = (newPage: number) => {
+    setSearchParams({ page: newPage.toString() })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   if (isLoading) {
     return (
@@ -55,23 +74,54 @@ export default function AllProjects() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {t('projects.title')}
           </h1>
+          {meta && (
+            <p className="text-gray-600">
+              {t('projects.totalProjects', {
+                count: meta.total,
+                defaultValue: `${meta.total} projects`,
+              })}
+            </p>
+          )}
         </div>
 
-        {allProjects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {allProjects.map(project => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                currentLanguage={i18n.language}
+        {projects.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {projects.map(project => (
+                <Link key={project.id} to={`/projects/${project.id}`}>
+                  <ProjectCard
+                    project={project}
+                    currentLanguage={i18n.language}
+                  />
+                </Link>
+              ))}
+            </div>
+            {meta && (
+              <Pagination
+                currentPage={page}
+                totalPages={meta.totalPages}
+                hasNextPage={meta.hasNextPage}
+                hasPreviousPage={meta.hasPreviousPage}
+                onPageChange={handlePageChange}
+                translations={{
+                  previous: t('pagination.previous', {
+                    defaultValue: 'Previous',
+                  }),
+                  next: t('pagination.next', { defaultValue: 'Next' }),
+                }}
               />
-            ))}
-          </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-16">
             <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 text-lg mb-2">
               {t('projects.noProjects')}
+            </p>
+            <p className="text-gray-400 text-sm">
+              {t('projects.tryDifferentFilters', {
+                defaultValue: 'Try adjusting your filters',
+              })}
             </p>
           </div>
         )}
