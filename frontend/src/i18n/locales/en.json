@@ -57,5 +57,37 @@
     "existingTranslations": "Existing Translations",
     "noTranslations": "No translations yet",
     "saveTranslation": "Save Translation"
+  },
+
+  "cover": {
+    "exploreTitle": "Apartments and new developments",
+    "exploreDescription": "Find your perfect property in the best locations",
+    "sellTitle": "Do you want to sell an apartment, house or land?",
+    "sellDescription": "List your property and quickly find buyers",
+    "addProperty": "Add property"
+  },
+  "search": {
+    "propertyType": "Property Type",
+    "location": "Location",
+    "locationPlaceholder": "City, Address, ID",
+    "rooms": "Rooms",
+    "any": "Any",
+    "allTypes": "All Types",
+    "apartment": "Apartment",
+    "house": "House",
+    "commercial": "Commercial",
+    "search": "Search"
+  },
+  "categories": {
+    "constructionProjects": "Construction projects",
+    "apartmentsFromDevelopers": "Apartments from developers",
+    "residentialApartments": "Residential apartments",
+    "commercialProperties": "Commercial properties",
+    "landsForSale": "Lands for sale",
+    "projectsCount": "{{count}} developments",
+    "apartmentsCount": "{{count}} apartments",
+    "residentialCount": "{{count}} apartments",
+    "commercialCount": "{{count}} properties",
+    "landsCount": "{{count}} lands"
   }
 }

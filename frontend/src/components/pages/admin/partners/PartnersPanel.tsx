@@ -6,13 +6,31 @@ import type { Partner } from '@/lib/types/partners'
 import { CreatePartner } from './CreatePartner'
 import { EditPartner } from './EditPartner'
 import { AdminPartnerCard } from './AdminPartnerCard'
+import Pagination from '@/components/shared/pagination/Pagination'
+
+const PARTNERS_PER_PAGE = 5
 
 export default function PartnersPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const { data: partners, isLoading, error } = usePartners() // default language
+  const { data: partnersResponse, isLoading, error } = usePartners()
   const deletePartner = useDeletePartner()
+
+  const partners = partnersResponse || []
+
+  const totalPages = Math.ceil(partners.length / PARTNERS_PER_PAGE)
+  const startIndex = (currentPage - 1) * PARTNERS_PER_PAGE
+  const paginatedPartners = partners.slice(
+    startIndex,
+    startIndex + PARTNERS_PER_PAGE
+  )
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const handleEdit = (partner: Partner) => {
     setSelectedPartner(partner)
@@ -24,6 +42,9 @@ export default function PartnersPanel() {
 
     try {
       await deletePartner.mutateAsync(id)
+      if (paginatedPartners.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1)
+      }
     } catch (error: any) {
       alert(
         error.response?.data?.message ||
@@ -60,15 +81,11 @@ export default function PartnersPanel() {
             Construction Partners
           </h1>
         </div>
-        <div className="flex gap-3 w-full sm:w-auto">
-          <Button
-            onClick={() => setView('create')}
-            className="w-full sm:w-auto"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Partner
-          </Button>
-        </div>
+
+        <Button onClick={() => setView('create')} className="w-full sm:w-auto">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Partner
+        </Button>
       </div>
 
       {isLoading ? (
@@ -82,27 +99,36 @@ export default function PartnersPanel() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {partners && partners.length > 0 ? (
-            partners.map(partner => (
-              <AdminPartnerCard
-                key={partner.id}
-                partner={partner}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))
-          ) : (
-            <div className="col-span-full rounded-lg border border-dashed border-border bg-muted/30 p-12 text-center">
-              <p className="text-muted-foreground font-medium">
-                No partners found
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Add your first partner to get started
-              </p>
-            </div>
+        <>
+          <div className="flex flex-col gap-4">
+            {paginatedPartners.length > 0 ? (
+              paginatedPartners.map(partner => (
+                <AdminPartnerCard
+                  key={partner.id}
+                  partner={partner}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))
+            ) : (
+              <div className="col-span-full rounded-lg border border-dashed border-border bg-muted/30 p-12 text-center">
+                <p className="text-muted-foreground font-medium">
+                  No partners found
+                </p>
+              </div>
+            )}
+          </div>
+
+          {partners.length > PARTNERS_PER_PAGE && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              hasNextPage={currentPage < totalPages}
+              hasPreviousPage={currentPage > 1}
+            />
           )}
-        </div>
+        </>
       )}
     </div>
   )

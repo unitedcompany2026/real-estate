@@ -9,6 +9,7 @@ import Project from '@/pages/Project'
 import Partners from '@/pages/Partners'
 import AllProjects from '@/pages/AllProjects'
 import { ROUTES } from '@/constants/routes'
+import InventoryMap from '@/pages/Map'
 
 const Home = lazy(() => import('@/pages/Home'))
 const Signin = lazy(() => import('@/pages/Signin'))
@@ -30,7 +31,8 @@ export const AppRoutes = () => {
         <Route path={ROUTES.PROJECT} element={<Project />} />
         <Route path={ROUTES.ALL_PROJECTS} element={<AllProjects />} />
         <Route path={ROUTES.PROPERTY} element={<Property />} />
-        <Route path={ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
+        <Route path={ROUTES.PROPERTY} element={<Property />} />
+        <Route path="/map" element={<InventoryMap />} />
         <Route element={<ProtectedRoutes redirectTo={ROUTES.SIGNIN} />}></Route>
         <Route path={ROUTES.ADMIN} element={<Admin />} />
 

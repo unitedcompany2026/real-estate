@@ -55,5 +55,23 @@
     "existingTranslations": "არსებული თარგმანები",
     "noTranslations": "თარგმანები ჯერ არ არის",
     "saveTranslation": "თარგმანის შენახვა"
+  },
+  "search": {
+    "propertyType": "Property Type",
+    "location": "Location",
+    "locationPlaceholder": "City, Address, ID",
+    "rooms": "Rooms",
+    "any": "Any",
+    "allTypes": "All Types",
+    "apartment": "Apartment",
+    "house": "House",
+    "commercial": "Commercial",
+    "search": "Search"
+  },
+  "categories": {
+    "apartments": "Apartments from Developers",
+    "apartmentsDesc": "Find your perfect home",
+    "projects": "Construction Projects",
+    "projectsDesc": "Explore new developments"
   }
 }

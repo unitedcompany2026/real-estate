@@ -1,7 +1,4 @@
-'use client'
-
 import type React from 'react'
-
 import { useState } from 'react'
 import { X, Upload, Save } from 'lucide-react'
 import { useCreatePartner } from '@/lib/hooks/usePartners'

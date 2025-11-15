@@ -19,6 +19,14 @@ const CONFIDENTIAL_URL = '#'
 
 export default function Footer() {
   const pathname = window.location.pathname
+
+  // Hide footer on admin pages
+  const isAdminPath = pathname.includes('/admin')
+
+  if (isAdminPath) {
+    return null
+  }
+
   const isLandlordsPath =
     pathname.includes('/landlords') ||
     pathname.includes('/upload-property') ||

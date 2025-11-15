@@ -55,5 +55,23 @@
     "existingTranslations": "Существующие переводы",
     "noTranslations": "Переводов пока нет",
     "saveTranslation": "Сохранить перевод"
+  },
+  "search": {
+    "propertyType": "Property Type",
+    "location": "Location",
+    "locationPlaceholder": "City, Address, ID",
+    "rooms": "Rooms",
+    "any": "Any",
+    "allTypes": "All Types",
+    "apartment": "Apartment",
+    "house": "House",
+    "commercial": "Commercial",
+    "search": "Search"
+  },
+  "categories": {
+    "apartments": "Apartments from Developers",
+    "apartmentsDesc": "Find your perfect home",
+    "projects": "Construction Projects",
+    "projectsDesc": "Explore new developments"
   }
 }

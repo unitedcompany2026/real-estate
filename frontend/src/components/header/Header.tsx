@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,14 @@ export const Header = () => {
   const { t } = useTranslation()
   const { data: user, isLoading } = useCurrentUser()
   const signOut = useSignOut()
+  const location = useLocation()
+
+  // Hide header on admin pages
+  const isAdminPath = location.pathname.includes('/admin')
+
+  if (isAdminPath) {
+    return null
+  }
 
   const handleSignOut = async () => {
     try {

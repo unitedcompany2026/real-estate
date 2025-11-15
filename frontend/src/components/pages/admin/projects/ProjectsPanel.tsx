@@ -1,20 +1,35 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useProjects, useDeleteProject } from '@/lib/hooks/useProjects'
 import { Button } from '@/components/ui/button'
 import { CreateProject } from './CreateProject'
 import { EditProject } from './EditProject'
 import { AdminProjectCard } from './AdminProjectCard'
 import type { Project } from '@/lib/types/projects'
+import Pagination from '@/components/shared/pagination/Pagination'
 
+const PROJECTS_PER_PAGE = 6
+
+ 
+ 
 export default function ProjectsPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const { data: projectsResponse, isLoading, error } = useProjects()
   const deleteProject = useDeleteProject()
 
   const projects = projectsResponse?.data || []
+
+  // Calculate pagination
+  const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE)
+  const startIndex = (currentPage - 1) * PROJECTS_PER_PAGE
+  const endIndex = startIndex + PROJECTS_PER_PAGE
+  const paginatedProjects = projects.slice(startIndex, endIndex)
+
+  const hasNextPage = currentPage < totalPages
+  const hasPreviousPage = currentPage > 1
 
   const handleEdit = (project: Project) => {
     setSelectedProject(project)
@@ -26,6 +41,10 @@ export default function ProjectsPanel() {
 
     try {
       await deleteProject.mutateAsync(id)
+      // Adjust current page if we deleted the last item on the page
+      if (paginatedProjects.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1)
+      }
     } catch (error: any) {
       alert(
         error.response?.data?.message ||
@@ -38,6 +57,11 @@ export default function ProjectsPanel() {
   const handleBack = () => {
     setView('list')
     setSelectedProject(null)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (view === 'create') {
@@ -85,22 +109,34 @@ export default function ProjectsPanel() {
           Error loading projects. Please try again.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.length > 0 ? (
-            projects.map(project => (
-              <AdminProjectCard
-                key={project.id}
-                project={project}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12 text-muted-foreground">
-              No projects found. Add your first project!
-            </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {paginatedProjects.length > 0 ? (
+              paginatedProjects.map(project => (
+                <AdminProjectCard
+                  key={project.id}
+                  project={project}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                No projects found. Add your first project!
+              </div>
+            )}
+          </div>
+
+          {projects.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              hasNextPage={hasNextPage}
+              hasPreviousPage={hasPreviousPage}
+            />
           )}
-        </div>
+        </>
       )}
     </div>
   )
