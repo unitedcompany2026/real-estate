@@ -1,6 +1,5 @@
 import { Edit, Trash2, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import type { Partner } from '@/lib/types/partners'
 
 const API_URL = 'http://localhost:3000'
@@ -19,48 +18,47 @@ export function AdminPartnerCard({
   const imageUrl = partner.image ? `${API_URL}/${partner.image}` : null
 
   return (
-    <Card className="flex items-center justify-between p-4 hover:shadow-sm transition">
-      <div className="flex items-center gap-4">
+    <div className="grid grid-cols-12 gap-4 items-center p-4 border-b border-border hover:bg-muted/30 transition">
+      {/* Image */}
+      <div className="col-span-2">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={partner.companyName}
-            className="h-16 w-16 object-cover rounded-md bg-muted"
+            className="h-12 w-12 object-cover rounded-md bg-muted"
           />
         ) : (
-          <div className="h-16 w-16 flex items-center justify-center rounded-md bg-muted">
-            <ImageIcon className="w-8 h-8 text-muted-foreground" />
+          <div className="h-12 w-12 flex items-center justify-center rounded-md bg-muted">
+            <ImageIcon className="w-6 h-6 text-muted-foreground" />
           </div>
         )}
-
-        <div className="flex flex-col">
-          <h3 className="text-lg font-medium text-foreground">
-            {partner.companyName}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Created: {new Date(partner.createdAt).toLocaleDateString()}
-          </p>
-        </div>
       </div>
-      <div className="flex items-center gap-2">
+
+      {/* Company Name */}
+      <div className="col-span-9">
+        <p className="font-medium text-foreground">{partner.companyName}</p>
+      </div>
+
+      {/* Actions */}
+      <div className="col-span-1 flex items-center justify-end gap-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => onEdit(partner)}
-          className="flex items-center gap-1"
+          className="h-8 w-8 p-0"
         >
-          <Edit className="w-4 h-4" /> Edit
+          <Edit className="w-4 h-4" />
         </Button>
 
         <Button
-          variant="destructive"
+          variant="ghost"
           size="sm"
           onClick={() => onDelete(partner.id)}
-          className="flex items-center gap-1"
+          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
         >
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
-    </Card>
+    </div>
   )
 }

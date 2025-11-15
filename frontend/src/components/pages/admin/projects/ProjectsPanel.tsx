@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 import { useProjects, useDeleteProject } from '@/lib/hooks/useProjects'
 import { Button } from '@/components/ui/button'
 import { CreateProject } from './CreateProject'
@@ -8,28 +9,32 @@ import { AdminProjectCard } from './AdminProjectCard'
 import type { Project } from '@/lib/types/projects'
 import Pagination from '@/components/shared/pagination/Pagination'
 
-const PROJECTS_PER_PAGE = 6
+const PROJECTS_PER_PAGE = 5
 
- 
- 
 export default function ProjectsPanel() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const { data: projectsResponse, isLoading, error } = useProjects()
+  const page = parseInt(searchParams.get('page') || '1', 10)
+
+  const {
+    data: projectsResponse,
+    isLoading,
+    error,
+  } = useProjects({
+    page,
+    limit: PROJECTS_PER_PAGE,
+  })
   const deleteProject = useDeleteProject()
 
   const projects = projectsResponse?.data || []
+  const meta = projectsResponse?.meta
 
-  // Calculate pagination
-  const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE)
-  const startIndex = (currentPage - 1) * PROJECTS_PER_PAGE
-  const endIndex = startIndex + PROJECTS_PER_PAGE
-  const paginatedProjects = projects.slice(startIndex, endIndex)
-
-  const hasNextPage = currentPage < totalPages
-  const hasPreviousPage = currentPage > 1
+  const handlePageChange = (newPage: number) => {
+    setSearchParams({ page: newPage.toString() })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const handleEdit = (project: Project) => {
     setSelectedProject(project)
@@ -41,9 +46,9 @@ export default function ProjectsPanel() {
 
     try {
       await deleteProject.mutateAsync(id)
-      // Adjust current page if we deleted the last item on the page
-      if (paginatedProjects.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1)
+      // If last item on page deleted, go back a page
+      if (projects.length === 1 && page > 1) {
+        handlePageChange(page - 1)
       }
     } catch (error: any) {
       alert(
@@ -59,15 +64,12 @@ export default function ProjectsPanel() {
     setSelectedProject(null)
   }
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
+  // ---------------- CREATE ----------------
   if (view === 'create') {
     return <CreateProject onBack={handleBack} onSuccess={handleBack} />
   }
 
+  // ---------------- EDIT ----------------
   if (view === 'edit' && selectedProject) {
     return (
       <EditProject
@@ -78,65 +80,70 @@ export default function ProjectsPanel() {
     )
   }
 
+  // ---------------- LIST ----------------
   return (
-    <div>
-      <div className="flex justify-between items-start mb-8">
-        <div>
-          <h2 className="text-4xl font-bold text-foreground">
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+        <div className="space-y-2 flex-1">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
             Construction Projects
-          </h2>
-          <p className="text-muted-foreground mt-2">
-            Manage your construction projects
-          </p>
+          </h1>
         </div>
-        <div className="flex gap-3 items-center">
-          <Button
-            onClick={() => setView('create')}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Project
-          </Button>
-        </div>
+
+        <Button onClick={() => setView('create')} className="w-full sm:w-auto">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Project
+        </Button>
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="flex justify-center items-center py-24">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
       ) : error ? (
-        <div className="text-center py-12 text-red-500">
-          Error loading projects. Please try again.
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center">
+          <p className="text-destructive font-medium">
+            Error loading projects. Please try again.
+          </p>
         </div>
-      ) : (
+      ) : projects.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {paginatedProjects.length > 0 ? (
-              paginatedProjects.map(project => (
-                <AdminProjectCard
-                  key={project.id}
-                  project={project}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12 text-muted-foreground">
-                No projects found. Add your first project!
-              </div>
-            )}
+          <div className="border border-border rounded-lg overflow-hidden bg-card">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-4 items-center p-4 bg-muted/50 border-b border-border font-medium text-sm text-muted-foreground">
+              <div className="col-span-1">Image</div>
+              <div className="col-span-3">Name</div>
+              <div className="col-span-3">Location</div>
+              <div className="col-span-2">Partner</div>
+              <div className="col-span-2">Created</div>
+              <div className="col-span-1 text-right">Actions</div>
+            </div>
+
+            {/* Table Rows */}
+            {projects.map(project => (
+              <AdminProjectCard
+                key={project.id}
+                project={project}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
           </div>
 
-          {projects.length > 0 && (
+          {meta && meta.totalPages > 1 && (
             <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
+              currentPage={page}
+              totalPages={meta.totalPages}
+              hasNextPage={meta.hasNextPage}
+              hasPreviousPage={meta.hasPreviousPage}
               onPageChange={handlePageChange}
-              hasNextPage={hasNextPage}
-              hasPreviousPage={hasPreviousPage}
             />
           )}
         </>
+      ) : (
+        <div className="col-span-full rounded-lg border border-dashed border-border bg-muted/30 p-12 text-center">
+          <p className="text-muted-foreground font-medium">No projects found</p>
+        </div>
       )}
     </div>
   )

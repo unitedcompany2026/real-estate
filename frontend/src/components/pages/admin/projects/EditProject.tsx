@@ -30,47 +30,49 @@ interface EditProjectProps {
 }
 
 export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    project.image ? `${API_URL}/${project.image}` : null
-  )
-  const [galleryFiles, setGalleryFiles] = useState<File[]>([])
-  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([])
-  const [deletedGalleryIndices, setDeletedGalleryIndices] = useState<number[]>(
-    []
-  )
-  const [partnerId, setPartnerId] = useState(
-    project.partnerId ? project.partnerId.toString() : ''
-  )
-  const [projectLocation, setProjectLocation] = useState(
-    project.projectLocation || ''
-  )
-  const [priceFrom, setPriceFrom] = useState(
-    project.priceFrom?.toString() || ''
-  )
-  const [deliveryDate, setDeliveryDate] = useState(
-    project.deliveryDate ? project.deliveryDate.split('T')[0] : ''
-  )
-  const [numFloors, setNumFloors] = useState(
-    project.numFloors?.toString() || ''
-  )
-  const [numApartments, setNumApartments] = useState(
-    project.numApartments?.toString() || ''
-  )
+  const [formData, setFormData] = useState({
+    partnerId: project.partner?.id?.toString() || '',
+    projectLocation: project.projectLocation || '',
+    priceFrom: project.priceFrom?.toString() || '',
+    deliveryDate: project.deliveryDate
+      ? project.deliveryDate.split('T')[0]
+      : '',
+    numFloors: project.numFloors?.toString() || '',
+    numApartments: project.numApartments?.toString() || '',
+  })
+
+  const [images, setImages] = useState({
+    mainFile: null as File | null,
+    mainPreview: project.image ? `${API_URL}/${project.image}` : null,
+    galleryFiles: [] as File[],
+    galleryPreviews: [] as string[],
+    deletedGalleryIndices: [] as number[],
+  })
+
   const [activeSection, setActiveSection] = useState<
     'details' | 'images' | 'gallery' | 'translations'
   >('details')
 
   const updateProject = useUpdateProject()
   const deleteGalleryImage = useDeleteProjectGalleryImage()
-  const { data: partners } = usePartners('en')
+  const { data: partnersResponse } = usePartners()
+  const partners = partnersResponse?.data || []
+
+  const updateFormField = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setImageFile(file)
       const reader = new FileReader()
-      reader.onloadend = () => setImagePreview(reader.result as string)
+      reader.onloadend = () => {
+        setImages(prev => ({
+          ...prev,
+          mainFile: file,
+          mainPreview: reader.result as string,
+        }))
+      }
       reader.readAsDataURL(file)
     }
   }
@@ -78,12 +80,22 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length > 0) {
-      setGalleryFiles(prev => [...prev, ...files])
+      const newPreviews: string[] = []
+      let loadedCount = 0
 
       files.forEach(file => {
         const reader = new FileReader()
         reader.onloadend = () => {
-          setGalleryPreviews(prev => [...prev, reader.result as string])
+          newPreviews.push(reader.result as string)
+          loadedCount++
+
+          if (loadedCount === files.length) {
+            setImages(prev => ({
+              ...prev,
+              galleryFiles: [...prev.galleryFiles, ...files],
+              galleryPreviews: [...prev.galleryPreviews, ...newPreviews],
+            }))
+          }
         }
         reader.readAsDataURL(file)
       })
@@ -91,23 +103,41 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
   }
 
   const removeNewGalleryImage = (index: number) => {
-    setGalleryFiles(prev => prev.filter((_, i) => i !== index))
-    setGalleryPreviews(prev => prev.filter((_, i) => i !== index))
+    setImages(prev => ({
+      ...prev,
+      galleryFiles: prev.galleryFiles.filter((_, i) => i !== index),
+      galleryPreviews: prev.galleryPreviews.filter((_, i) => i !== index),
+    }))
   }
 
   const markExistingGalleryImageForDeletion = (index: number) => {
-    setDeletedGalleryIndices(prev => [...prev, index])
+    setImages(prev => ({
+      ...prev,
+      deletedGalleryIndices: [...prev.deletedGalleryIndices, index],
+    }))
   }
 
   const undoDeleteExistingGalleryImage = (index: number) => {
-    setDeletedGalleryIndices(prev => prev.filter(i => i !== index))
+    setImages(prev => ({
+      ...prev,
+      deletedGalleryIndices: prev.deletedGalleryIndices.filter(
+        i => i !== index
+      ),
+    }))
+  }
+
+  const resetMainImage = () => {
+    setImages(prev => ({
+      ...prev,
+      mainFile: null,
+      mainPreview: project.image ? `${API_URL}/${project.image}` : null,
+    }))
   }
 
   const handleSubmit = async () => {
     try {
-      // First, delete marked gallery images
-      if (deletedGalleryIndices.length > 0) {
-        for (const index of deletedGalleryIndices) {
+      if (images.deletedGalleryIndices.length > 0) {
+        for (const index of images.deletedGalleryIndices) {
           await deleteGalleryImage.mutateAsync({
             id: project.id,
             imageIndex: index,
@@ -115,49 +145,51 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
         }
       }
 
-      // Then update other fields
       const data = new FormData()
 
-      if (imageFile) {
-        data.append('image', imageFile)
-      }
-      if (partnerId && partnerId !== project.partnerId?.toString()) {
-        data.append('partnerId', partnerId)
-      }
-      if (projectLocation !== project.projectLocation) {
-        data.append('projectLocation', projectLocation)
-      }
-      if (priceFrom !== (project.priceFrom?.toString() || '')) {
-        data.append('priceFrom', priceFrom)
-      }
-      if (
-        deliveryDate !==
-        (project.deliveryDate ? project.deliveryDate.split('T')[0] : '')
-      ) {
-        data.append('deliveryDate', deliveryDate)
-      }
-      if (numFloors !== (project.numFloors?.toString() || '')) {
-        data.append('numFloors', numFloors)
-      }
-      if (numApartments !== (project.numApartments?.toString() || '')) {
-        data.append('numApartments', numApartments)
+      if (images.mainFile) {
+        data.append('image', images.mainFile)
       }
 
-      galleryFiles.forEach(file => {
+      const originalPartnerId = project.partner?.id?.toString() || ''
+      if (formData.partnerId && formData.partnerId !== originalPartnerId) {
+        data.append('partnerId', formData.partnerId)
+      }
+      if (formData.projectLocation !== project.projectLocation) {
+        data.append('projectLocation', formData.projectLocation)
+      }
+      if (formData.priceFrom !== (project.priceFrom?.toString() || '')) {
+        data.append('priceFrom', formData.priceFrom)
+      }
+      if (
+        formData.deliveryDate !==
+        (project.deliveryDate ? project.deliveryDate.split('T')[0] : '')
+      ) {
+        data.append('deliveryDate', formData.deliveryDate)
+      }
+      if (formData.numFloors !== (project.numFloors?.toString() || '')) {
+        data.append('numFloors', formData.numFloors)
+      }
+      if (
+        formData.numApartments !== (project.numApartments?.toString() || '')
+      ) {
+        data.append('numApartments', formData.numApartments)
+      }
+
+      images.galleryFiles.forEach(file => {
         data.append('gallery', file)
       })
 
-      // Check if there are any changes to update
       const hasUpdateChanges =
-        imageFile ||
-        galleryFiles.length > 0 ||
-        (partnerId && partnerId !== project.partnerId?.toString()) ||
-        projectLocation !== project.projectLocation ||
-        priceFrom !== (project.priceFrom?.toString() || '') ||
-        deliveryDate !==
+        images.mainFile ||
+        images.galleryFiles.length > 0 ||
+        (formData.partnerId && formData.partnerId !== originalPartnerId) ||
+        formData.projectLocation !== project.projectLocation ||
+        formData.priceFrom !== (project.priceFrom?.toString() || '') ||
+        formData.deliveryDate !==
           (project.deliveryDate ? project.deliveryDate.split('T')[0] : '') ||
-        numFloors !== (project.numFloors?.toString() || '') ||
-        numApartments !== (project.numApartments?.toString() || '')
+        formData.numFloors !== (project.numFloors?.toString() || '') ||
+        formData.numApartments !== (project.numApartments?.toString() || '')
 
       if (hasUpdateChanges) {
         await updateProject.mutateAsync({ id: project.id, data })
@@ -170,22 +202,22 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     }
   }
 
+  const originalPartnerId = project.partner?.id?.toString() || ''
   const hasChanges =
-    imageFile ||
-    galleryFiles.length > 0 ||
-    deletedGalleryIndices.length > 0 ||
-    (partnerId && partnerId !== project.partnerId?.toString()) ||
-    projectLocation !== project.projectLocation ||
-    priceFrom !== (project.priceFrom?.toString() || '') ||
-    deliveryDate !==
+    images.mainFile ||
+    images.galleryFiles.length > 0 ||
+    images.deletedGalleryIndices.length > 0 ||
+    (formData.partnerId && formData.partnerId !== originalPartnerId) ||
+    formData.projectLocation !== project.projectLocation ||
+    formData.priceFrom !== (project.priceFrom?.toString() || '') ||
+    formData.deliveryDate !==
       (project.deliveryDate ? project.deliveryDate.split('T')[0] : '') ||
-    numFloors !== (project.numFloors?.toString() || '') ||
-    numApartments !== (project.numApartments?.toString() || '')
+    formData.numFloors !== (project.numFloors?.toString() || '') ||
+    formData.numApartments !== (project.numApartments?.toString() || '')
 
-  // Filter out deleted images from display
   const displayGallery =
     project.gallery?.filter(
-      (_, index) => !deletedGalleryIndices.includes(index)
+      (_, index) => !images.deletedGalleryIndices.includes(index)
     ) || []
 
   return (
@@ -240,7 +272,7 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
           }`}
         >
           <ImageIcon className="w-4 h-4 inline mr-2" />
-          Gallery ({displayGallery.length + galleryFiles.length})
+          Gallery ({displayGallery.length + images.galleryFiles.length})
         </button>
         <button
           onClick={() => setActiveSection('translations')}
@@ -275,8 +307,10 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
               <Input
                 id="projectLocation"
                 type="text"
-                value={projectLocation}
-                onChange={e => setProjectLocation(e.target.value)}
+                value={formData.projectLocation}
+                onChange={e =>
+                  updateFormField('projectLocation', e.target.value)
+                }
                 placeholder="e.g., Downtown District"
                 className="bg-background border-border"
               />
@@ -289,7 +323,10 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
               >
                 Partner
               </Label>
-              <Select value={partnerId} onValueChange={setPartnerId}>
+              <Select
+                value={formData.partnerId}
+                onValueChange={value => updateFormField('partnerId', value)}
+              >
                 <SelectTrigger className="bg-background border-border">
                   <SelectValue placeholder="Select partner" />
                 </SelectTrigger>
@@ -314,8 +351,8 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 <Input
                   id="priceFrom"
                   type="number"
-                  value={priceFrom}
-                  onChange={e => setPriceFrom(e.target.value)}
+                  value={formData.priceFrom}
+                  onChange={e => updateFormField('priceFrom', e.target.value)}
                   placeholder="e.g., 50000"
                   className="bg-background border-border"
                 />
@@ -331,8 +368,10 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 <Input
                   id="deliveryDate"
                   type="date"
-                  value={deliveryDate}
-                  onChange={e => setDeliveryDate(e.target.value)}
+                  value={formData.deliveryDate}
+                  onChange={e =>
+                    updateFormField('deliveryDate', e.target.value)
+                  }
                   className="bg-background border-border"
                 />
               </div>
@@ -347,8 +386,8 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 <Input
                   id="numFloors"
                   type="number"
-                  value={numFloors}
-                  onChange={e => setNumFloors(e.target.value)}
+                  value={formData.numFloors}
+                  onChange={e => updateFormField('numFloors', e.target.value)}
                   placeholder="e.g., 10"
                   className="bg-background border-border"
                 />
@@ -364,8 +403,10 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 <Input
                   id="numApartments"
                   type="number"
-                  value={numApartments}
-                  onChange={e => setNumApartments(e.target.value)}
+                  value={formData.numApartments}
+                  onChange={e =>
+                    updateFormField('numApartments', e.target.value)
+                  }
                   placeholder="e.g., 50"
                   className="bg-background border-border"
                 />
@@ -399,10 +440,10 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 Main Project Image
               </Label>
               <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-foreground/40 transition-colors relative bg-muted/30">
-                {imagePreview ? (
+                {images.mainPreview ? (
                   <div className="relative inline-block">
                     <img
-                      src={imagePreview}
+                      src={images.mainPreview}
                       alt="Preview"
                       className="max-h-48 rounded-md border border-border"
                     />
@@ -411,12 +452,7 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                       variant="destructive"
                       size="icon"
                       className="absolute -top-2 -right-2 h-8 w-8"
-                      onClick={() => {
-                        setImageFile(null)
-                        setImagePreview(
-                          project.image ? `${API_URL}/${project.image}` : null
-                        )
-                      }}
+                      onClick={resetMainImage}
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -471,7 +507,7 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {project.gallery.map((img, index) => {
                     const isMarkedForDeletion =
-                      deletedGalleryIndices.includes(index)
+                      images.deletedGalleryIndices.includes(index)
                     return (
                       <div key={index} className="relative group">
                         <div
@@ -549,9 +585,9 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 />
               </div>
 
-              {galleryPreviews.length > 0 && (
+              {images.galleryPreviews.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  {galleryPreviews.map((preview, index) => (
+                  {images.galleryPreviews.map((preview, index) => (
                     <div key={index} className="relative">
                       <img
                         src={preview}

@@ -1,7 +1,4 @@
-'use client'
-
 import type React from 'react'
-
 import { useState } from 'react'
 import { X, Upload, Save } from 'lucide-react'
 import { useCreateProject } from '@/lib/hooks/useProjects'
@@ -40,7 +37,11 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const createProject = useCreateProject()
-  const { data: partners } = usePartners('en')
+  const { data: partnersResponse } = usePartners()
+
+  const partners = partnersResponse?.data || []
+
+  console.log(partners)
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -213,7 +214,7 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
               <SelectValue placeholder="Select a partner" />
             </SelectTrigger>
             <SelectContent>
-              {partners?.map(partner => (
+              {partners.map(partner => (
                 <SelectItem key={partner.id} value={partner.id.toString()}>
                   {partner.companyName}
                 </SelectItem>

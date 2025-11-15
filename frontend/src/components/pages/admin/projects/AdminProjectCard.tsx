@@ -1,8 +1,5 @@
-'use client'
-
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import type { Project } from '@/lib/types/projects'
 
 const API_URL = 'http://localhost:3000'
@@ -21,57 +18,68 @@ export function AdminProjectCard({
   const imageUrl = project.image ? `${API_URL}/${project.image}` : null
 
   return (
-    <Card className="overflow-hidden border-border hover:shadow-md transition-shadow duration-200">
-      <div className="h-48 bg-muted flex items-center justify-center">
+    <div className="grid grid-cols-12 gap-4 items-center p-4 border-b border-border hover:bg-muted/30 transition">
+      {/* Image */}
+      <div className="col-span-1">
         {imageUrl ? (
           <img
-            src={imageUrl || '/placeholder.svg'}
+            src={imageUrl}
             alt={project.projectName}
-            className="h-full w-full object-cover"
+            className="h-12 w-12 object-cover rounded-md bg-muted"
           />
         ) : (
-          <p className="text-muted-foreground text-sm">No image</p>
+          <div className="h-12 w-12 flex items-center justify-center rounded-md bg-muted">
+            <ImageIcon className="w-6 h-6 text-muted-foreground" />
+          </div>
         )}
       </div>
-      <CardContent className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">
-          {project.projectName}
-        </h3>
 
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>
-            <span className="font-medium text-foreground">Location:</span>{' '}
-            {project.projectLocation}
-          </p>
+      {/* Project Name */}
+      <div className="col-span-3">
+        <p className="font-medium text-foreground">{project.projectName}</p>
+      </div>
 
-          {project.partner && (
-            <p>
-              <span className="font-medium text-foreground">Partner:</span>{' '}
-              {project.partner.companyName}
-            </p>
-          )}
+      {/* Location */}
+      <div className="col-span-3">
+        <p className="text-sm text-muted-foreground">
+          {project.projectLocation}
+        </p>
+      </div>
 
-          <p className="text-xs">
-            <span className="font-medium">Created:</span>{' '}
-            {new Date(project.createdAt).toLocaleDateString()}
-          </p>
-        </div>
+      {/* Partner */}
+      <div className="col-span-2">
+        <p className="text-sm text-muted-foreground">
+          {project.partner ? project.partner.companyName : '—'}
+        </p>
+      </div>
 
-        <div className="flex gap-2 pt-2">
-          <Button onClick={() => onEdit(project)} className="flex-1" size="sm">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => onDelete(project.id)}
-            size="icon"
-            className="h-10 w-10"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Created Date */}
+      <div className="col-span-2">
+        <p className="text-sm text-muted-foreground">
+          {new Date(project.createdAt).toLocaleDateString()}
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div className="col-span-1 flex items-center justify-end gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onEdit(project)}
+          className="h-8 w-8 p-0"
+        >
+          <Edit className="w-4 h-4" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(project.id)}
+          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
   )
 }
