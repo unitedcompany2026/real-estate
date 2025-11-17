@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { ArrowUpRight, MapPin } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { getImageUrl } from '@/lib/utils/image-utils'
 import type { Project } from '@/lib/types/projects'
+
 type TranslatableFields = 'projectName' | 'projectLocation'
 
 const ProjectCard = ({ project }: { project: Project }) => {
@@ -10,11 +11,10 @@ const ProjectCard = ({ project }: { project: Project }) => {
   const getTranslatedValue = (field: TranslatableFields) => {
     return project.translation?.[field] ?? project[field] ?? ''
   }
+
   const projectImage = getImageUrl(project.image ?? undefined)
   const projectName = getTranslatedValue('projectName')
   const projectLocation = getTranslatedValue('projectLocation')
-  const partnerName =
-    project?.partner?.translation?.companyName || project?.partner?.companyName
 
   return (
     <div className="bg-white rounded-xl border border-gray-300 transition-all duration-300 h-full p-1 cursor-pointer hover:shadow-lg">
@@ -54,28 +54,31 @@ const ProjectCard = ({ project }: { project: Project }) => {
         )}
       </div>
 
-      <div className="p-2 sm:p-3">
-        <div className="flex justify-between items-start gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors">
-              {projectName}
-            </h3>
+      <div className="p-3 sm:p-4">
+        <div className="space-y-3">
+          {/* PROJECT NAME */}
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors line-clamp-2">
+            {projectName}
+          </h3>
+
+          {/* LOCATION + PRICE */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Location */}
             {projectLocation && (
-              <div className="flex items-center gap-1 mt-1">
-                <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                <p className="text-xs text-gray-500 truncate">
+              <div className="flex items-center gap-2 min-w-0">
+                <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <p className="text-sm text-gray-600 truncate">
                   {projectLocation}
                 </p>
               </div>
             )}
-            {partnerName && (
-              <p className="text-xs text-gray-500 mt-1 truncate">
-                {partnerName}
-              </p>
+
+            {/* Price */}
+            {project.priceFrom && (
+              <span className="text-sm font-semibold text-blue-900 whitespace-nowrap">
+                From: ${project.priceFrom.toLocaleString()}
+              </span>
             )}
-          </div>
-          <div className="bg-gray-200 rounded-full p-2 hover:bg-blue-900 transition-colors flex-shrink-0 group">
-            <ArrowUpRight className="w-4 h-4 text-gray-700 group-hover:text-white transition-colors" />
           </div>
         </div>
       </div>

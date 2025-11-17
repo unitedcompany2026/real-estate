@@ -2,15 +2,27 @@ import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import ProjectCard from '@/components/pages/projects/ProjectCard'
+ 
 
 import { useProjects } from '@/lib/hooks/useProjects'
 import Pagination from '@/components/shared/pagination/Pagination'
+import { ProjectFilters } from '@/components/pages/projects/ProjectsFilter'
 
 export default function AllProjects() {
   const { t, i18n } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const page = parseInt(searchParams.get('page') || '1', 10)
+  const location = searchParams.get('location') || undefined
+  const priceFrom = searchParams.get('priceFrom')
+    ? parseInt(searchParams.get('priceFrom')!)
+    : undefined
+  const priceTo = searchParams.get('priceTo')
+    ? parseInt(searchParams.get('priceTo')!)
+    : undefined
+  const publicFilter = searchParams.get('public')
+    ? searchParams.get('public') === 'true'
+    : undefined
 
   const {
     data: projectsResponse,
@@ -20,13 +32,19 @@ export default function AllProjects() {
     lang: i18n.language,
     page: page,
     limit: 8,
+    location,
+    priceFrom,
+    priceTo,
+    public: publicFilter,
   })
 
   const projects = projectsResponse?.data || []
   const meta = projectsResponse?.meta
 
   const handlePageChange = (newPage: number) => {
-    setSearchParams({ page: newPage.toString() })
+    const params = new URLSearchParams(searchParams)
+    params.set('page', newPage.toString())
+    setSearchParams(params)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -84,15 +102,15 @@ export default function AllProjects() {
           )}
         </div>
 
+        {/* Filters Component */}
+        <ProjectFilters />
+
         {projects.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {projects.map(project => (
                 <Link key={project.id} to={`/projects/${project.id}`}>
-                  <ProjectCard
-                    project={project}
-                    currentLanguage={i18n.language}
-                  />
+                  <ProjectCard project={project} />
                 </Link>
               ))}
             </div>
