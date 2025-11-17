@@ -40,7 +40,7 @@ export function AdminProjectCard({
       </div>
 
       {/* Location */}
-      <div className="col-span-3">
+      <div className="col-span-2">
         <p className="text-sm text-muted-foreground">
           {project.projectLocation}
         </p>
@@ -53,11 +53,22 @@ export function AdminProjectCard({
         </p>
       </div>
 
-      {/* Created Date */}
+      {/* Price From */}
       <div className="col-span-2">
-        <p className="text-sm text-muted-foreground">
-          {new Date(project.createdAt).toLocaleDateString()}
+        <p className="text-sm text-foreground font-medium">
+          {project.priceFrom ? `₾${project.priceFrom.toLocaleString()}` : '—'}
         </p>
+      </div>
+
+      {/* Hot Sale */}
+      <div className="col-span-1">
+        {project.hotSale ? (
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+            🔥 Hot
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">—</span>
+        )}
       </div>
 
       {/* Actions */}

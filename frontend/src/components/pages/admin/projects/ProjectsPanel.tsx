@@ -113,9 +113,10 @@ export default function ProjectsPanel() {
             <div className="grid grid-cols-12 gap-4 items-center p-4 bg-muted/50 border-b border-border font-medium text-sm text-muted-foreground">
               <div className="col-span-1">Image</div>
               <div className="col-span-3">Name</div>
-              <div className="col-span-3">Location</div>
+              <div className="col-span-2">Location</div>
               <div className="col-span-2">Partner</div>
-              <div className="col-span-2">Created</div>
+              <div className="col-span-2">Price From</div>
+              <div className="col-span-1">Hot Sale</div>
               <div className="col-span-1 text-right">Actions</div>
             </div>
 

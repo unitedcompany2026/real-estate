@@ -1,5 +1,4 @@
 import type React from 'react'
-
 import { useState } from 'react'
 import { X, Upload, Save, Trash2, ImageIcon } from 'lucide-react'
 import {
@@ -448,20 +447,8 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
               </div>
             </div>
 
-            <div className="border border-border rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label
-                    htmlFor="hotSale"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    🔥 Mark as Hot Sale
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Hot sale projects will be displayed prominently on the
-                    homepage
-                  </p>
-                </div>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
                 <Switch
                   id="hotSale"
                   checked={formData.hotSale}
@@ -469,21 +456,15 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                     updateFormField('hotSale', checked)
                   }
                 />
+                <Label
+                  htmlFor="hotSale"
+                  className="text-sm font-medium text-foreground cursor-pointer"
+                >
+                  🔥 Hot Sale
+                </Label>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label
-                    htmlFor="public"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    👁️ Make Publicly Visible
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Public projects are visible to all users. Uncheck to hide
-                    from clients.
-                  </p>
-                </div>
+              <div className="flex items-center gap-3">
                 <Switch
                   id="public"
                   checked={formData.public}
@@ -491,6 +472,12 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                     updateFormField('public', checked)
                   }
                 />
+                <Label
+                  htmlFor="public"
+                  className="text-sm font-medium text-foreground cursor-pointer"
+                >
+                  👁️ Public
+                </Label>
               </div>
             </div>
 
