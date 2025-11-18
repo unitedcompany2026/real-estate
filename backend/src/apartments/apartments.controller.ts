@@ -35,12 +35,26 @@ export class ApartmentsController {
   constructor(private readonly apartmentsService: ApartmentsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all apartments' })
+  @ApiOperation({ summary: 'Get all apartments with pagination' })
   @ApiQuery({
     name: 'lang',
     required: false,
     description: 'Language code (e.g., en, ka, ru)',
     example: 'en',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    example: 1,
+    type: 'number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    example: 10,
+    type: 'number',
   })
   @ApiQuery({
     name: 'projectId',
@@ -54,10 +68,16 @@ export class ApartmentsController {
   })
   async findAll(
     @Query('lang') lang?: string,
-    @Query('projectId', new ParseIntPipe({ optional: true }))
-    projectId?: number,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('projectId') projectId?: string,
   ) {
-    return this.apartmentsService.findAll(lang || 'en', projectId);
+    return this.apartmentsService.findAll({
+      lang,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+      projectId: projectId ? parseInt(projectId, 10) : undefined,
+    });
   }
 
   @Get(':id')

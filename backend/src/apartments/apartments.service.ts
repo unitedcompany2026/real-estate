@@ -9,13 +9,33 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { FileUtils } from '@/common/utils/file.utils';
 import { LANGUAGES } from '@/common/constants/language';
 
+interface FindAllParams {
+  lang?: string;
+  page?: number;
+  limit?: number;
+  projectId?: number;
+}
+
 @Injectable()
 export class ApartmentsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll(lang: string = 'en', projectId?: number) {
+  async findAll(params: FindAllParams = {}) {
+    const { lang = 'en', page = 1, limit = 10, projectId } = params;
+
+    const skip = (page - 1) * limit;
+
+    const where = projectId ? { projectId } : undefined;
+
+    const total = await this.prismaService.apartments.count({ where });
+
     const apartments = await this.prismaService.apartments.findMany({
-      where: projectId ? { projectId } : undefined,
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         translations: {
           where: { language: lang },
@@ -37,17 +57,27 @@ export class ApartmentsService {
       },
     });
 
-    return apartments.map((apartment) => ({
+    const mappedApartments = apartments.map((apartment) => ({
       id: apartment.id,
       room: apartment.room,
       area: apartment.area,
-      floor: apartment.floor,
-      totalFloors: apartment.totalFloors,
       images: apartment.images,
       description: apartment.translations[0]?.description || null,
       createdAt: apartment.createdAt,
       project: apartment.project,
     }));
+
+    return {
+      data: mappedApartments,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findOne(id: number, lang: string = 'en') {
@@ -77,8 +107,6 @@ export class ApartmentsService {
       id: apartment.id,
       room: apartment.room,
       area: apartment.area,
-      floor: apartment.floor,
-      totalFloors: apartment.totalFloors,
       images: apartment.images,
       description: apartment.translations[0]?.description || null,
       createdAt: apartment.createdAt,
@@ -112,8 +140,6 @@ export class ApartmentsService {
       data: {
         room: dto.room,
         area: dto.area,
-        floor: dto.floor,
-        totalFloors: dto.totalFloors,
         images: imageUrls,
         projectId: dto.projectId,
       },
@@ -177,8 +203,6 @@ export class ApartmentsService {
 
     if (dto.room !== undefined) updateData.room = dto.room;
     if (dto.area !== undefined) updateData.area = dto.area;
-    if (dto.floor !== undefined) updateData.floor = dto.floor;
-    if (dto.totalFloors !== undefined) updateData.totalFloors = dto.totalFloors;
     if (dto.projectId !== undefined) updateData.projectId = dto.projectId;
 
     const updatedApartment = await this.prismaService.apartments.update({

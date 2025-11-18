@@ -1,40 +1,32 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsNumber } from 'class-validator';
+import { IsOptional, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateApartmentDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Number of rooms', example: 2 })
   @Type(() => Number)
   @IsNumber()
   room: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Area in square meters', example: 85 })
   @Type(() => Number)
   @IsNumber()
   area: number;
 
-  @ApiProperty()
-  @Type(() => Number)
-  @IsNumber()
-  floor: number;
-
-  @ApiProperty()
-  @Type(() => Number)
-  @IsNumber()
-  totalFloors: number;
-
-  @ApiProperty()
+  @ApiProperty({ description: 'Project ID', example: 1 })
   @Type(() => Number)
   @IsNumber()
   projectId: number;
 
-  @ApiProperty()
+  @ApiPropertyOptional({ description: 'Apartment description' })
   @IsOptional()
+  @IsString()
   description?: string;
 
   @ApiPropertyOptional({
     type: 'array',
     items: { type: 'string', format: 'binary' },
+    description: 'Apartment images (max 10)',
   })
   images?: any[];
 }
