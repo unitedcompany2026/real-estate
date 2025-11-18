@@ -1,20 +1,31 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateApartmentDto {
   @ApiProperty()
+  @Type(() => Number)
+  @IsNumber()
   room: number;
 
   @ApiProperty()
+  @Type(() => Number)
+  @IsNumber()
   area: number;
 
   @ApiProperty()
+  @Type(() => Number)
+  @IsNumber()
   floor: number;
 
   @ApiProperty()
+  @Type(() => Number)
+  @IsNumber()
   totalFloors: number;
 
   @ApiProperty()
+  @Type(() => Number)
+  @IsNumber()
   projectId: number;
 
   @ApiProperty()
