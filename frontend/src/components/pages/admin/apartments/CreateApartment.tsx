@@ -1,5 +1,4 @@
 import type React from 'react'
-
 import { useState } from 'react'
 import { X, Save, ImagePlus } from 'lucide-react'
 import { useCreateApartment } from '@/lib/hooks/useApartments'
@@ -7,7 +6,6 @@ import { useProjects } from '@/lib/hooks/useProjects'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Select,
@@ -27,8 +25,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
   const [formData, setFormData] = useState({
     room: '',
     area: '',
-    floor: '',
-    totalFloors: '',
     description: '',
     projectId: '',
   })
@@ -39,6 +35,7 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
   const createApartment = useCreateApartment()
   const { data: projectsResponse } = useProjects()
   const projects = projectsResponse?.data || []
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
@@ -70,15 +67,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
     if (!formData.area || Number(formData.area) <= 0) {
       newErrors.area = 'Valid area is required'
     }
-    if (!formData.floor || Number(formData.floor) <= 0) {
-      newErrors.floor = 'Valid floor number is required'
-    }
-    if (!formData.totalFloors || Number(formData.totalFloors) <= 0) {
-      newErrors.totalFloors = 'Valid total floors is required'
-    }
-    if (Number(formData.floor) > Number(formData.totalFloors)) {
-      newErrors.floor = 'Floor cannot be greater than total floors'
-    }
     if (!formData.projectId) {
       newErrors.projectId = 'Project selection is required'
     }
@@ -93,8 +81,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
     const data = new FormData()
     data.append('room', formData.room)
     data.append('area', formData.area)
-    data.append('floor', formData.floor)
-    data.append('totalFloors', formData.totalFloors)
     data.append('projectId', formData.projectId)
 
     if (formData.description.trim()) {
@@ -176,56 +162,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
             />
             {errors.area && (
               <p className="text-red-500 text-sm font-medium">{errors.area}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label
-              htmlFor="floor"
-              className="text-sm font-medium text-foreground"
-            >
-              Floor <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="floor"
-              type="number"
-              min="1"
-              value={formData.floor}
-              onChange={e =>
-                setFormData({ ...formData, floor: e.target.value })
-              }
-              placeholder="e.g., 5"
-              className={`bg-background border ${errors.floor ? 'border-red-500' : 'border-border'}`}
-            />
-            {errors.floor && (
-              <p className="text-red-500 text-sm font-medium">{errors.floor}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="totalFloors"
-              className="text-sm font-medium text-foreground"
-            >
-              Total Floors <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="totalFloors"
-              type="number"
-              min="1"
-              value={formData.totalFloors}
-              onChange={e =>
-                setFormData({ ...formData, totalFloors: e.target.value })
-              }
-              placeholder="e.g., 10"
-              className={`bg-background border ${errors.totalFloors ? 'border-red-500' : 'border-border'}`}
-            />
-            {errors.totalFloors && (
-              <p className="text-red-500 text-sm font-medium">
-                {errors.totalFloors}
-              </p>
             )}
           </div>
         </div>
