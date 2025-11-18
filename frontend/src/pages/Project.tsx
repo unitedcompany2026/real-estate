@@ -12,8 +12,6 @@ import {
 } from '@/components/ui/carousel'
 import { useProject } from '@/lib/hooks/useProjects'
 
-const API_URL = 'http://localhost:3000'
-
 const ApartmentCard = ({ apartment }: { apartment: Apartment }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -24,7 +22,7 @@ const ApartmentCard = ({ apartment }: { apartment: Apartment }) => {
               {apartment.images.map((image, index) => (
                 <CarouselItem key={index}>
                   <img
-                    src={`${API_URL}/${image}`}
+                    src={`${import.meta.env.VITE_API_IMAGE_URL}/${image}`}
                     alt={`${apartment.room} room apartment - Image ${index + 1}`}
                     className="w-full h-64 object-cover"
                   />
@@ -106,7 +104,7 @@ const ProjectImageCarousel = ({
       <div className="bg-white rounded-xl shadow-sm overflow-hidden h-full">
         <div className="relative h-80 lg:h-[500px] bg-gray-900">
           <img
-            src={`${API_URL}/${allImages[0]}`}
+            src={`${import.meta.env.VITE_API_IMAGE_URL}/${allImages[0]}`}
             alt={projectName}
             className="w-full h-full object-cover"
           />
@@ -123,7 +121,7 @@ const ProjectImageCarousel = ({
             <CarouselItem key={index}>
               <div className="relative h-80 lg:h-[500px] bg-gray-900">
                 <img
-                  src={`${API_URL}/${img}`}
+                  src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
                   alt={`${projectName} - Image ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

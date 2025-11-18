@@ -25,8 +25,6 @@ import type { Apartment } from '@/lib/types/apartments'
 import { ApartmentTranslationsManager } from './ApartmentTranslationsManager'
 import { Textarea } from '@/components/ui/textarea'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-
 interface EditApartmentProps {
   apartment: Apartment
   onBack: () => void
@@ -343,7 +341,10 @@ export function EditApartment({
                   {apartment.images.map((image, index) => (
                     <div key={index} className="relative group">
                       <img
-                        src={`${API_URL}/${image}` || '/placeholder.svg'}
+                        src={
+                          `${import.meta.env.VITE_API_IMAGE_URL}/${image}` ||
+                          '/placeholder.svg'
+                        }
                         alt={`Apartment ${index + 1}`}
                         className="w-full h-32 object-cover rounded-md border border-border"
                       />

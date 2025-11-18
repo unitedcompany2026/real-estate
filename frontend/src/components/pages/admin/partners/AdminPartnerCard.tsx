@@ -2,7 +2,7 @@ import { Edit, Trash2, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Partner } from '@/lib/types/partners'
 
-const API_URL = 'http://localhost:3000'
+ 
 
 interface PartnerCardProps {
   partner: Partner
@@ -15,7 +15,9 @@ export function AdminPartnerCard({
   onEdit,
   onDelete,
 }: PartnerCardProps) {
-  const imageUrl = partner.image ? `${API_URL}/${partner.image}` : null
+  const imageUrl = partner.image
+    ? `${import.meta.env.VITE_API_IMAGE_URL}/${partner.image}`
+    : null
 
   return (
     <div className="grid grid-cols-12 gap-4 items-center p-4 border-b border-border hover:bg-muted/30 transition">

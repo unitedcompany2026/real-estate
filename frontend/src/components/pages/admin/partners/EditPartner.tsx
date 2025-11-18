@@ -8,8 +8,6 @@ import { Label } from '@/components/ui/label'
 import type { Partner } from '@/lib/types/partners'
 import { TranslationsManager } from './TranslationManager'
 
-const API_URL = 'http://localhost:3000'
-
 interface EditPartnerProps {
   partner: Partner
   onBack: () => void
@@ -19,7 +17,9 @@ interface EditPartnerProps {
 export function EditPartner({ partner, onBack, onSuccess }: EditPartnerProps) {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(
-    partner.image ? `${API_URL}/${partner.image}` : null
+    partner.image
+      ? `${import.meta.env.VITE_API_IMAGE_URL}/${partner.image}`
+      : null
   )
   const [activeSection, setActiveSection] = useState<'image' | 'translations'>(
     'image'
@@ -119,7 +119,9 @@ export function EditPartner({ partner, onBack, onSuccess }: EditPartnerProps) {
                       onClick={() => {
                         setImageFile(null)
                         setImagePreview(
-                          partner.image ? `${API_URL}/${partner.image}` : null
+                          partner.image
+                            ? `${import.meta.env.VITE_API_IMAGE_URL}/${partner.image}`
+                            : null
                         )
                       }}
                     >

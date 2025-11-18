@@ -1,11 +1,7 @@
-'use client'
-
 import { Edit, Trash2, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Apartment } from '@/lib/types/apartments'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 interface ApartmentCardProps {
   apartment: Apartment
@@ -19,7 +15,7 @@ export function AdminApartmentCard({
   onDelete,
 }: ApartmentCardProps) {
   const imageUrl = apartment.images?.[0]
-    ? `${API_URL}/${apartment.images[0]}`
+    ? `${import.meta.env.VITE_API_IMAGE_URL}/${apartment.images[0]}`
     : null
 
   return (

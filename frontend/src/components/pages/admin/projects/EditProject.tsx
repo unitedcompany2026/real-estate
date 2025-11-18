@@ -21,8 +21,6 @@ import { Switch } from '@/components/ui/switch'
 import type { Project } from '@/lib/types/projects'
 import { ProjectTranslationsManager } from './ProjectTranslationsManager'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-
 interface EditProjectProps {
   project: Project
   onBack: () => void
@@ -44,7 +42,9 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
 
   const [images, setImages] = useState({
     mainFile: null as File | null,
-    mainPreview: project.image ? `${API_URL}/${project.image}` : null,
+    mainPreview: project.image
+      ? `${import.meta.env.VITE_API_IMAGE_URL}/${project.image}`
+      : null,
     galleryFiles: [] as File[],
     galleryPreviews: [] as string[],
     deletedGalleryIndices: [] as number[],
@@ -137,7 +137,9 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     setImages(prev => ({
       ...prev,
       mainFile: null,
-      mainPreview: project.image ? `${API_URL}/${project.image}` : null,
+      mainPreview: project.image
+        ? `${import.meta.env.VITE_API_IMAGE_URL}/${project.image}`
+        : null,
     }))
   }
 
@@ -224,15 +226,6 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
         formData.public !== originalPublic
 
       // Debug log
-      console.log('=== FORM SUBMISSION DEBUG ===')
-      console.log('Has changes:', hasChanges)
-      console.log('FormData contents:')
-      for (const [key, value] of data.entries()) {
-        console.log(`  ${key}:`, value, `(type: ${typeof value})`)
-      }
-      console.log('Boolean states:')
-      console.log('  hotSale:', formData.hotSale, '→', String(formData.hotSale))
-      console.log('  public:', formData.public, '→', String(formData.public))
 
       if (hasChanges) {
         await updateProject.mutateAsync({ id: project.id, data })
@@ -582,7 +575,7 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                           className={`relative ${isMarkedForDeletion ? 'opacity-40' : ''}`}
                         >
                           <img
-                            src={`${API_URL}/${img}`}
+                            src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
                             alt={`Gallery ${index + 1}`}
                             className="w-full h-32 object-cover rounded-md border border-border"
                           />

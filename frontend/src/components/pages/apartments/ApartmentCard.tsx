@@ -11,10 +11,9 @@ interface ApartmentCardProps {
 const ApartmentCard = ({ apartment }: ApartmentCardProps) => {
   const { t } = useTranslation()
 
-  // Get the first image from the array and convert it to a full URL
   const mainImage = getImageUrl(
     apartment.images?.[0],
-    import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    import.meta.env.VITE_API_IMAGE_URL
   )
 
   const description =

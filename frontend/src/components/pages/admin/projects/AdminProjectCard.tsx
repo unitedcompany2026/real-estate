@@ -2,8 +2,6 @@ import { Edit, Trash2, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Project } from '@/lib/types/projects'
 
-const API_URL = 'http://localhost:3000'
-
 interface ProjectCardProps {
   project: Project
   onEdit: (project: Project) => void
@@ -15,7 +13,9 @@ export function AdminProjectCard({
   onEdit,
   onDelete,
 }: ProjectCardProps) {
-  const imageUrl = project.image ? `${API_URL}/${project.image}` : null
+  const imageUrl = project.image
+    ? `${import.meta.env.VITE_API_IMAGE_URL}/${project.image}`
+    : null
 
   return (
     <div className="grid grid-cols-12 gap-4 items-center p-4 border-b border-border hover:bg-muted/30 transition">
