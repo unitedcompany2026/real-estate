@@ -15,7 +15,6 @@ export const Header = () => {
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Hide header on admin pages
   const isAdminPath = location.pathname.includes('/admin')
 
   if (isAdminPath) {
@@ -63,15 +62,14 @@ export const Header = () => {
   ]
 
   return (
-    <header className="sticky px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
+    <header className="  px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto  ">
         <div className="flex h-20 items-center justify-between">
-          {/* Logo */}
           <Link
             to={ROUTES.HOME}
-            className="flex items-center gap-3 flex-shrink-0 group"
+            className="flex items-center gap-3 shrink-0 group"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg group-hover:shadow-xl transition-all duration-200">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-blue-700 shadow-lg group-hover:shadow-xl transition-all duration-200">
               <span className="text-xl font-bold text-white">UC</span>
             </div>
             <span className="text-xl font-bold text-gray-900 hidden sm:inline group-hover:text-blue-600 transition-colors duration-200">
@@ -79,7 +77,6 @@ export const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation - Moved to Right */}
           <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
             <nav className="flex items-center gap-1">
               {navItems.map(item => (
@@ -111,7 +108,6 @@ export const Header = () => {
               ))}
             </nav>
 
-            {/* Auth & Settings Section */}
             <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
               {isLoading ? (
                 <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />
@@ -146,7 +142,6 @@ export const Header = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -159,7 +154,6 @@ export const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 py-4 animate-fade-in">
             <nav className="flex flex-col gap-2">
@@ -195,7 +189,6 @@ export const Header = () => {
               ))}
             </nav>
 
-            {/* Mobile Auth Section */}
             <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
               {isLoading ? (
                 <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />

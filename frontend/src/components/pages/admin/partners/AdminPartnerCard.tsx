@@ -2,8 +2,6 @@ import { Edit, Trash2, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { Partner } from '@/lib/types/partners'
 
- 
-
 interface PartnerCardProps {
   partner: Partner
   onEdit: (partner: Partner) => void
@@ -21,7 +19,6 @@ export function AdminPartnerCard({
 
   return (
     <div className="grid grid-cols-12 gap-4 items-center p-4 border-b border-border hover:bg-muted/30 transition">
-      {/* Image */}
       <div className="col-span-2">
         {imageUrl ? (
           <img
@@ -36,12 +33,10 @@ export function AdminPartnerCard({
         )}
       </div>
 
-      {/* Company Name */}
       <div className="col-span-9">
         <p className="font-medium text-foreground">{partner.companyName}</p>
       </div>
 
-      {/* Actions */}
       <div className="col-span-1 flex items-center justify-end gap-2">
         <Button
           variant="ghost"

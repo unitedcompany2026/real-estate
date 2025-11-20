@@ -76,23 +76,23 @@ const PropertyCard = ({
 
         <div className="space-y-2">
           <div className="flex items-center text-gray-600 text-sm">
-            <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+            <MapPin className="w-4 h-4 mr-2 shrink-0" />
             <span className="truncate">{property.location}</span>
           </div>
 
           <div className="flex items-center gap-4 text-gray-600 text-sm">
             <div className="flex items-center">
-              <Home className="w-4 h-4 mr-1 flex-shrink-0" />
+              <Home className="w-4 h-4 mr-1 shrink-0" />
               <span className="mr-1">Floor</span>
               <span className="font-medium">{property.floor}</span>
             </div>
             <div className="flex items-center">
-              <DoorOpen className="w-4 h-4 mr-1 flex-shrink-0" />
+              <DoorOpen className="w-4 h-4 mr-1 shrink-0" />
               <span className="mr-1">Rooms</span>
               <span className="font-medium">{property.rooms}</span>
             </div>
             <div className="flex items-center">
-              <Bed className="w-4 h-4 mr-1 flex-shrink-0" />
+              <Bed className="w-4 h-4 mr-1 shrink-0" />
               <span className="mr-1">Beds</span>
               <span className="font-medium">{property.bedrooms}</span>
             </div>

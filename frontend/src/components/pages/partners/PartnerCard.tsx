@@ -1,13 +1,10 @@
-// PartnerCard.tsx
 import type { Partner } from '@/lib/types/partners'
 import { getImageUrl } from '@/lib/utils/image-utils'
 import { useState } from 'react'
 
-// Fixed: Changed prop name from 'partners' to 'partner' and type to Partner (singular)
 const PartnerCard = ({ partner }: { partner: Partner }) => {
   const [imageError, setImageError] = useState(false)
 
-  // Fixed: Use 'partner' instead of 'partners'
   const displayName = partner.translation?.companyName || partner.companyName
   const imageUrl = getImageUrl(partner.image)
 

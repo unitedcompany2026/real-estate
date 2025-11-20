@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
-
-/* Add support for Radix UI data-state attributes */
 @custom-variant data-state-open (&[data-state="open"]);
 @custom-variant data-state-closed (&[data-state="closed"]);
 

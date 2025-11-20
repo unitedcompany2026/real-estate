@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import {
   Carousel,
   CarouselContent,
@@ -26,12 +27,12 @@ const PartnersCarousel = ({ partners }: PartnersCarouselProps) => {
             {t('partners.title')}
           </h1>
 
-          <a
-            href="/partners"
+          <Link
+            to="/partners"
             className="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap"
           >
             {t('common.seeAll')} →
-          </a>
+          </Link>
         </div>
 
         <Carousel opts={{ align: 'start', loop: true }} className="w-full">
@@ -39,9 +40,11 @@ const PartnersCarousel = ({ partners }: PartnersCarouselProps) => {
             {partners.map(partner => (
               <CarouselItem
                 key={partner.id}
-                className="cursor-default basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                className="cursor-pointer basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
               >
-                <PartnerCard partner={partner} />
+                <Link to={`/partners/${partner.id}`}>
+                  <PartnerCard partner={partner} />
+                </Link>
               </CarouselItem>
             ))}
           </CarouselContent>

@@ -4,6 +4,7 @@ import Lightbox from 'yet-another-react-lightbox'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import 'yet-another-react-lightbox/styles.css'
 import type { Apartment } from '@/lib/types/apartments'
+import { Button } from '@/components/ui/button'
 
 export const ProjectApartmentCard = ({
   apartment,
@@ -69,25 +70,25 @@ export const ProjectApartmentCard = ({
                     />
                   ))}
 
-                  <button
+                  <Button
                     onClick={goToPrevious}
                     className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 z-10"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-4 h-4 text-gray-800" />
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     onClick={goToNext}
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 shadow-lg transition-all opacity-0 group-hover:opacity-100 z-10"
                     aria-label="Next image"
                   >
                     <ChevronRight className="w-4 h-4 text-gray-800" />
-                  </button>
+                  </Button>
 
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                     {apartment.images.map((_, index) => (
-                      <button
+                      <Button
                         key={index}
                         onClick={e => {
                           e.stopPropagation()

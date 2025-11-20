@@ -152,7 +152,6 @@ export function EditApartment({
 
   return (
     <div className="bg-background rounded-lg border border-border shadow-sm p-8  mx-auto">
-      {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-3xl font-bold text-foreground tracking-tight flex items-center gap-2">
@@ -171,7 +170,6 @@ export function EditApartment({
         </Button>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-2 mb-8 border-b border-border w-full overflow-x-auto">
         <button
           onClick={() => setActiveSection('details')}
@@ -216,7 +214,6 @@ export function EditApartment({
         </div>
       )}
 
-      {/* Content */}
       <div className="space-y-6">
         {activeSection === 'details' && (
           <div className="space-y-4">

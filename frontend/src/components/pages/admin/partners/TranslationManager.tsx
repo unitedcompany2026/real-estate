@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
-import type { UpsertTranslationDto } from '@/lib/services/partners.service'
 import { LANGUAGE_OPTIONS } from '@/constants/languages'
+import type { UpsertTranslationDto } from '@/lib/types/partners'
 
 interface TranslationsManagerProps {
   partnerId: number

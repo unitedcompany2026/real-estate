@@ -19,7 +19,6 @@ export function AdminProjectCard({
 
   return (
     <div className="grid grid-cols-12 gap-4 items-center p-4 border-b border-border hover:bg-muted/30 transition">
-      {/* Image */}
       <div className="col-span-1">
         {imageUrl ? (
           <img
@@ -34,33 +33,28 @@ export function AdminProjectCard({
         )}
       </div>
 
-      {/* Project Name */}
       <div className="col-span-3">
         <p className="font-medium text-foreground">{project.projectName}</p>
       </div>
 
-      {/* Location */}
       <div className="col-span-2">
         <p className="text-sm text-muted-foreground">
           {project.projectLocation}
         </p>
       </div>
 
-      {/* Partner */}
       <div className="col-span-2">
         <p className="text-sm text-muted-foreground">
           {project.partner ? project.partner.companyName : '—'}
         </p>
       </div>
 
-      {/* Price From */}
       <div className="col-span-2">
         <p className="text-sm text-foreground font-medium">
           {project.priceFrom ? `$${project.priceFrom.toLocaleString()}` : '—'}
         </p>
       </div>
 
-      {/* Hot Sale */}
       <div className="col-span-1">
         {project.hotSale ? (
           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
@@ -71,7 +65,6 @@ export function AdminProjectCard({
         )}
       </div>
 
-      {/* Actions */}
       <div className="col-span-1 flex items-center justify-end gap-2">
         <Button
           variant="ghost"

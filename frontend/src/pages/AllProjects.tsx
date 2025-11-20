@@ -2,8 +2,6 @@ import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import ProjectCard from '@/components/pages/projects/ProjectCard'
- 
-
 import { useProjects } from '@/lib/hooks/useProjects'
 import Pagination from '@/components/shared/pagination/Pagination'
 import { ProjectFilters } from '@/components/pages/projects/ProjectsFilter'
@@ -102,7 +100,6 @@ export default function AllProjects() {
           )}
         </div>
 
-        {/* Filters Component */}
         <ProjectFilters />
 
         {projects.length > 0 ? (

@@ -66,7 +66,6 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
     partnerId: searchParams.get('partnerId') || 'all',
   })
 
-  // Price range config
   const MAX_PRICE = 10000
   const PRICE_STEP = 500
 

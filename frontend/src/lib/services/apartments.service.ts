@@ -9,7 +9,6 @@ import type {
 } from '../types/apartments'
 
 export const apartmentsService = {
-  // Updated to accept params object and return ApartmentsResponse
   getAll: (params?: GetApartmentsParams) =>
     api.get<ApartmentsResponse>(API_ENDPOINTS.APARTMENTS.APARTMENTS, {
       params,
@@ -39,7 +38,6 @@ export const apartmentsService = {
       API_ENDPOINTS.APARTMENTS.APARTMENT_BY_ID(id)
     ),
 
-  // Backend: @Delete(':id/images/:imageIndex')
   deleteImage: (id: number, imageIndex: number) =>
     api.delete<{ message: string }>(
       API_ENDPOINTS.APARTMENTS.APARTMENT_IMAGE(id, imageIndex)
@@ -48,7 +46,6 @@ export const apartmentsService = {
   getTranslations: (id: number) =>
     api.get<ApartmentTranslation[]>(API_ENDPOINTS.APARTMENTS.TRANSLATIONS(id)),
 
-  // Backend: @Patch(':id/translations') with Body { language, description }
   upsertTranslation: (id: number, data: UpsertTranslationDto) =>
     api.patch<ApartmentTranslation>(
       API_ENDPOINTS.APARTMENTS.TRANSLATIONS(id),

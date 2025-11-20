@@ -47,7 +47,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
         {project.hotSale && (
           <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden pointer-events-none">
-            <div className="absolute top-4 -right-8 w-32 bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold py-1.5 text-center shadow-lg transform rotate-45">
+            <div className="absolute top-4 -right-8 w-32 bg-linear-to-r from-red-600 to-red-500 text-white text-xs font-bold py-1.5 text-center shadow-lg transform rotate-45">
               HOT SALE
             </div>
           </div>
@@ -63,7 +63,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
           <div className="flex items-center justify-between gap-2">
             {projectLocation && (
               <div className="flex items-center gap-2 min-w-0">
-                <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
                 <p className="text-sm text-gray-600 truncate">
                   {projectLocation}
                 </p>

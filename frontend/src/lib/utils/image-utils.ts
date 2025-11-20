@@ -1,6 +1,6 @@
 export const getImageUrl = (
   imagePath?: string,
-  apiUrl: string = import.meta.env.VITE_API_IMAGE_URL || 'http://localhost:3000'
+  apiUrl: string = import.meta.env.VITE_API_IMAGE_URL
 ): string => {
   if (!imagePath) return '/placeholder.svg'
 

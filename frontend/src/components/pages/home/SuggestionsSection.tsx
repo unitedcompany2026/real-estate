@@ -5,7 +5,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel'
-import { useTranslation } from 'react-i18next'
 
 export default function SuggestSection() {
   const data = [

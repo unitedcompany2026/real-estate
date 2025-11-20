@@ -66,17 +66,21 @@ export class ApartmentsController {
     status: 200,
     description: 'Apartments retrieved successfully',
   })
+  @Get()
   async findAll(
     @Query('lang') lang?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('projectId') projectId?: string,
+    @Query('hotSale') hotSale?: string, // new query
   ) {
     return this.apartmentsService.findAll({
       lang,
       page: page ? parseInt(page, 10) : undefined,
       limit: limit ? parseInt(limit, 10) : undefined,
       projectId: projectId ? parseInt(projectId, 10) : undefined,
+      hotSale:
+        hotSale === 'true' ? true : hotSale === 'false' ? false : undefined,
     });
   }
 

@@ -48,11 +48,10 @@ export const useUpdateProject = () => {
       return response.data
     },
     onSuccess: (_, variables) => {
-      // Invalidate the specific project query
       queryClient.invalidateQueries({
         queryKey: ['projects', variables.id],
       })
-      // Also invalidate the projects list
+
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })

@@ -21,25 +21,21 @@ export default function ProjectPage() {
   const navigate = useNavigate()
   const projectId = Number(id)
 
-  // Fetch project details
   const {
     data: project,
     isLoading: projectLoading,
     error,
   } = useProject(projectId)
 
-  // Fetch apartments for the project
   const { data: apartmentsResponse, isLoading: apartmentsLoading } =
     useApartments({
       projectId,
-      lang: 'en', // or i18n.language if using translations
     })
 
   const apartments = apartmentsResponse?.data || []
 
   const isLoading = projectLoading || apartmentsLoading
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -51,7 +47,6 @@ export default function ProjectPage() {
     )
   }
 
-  // Error / not found state
   if (error || !project) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -74,11 +69,9 @@ export default function ProjectPage() {
     )
   }
 
-  // Main render
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8">
-        {/* Project Details */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
           <div className="lg:col-span-2 h-[400px] lg:h-[500px]">
             <ProjectImageCarousel
@@ -90,7 +83,6 @@ export default function ProjectPage() {
 
           <div className="lg:col-span-1 h-[400px] lg:h-[500px]">
             <div className="bg-white rounded-xl shadow-sm p-5 h-full flex flex-col">
-              {/* Project Header */}
               <div className="mb-4 pb-4 border-b">
                 <h1 className="text-xl font-bold text-gray-900 mb-1">
                   {project.projectName || 'No name'}
@@ -100,7 +92,6 @@ export default function ProjectPage() {
                 </p>
               </div>
 
-              {/* Project Info */}
               <div className="space-y-3 mb-4 flex-1">
                 <div className="flex items-center justify-between py-2.5 border-b border-gray-200">
                   <span className="text-sm font-medium text-gray-600">
@@ -143,7 +134,6 @@ export default function ProjectPage() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="space-y-2.5 pt-3 mt-auto">
                 <Button
                   size="lg"
@@ -165,7 +155,6 @@ export default function ProjectPage() {
           </div>
         </div>
 
-        {/* Apartments Section */}
         {apartments.length > 0 ? (
           <div className="bg-white rounded-xl shadow-sm p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">

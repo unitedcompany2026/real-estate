@@ -3,9 +3,8 @@ export interface Apartment {
   room: number
   area: number
   images: string[]
-  description: string | null // Backend maps translations[0].description to this
+  description: string | null
   createdAt: string
-  // Project is optional based on your Prisma logic
   project?: {
     id: number
     projectName: string
@@ -26,7 +25,6 @@ export interface ApartmentTranslation {
   description: string | null
 }
 
-// Matches the return of ApartmentsService.findAll
 export interface ApartmentsResponse {
   data: Apartment[]
   meta: {
@@ -39,11 +37,11 @@ export interface ApartmentsResponse {
   }
 }
 
-// Parameters strictly matching the Controller @Query
 export interface GetApartmentsParams {
   lang?: string
   page?: number
   limit?: number
+  hotSale?: boolean
   projectId?: number
 }
 

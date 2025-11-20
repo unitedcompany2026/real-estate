@@ -155,27 +155,22 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
         }
       }
 
-      // Prepare FormData for update
       const data = new FormData()
 
-      // Main image
       if (images.mainFile) {
         data.append('image', images.mainFile)
       }
 
-      // Partner ID - only if changed
       const originalPartnerId = project.partner?.id?.toString() || ''
       if (formData.partnerId && formData.partnerId !== originalPartnerId) {
         data.append('partnerId', formData.partnerId)
       }
 
-      // Price - only if changed
       const originalPrice = project.priceFrom?.toString() || ''
       if (formData.priceFrom !== originalPrice) {
         data.append('priceFrom', formData.priceFrom || '0')
       }
 
-      // Delivery date - only if changed
       const originalDeliveryDate = project.deliveryDate
         ? project.deliveryDate.split('T')[0]
         : ''
@@ -183,36 +178,30 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
         data.append('deliveryDate', formData.deliveryDate)
       }
 
-      // Number of floors - only if changed
       const originalFloors = project.numFloors?.toString() || ''
       if (formData.numFloors !== originalFloors) {
         data.append('numFloors', formData.numFloors || '0')
       }
 
-      // Number of apartments - only if changed
       const originalApartments = project.numApartments?.toString() || ''
       if (formData.numApartments !== originalApartments) {
         data.append('numApartments', formData.numApartments || '0')
       }
 
-      // Hot sale - only if changed
       const originalHotSale = Boolean(project.hotSale)
       if (formData.hotSale !== originalHotSale) {
         data.append('hotSale', String(formData.hotSale))
       }
 
-      // Public visibility - only if changed
       const originalPublic = project.public ?? true
       if (formData.public !== originalPublic) {
         data.append('public', String(formData.public))
       }
 
-      // Gallery files
       images.galleryFiles.forEach(file => {
         data.append('gallery', file)
       })
 
-      // Check if there are any changes to send
       const hasChanges =
         images.mainFile ||
         images.galleryFiles.length > 0 ||
@@ -225,8 +214,6 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
         formData.hotSale !== originalHotSale ||
         formData.public !== originalPublic
 
-      // Debug log
-
       if (hasChanges) {
         await updateProject.mutateAsync({ id: project.id, data })
       }
@@ -238,7 +225,6 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     }
   }
 
-  // Calculate if there are unsaved changes
   const originalPartnerId = project.partner?.id?.toString() || ''
   const originalPrice = project.priceFrom?.toString() || ''
   const originalDeliveryDate = project.deliveryDate

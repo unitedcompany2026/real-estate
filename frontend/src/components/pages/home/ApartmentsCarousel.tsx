@@ -1,4 +1,3 @@
-// components/pages/home/ApartmentsCarousel.tsx
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import {
@@ -8,9 +7,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel'
-
 import type { Apartment } from '@/lib/types/apartments'
-import ApartmentCard from '../apartments/ApartmentCard'
+
+import { ProjectApartmentCard } from '../projects/ProjectApartmentCard'
 
 interface ApartmentsCarouselProps {
   apartments?: Apartment[]
@@ -46,7 +45,7 @@ const ApartmentsCarousel = ({ apartments }: ApartmentsCarouselProps) => {
                 className="cursor-default basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
               >
                 <Link to={`/apartments/${apartment.id}`}>
-                  <ApartmentCard apartment={apartment} />
+                  <ProjectApartmentCard apartment={apartment} />
                 </Link>
               </CarouselItem>
             ))}

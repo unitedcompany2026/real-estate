@@ -46,7 +46,7 @@ export default function ProjectsPanel() {
 
     try {
       await deleteProject.mutateAsync(id)
-      // If last item on page deleted, go back a page
+
       if (projects.length === 1 && page > 1) {
         handlePageChange(page - 1)
       }
@@ -64,12 +64,10 @@ export default function ProjectsPanel() {
     setSelectedProject(null)
   }
 
-  // ---------------- CREATE ----------------
   if (view === 'create') {
     return <CreateProject onBack={handleBack} onSuccess={handleBack} />
   }
 
-  // ---------------- EDIT ----------------
   if (view === 'edit' && selectedProject) {
     return (
       <EditProject
@@ -80,7 +78,6 @@ export default function ProjectsPanel() {
     )
   }
 
-  // ---------------- LIST ----------------
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
@@ -109,7 +106,6 @@ export default function ProjectsPanel() {
       ) : projects.length > 0 ? (
         <>
           <div className="border border-border rounded-lg overflow-hidden bg-card">
-            {/* Table Header */}
             <div className="grid grid-cols-12 gap-4 items-center p-4 bg-muted/50 border-b border-border font-medium text-sm text-muted-foreground">
               <div className="col-span-1">Image</div>
               <div className="col-span-3">Name</div>
@@ -120,7 +116,6 @@ export default function ProjectsPanel() {
               <div className="col-span-1 text-right">Actions</div>
             </div>
 
-            {/* Table Rows */}
             {projects.map(project => (
               <AdminProjectCard
                 key={project.id}

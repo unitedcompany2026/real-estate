@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Lightbox from 'yet-another-react-lightbox'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import 'yet-another-react-lightbox/styles.css'
+import { Button } from '@/components/ui/button'
 
 export const ProjectImageCarousel = ({
   gallery = [],
@@ -20,7 +21,6 @@ export const ProjectImageCarousel = ({
   const allImages = image ? [image, ...gallery] : gallery
   const hasImages = allImages.length > 0
 
-  // Prepare slides for lightbox
   const slides = allImages.map(img => ({
     src: `${import.meta.env.VITE_API_IMAGE_URL}/${img}`,
     alt: projectName,
@@ -98,25 +98,25 @@ export const ProjectImageCarousel = ({
             />
           ))}
 
-          <button
+          <Button
             onClick={goToPrevious}
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden md:flex items-center justify-center z-10"
             aria-label="Previous image"
           >
             <ChevronLeft className="w-6 h-6 text-gray-800" />
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={goToNext}
             className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all opacity-0 group-hover:opacity-100 hidden md:flex items-center justify-center z-10"
             aria-label="Next image"
           >
             <ChevronRight className="w-6 h-6 text-gray-800" />
-          </button>
+          </Button>
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
             {allImages.map((_, index) => (
-              <button
+              <Button
                 key={index}
                 onClick={() => setCurrent(index)}
                 className={`h-2 rounded-full transition-all ${

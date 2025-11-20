@@ -46,7 +46,7 @@ export default function PartnersPanel() {
 
     try {
       await deletePartner.mutateAsync(id)
-      // If last item on page deleted, go back a page
+
       if (partners.length === 1 && page > 1) {
         handlePageChange(page - 1)
       }
@@ -109,14 +109,12 @@ export default function PartnersPanel() {
       ) : partners.length > 0 ? (
         <>
           <div className="border border-border rounded-lg overflow-hidden bg-card">
-            {/* Table Header */}
             <div className="grid grid-cols-12 gap-4 items-center p-4 bg-muted/50 border-b border-border font-medium text-sm text-muted-foreground">
               <div className="col-span-2">Image</div>
               <div className="col-span-9">Company Name</div>
               <div className="col-span-1 text-right">Actions</div>
             </div>
 
-            {/* Table Rows */}
             {partners.map(partner => (
               <AdminPartnerCard
                 key={partner.id}

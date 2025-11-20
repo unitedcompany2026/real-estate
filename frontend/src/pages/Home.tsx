@@ -25,6 +25,7 @@ const HomePage = () => {
 
   const { data: apartments, isLoading: apartmentsLoading } = useApartments({
     lang: i18n.language,
+    hotSale: true,
   })
 
   const partners = partnersResponse?.data || []

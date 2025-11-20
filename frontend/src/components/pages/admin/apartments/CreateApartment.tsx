@@ -22,7 +22,6 @@ interface CreateApartmentProps {
 }
 
 export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
-  // Form State
   const [formData, setFormData] = useState({
     room: '',
     area: '',
@@ -30,27 +29,20 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
     projectId: '',
   })
 
-  // Image State
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
-
-  // Error State
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Hooks
   const createApartment = useCreateApartment()
   const { data: projectsResponse } = useProjects()
   const projects = projectsResponse?.data || []
 
-  // Handlers
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
-    // Append new files to existing ones
     setImageFiles(prev => [...prev, ...files])
 
-    // Generate previews
     files.forEach(file => {
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -114,7 +106,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
 
   return (
     <div className="bg-background rounded-lg border border-border shadow-sm p-8">
-      {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-3xl font-bold text-foreground tracking-tight">
@@ -135,7 +126,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
       </div>
 
       <div className="space-y-6">
-        {/* Project Selection */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground">
             Project <span className="text-red-500">*</span>
@@ -167,7 +157,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
           )}
         </div>
 
-        {/* Rooms and Area Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label
@@ -213,7 +202,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
           </div>
         </div>
 
-        {/* Description */}
         <div className="space-y-2">
           <Label
             htmlFor="description"
@@ -235,7 +223,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
           </p>
         </div>
 
-        {/* Image Upload */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-foreground">
             Apartment Images
@@ -259,7 +246,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
             />
           </div>
 
-          {/* Image Previews */}
           {imagePreviews.length > 0 && (
             <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mt-4">
               {imagePreviews.map((preview, index) => (
@@ -284,7 +270,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
           )}
         </div>
 
-        {/* Server Errors */}
         {errors.submit && (
           <Alert variant="destructive" className="border-red-200 bg-red-50">
             <AlertDescription className="text-red-800">
@@ -293,7 +278,6 @@ export function CreateApartment({ onBack, onSuccess }: CreateApartmentProps) {
           </Alert>
         )}
 
-        {/* Footer Actions */}
         <div className="flex gap-3 pt-4">
           <Button
             onClick={handleSubmit}

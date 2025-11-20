@@ -8,16 +8,14 @@ import type {
   UpsertTranslationDto,
 } from '../types/apartments'
 
-// Updated to accept full params object
 export const useApartments = (params: GetApartmentsParams = {}) => {
   return useQuery<ApartmentsResponse>({
-    // Include params in queryKey so changing page/lang triggers refetch
     queryKey: ['apartments', params],
     queryFn: async () => {
       const response = await apartmentsService.getAll(params)
       return response.data
     },
-    // Useful for pagination to prevent UI flashing
+
     placeholderData: keepPreviousData,
   })
 }
@@ -53,7 +51,7 @@ export const useUpdateApartment = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['apartments'] })
-      // Also invalidate specific apartment details
+
       queryClient.invalidateQueries({
         queryKey: ['apartments', variables.id],
       })
@@ -121,7 +119,7 @@ export const useUpsertApartmentTranslation = () => {
       queryClient.invalidateQueries({
         queryKey: ['apartments', variables.id, 'translations'],
       })
-      // Invalidate specific apartment because the 'description' field might change
+
       queryClient.invalidateQueries({
         queryKey: ['apartments', variables.id],
       })
@@ -140,7 +138,7 @@ export const useDeleteApartmentTranslation = () => {
       queryClient.invalidateQueries({
         queryKey: ['apartments', variables.id, 'translations'],
       })
-      // Invalidate details as description might fallback to default or change
+
       queryClient.invalidateQueries({
         queryKey: ['apartments', variables.id],
       })

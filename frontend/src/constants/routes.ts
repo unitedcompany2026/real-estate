@@ -7,7 +7,7 @@ export const ROUTES = {
   CONTACT: '/contact',
   PROPERTY: '/property',
   PARTNERS: '/partners',
-  PARTNER_PROJECTS: '/partners/:projects',
+  PARTNER_PROJECTS: '/partners/:partnerId',
   PROJECT: '/projects/:id',
   ALL_PROJECTS: '/projects',
 } as const

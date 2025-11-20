@@ -14,6 +14,7 @@ interface FindAllParams {
   page?: number;
   limit?: number;
   projectId?: number;
+  hotSale?: boolean;
 }
 
 @Injectable()
@@ -21,11 +22,16 @@ export class ApartmentsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAll(params: FindAllParams = {}) {
-    const { lang = 'en', page = 1, limit = 10, projectId } = params;
+    const { lang = 'en', page = 1, limit = 10, projectId, hotSale } = params;
 
     const skip = (page - 1) * limit;
 
-    const where = projectId ? { projectId } : undefined;
+    // Add filtering for project.hotSale
+    const where: any = {};
+    if (projectId) where.projectId = projectId;
+    if (hotSale !== undefined) {
+      where.project = { hotSale }; // filter apartments where project.hotSale = true
+    }
 
     const total = await this.prismaService.apartments.count({ where });
 
@@ -33,14 +39,9 @@ export class ApartmentsService {
       where,
       skip,
       take: limit,
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
       include: {
-        translations: {
-          where: { language: lang },
-          take: 1,
-        },
+        translations: { where: { language: lang }, take: 1 },
         project: {
           select: {
             id: true,
@@ -52,6 +53,7 @@ export class ApartmentsService {
             deliveryDate: true,
             numFloors: true,
             numApartments: true,
+            hotSale: true, // include hotSale flag
           },
         },
       },

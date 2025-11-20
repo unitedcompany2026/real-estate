@@ -1,15 +1,8 @@
 import { Suspense, lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { LoadingScreen } from '@/components/shared/loaders'
 import { ProtectedRoutes } from './ProtectedRoutes'
-import Contact from '@/pages/Contact'
-import Property from '@/pages/Property'
-import PartnerProjects from '@/pages/PartnerProjects'
-import Project from '@/pages/Project'
-import Partners from '@/pages/Partners'
-import AllProjects from '@/pages/AllProjects'
 import { ROUTES } from '@/constants/routes'
-import InventoryMap from '@/pages/Map'
+import { LoadingScreen } from '@/components/shared/loaders/LoadingScreen'
 
 const Home = lazy(() => import('@/pages/Home'))
 const Signin = lazy(() => import('@/pages/Signin'))
@@ -17,6 +10,13 @@ const Signup = lazy(() => import('@/pages/Signup'))
 const Admin = lazy(() => import('@/pages/Admin'))
 const Unauthorized = lazy(() => import('@/pages/Unauthorized'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
+const Contact = lazy(() => import('@/pages/Contact'))
+const Property = lazy(() => import('@/pages/Property'))
+const PartnerProjects = lazy(() => import('@/pages/PartnerProjects'))
+const Project = lazy(() => import('@/pages/Project'))
+const Partners = lazy(() => import('@/pages/Partners'))
+const AllProjects = lazy(() => import('@/pages/AllProjects'))
+const InventoryMap = lazy(() => import('@/pages/Map'))
 
 export const AppRoutes = () => {
   return (
@@ -31,19 +31,12 @@ export const AppRoutes = () => {
         <Route path={ROUTES.PROJECT} element={<Project />} />
         <Route path={ROUTES.ALL_PROJECTS} element={<AllProjects />} />
         <Route path={ROUTES.PROPERTY} element={<Property />} />
-        <Route path={ROUTES.PROPERTY} element={<Property />} />
         <Route path="/map" element={<InventoryMap />} />
-        <Route element={<ProtectedRoutes redirectTo={ROUTES.SIGNIN} />}></Route>
         <Route path={ROUTES.ADMIN} element={<Admin />} />
-
-        <Route
-          element={
-            <ProtectedRoutes
-              requiredRole="admin"
-              redirectTo={ROUTES.UNAUTHORIZED}
-            />
-          }
-        ></Route>
+        <Route element={<ProtectedRoutes redirectTo={ROUTES.SIGNIN} />}>
+          {/* <Route path={ROUTES.ADMIN} element={<Admin />} /> */}
+        </Route>
+        <Route path={ROUTES.UNAUTHORIZED} element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

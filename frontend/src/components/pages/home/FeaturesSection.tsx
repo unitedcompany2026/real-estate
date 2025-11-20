@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, memo } from 'react'
+import { useState, useEffect, useCallback, useMemo, memo } from 'react'
 
 const NavButton = memo(
   ({
@@ -171,7 +171,6 @@ const FeaturesSection = () => {
 
   return (
     <div className="relative w-full h-[85vh] overflow-hidden">
-      {/* Background Image */}
       <div className="absolute inset-0 transition-opacity duration-1000">
         <img
           src={backgroundImages[currentImageIndex]}
@@ -181,7 +180,7 @@ const FeaturesSection = () => {
         <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes panRight {
           0% {
             object-position: left center;
@@ -192,7 +191,6 @@ const FeaturesSection = () => {
         }
       `}</style>
 
-      {/* Navigation Buttons */}
       <NavButton
         direction="prev"
         onClick={prevSlide}
@@ -200,7 +198,6 @@ const FeaturesSection = () => {
       />
       <NavButton direction="next" onClick={nextSlide} label="Next Project" />
 
-      {/* Desktop View */}
       <div className="relative z-10 hidden md:flex h-full">
         {sections.map((section, index) => (
           <Section
@@ -213,10 +210,8 @@ const FeaturesSection = () => {
           />
         ))}
       </div>
-
-      {/* Mobile View */}
       <div className="relative z-10 md:hidden h-full">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/50 to-transparent pointer-events-none" />
         <div className="relative z-20 flex flex-col justify-end pb-16 items-center h-full px-6 text-center">
           <h2 className="text-3xl font-light text-white mb-4">
             {currentMobileSection.title}
@@ -239,7 +234,6 @@ const FeaturesSection = () => {
         </div>
       </div>
 
-      {/* Dot Indicators */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4 z-30">
         <div className="flex gap-2">
           {backgroundImages.map((_, index) => (

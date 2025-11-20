@@ -1,4 +1,4 @@
-import { LoadingScreen } from '@/components/shared/loaders'
+import { LoadingScreen } from '@/components/shared/loaders/LoadingScreen'
 import { ROUTES } from '@/constants/routes'
 import { useCurrentUser } from '@/lib/hooks/useAuth'
 import { getAccessToken } from '@/lib/utils/auth'
