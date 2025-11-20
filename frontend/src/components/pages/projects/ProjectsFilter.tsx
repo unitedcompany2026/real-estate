@@ -42,11 +42,13 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
     limit: 1000,
   })
 
+  // Get unique locations from TRANSLATED fields
   const uniqueLocations = useMemo(() => {
     if (!allProjectsResponse?.data) return []
 
     const locations = allProjectsResponse.data
       .map(project => {
+        // Prioritize translation field
         const location =
           project.translation?.projectLocation || project.projectLocation
         return location?.trim()
@@ -72,12 +74,17 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
   const applyFilters = () => {
     const params = new URLSearchParams()
     params.set('page', '1')
+
+    // Store the TRANSLATED location value
     if (filters.location && filters.location !== 'all')
       params.set('location', filters.location)
+
     if (filters.priceFrom > 0)
       params.set('priceFrom', filters.priceFrom.toString())
+
     if (filters.partnerId && filters.partnerId !== 'all')
       params.set('partnerId', filters.partnerId)
+
     setSearchParams(params)
     onFilterChange?.()
     setIsOpen(false)
@@ -139,6 +146,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
           </SheetHeader>
 
           <div className="mt-8 space-y-8">
+            {/* Location Filter - Uses translated locations */}
             <div className="space-y-3">
               <Label
                 htmlFor="location"
@@ -182,6 +190,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
               </Select>
             </div>
 
+            {/* Partner/Developer Filter - Uses translated company names */}
             <div className="space-y-3">
               <Label
                 htmlFor="partner"
@@ -218,6 +227,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                       value={partner.id.toString()}
                       className="cursor-pointer hover:bg-blue-50"
                     >
+                      {/* Display translated company name */}
                       {partner.translation?.companyName || partner.companyName}
                     </SelectItem>
                   ))}
@@ -225,6 +235,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
               </Select>
             </div>
 
+            {/* Price Filter */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label
@@ -265,6 +276,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
               </div>
             </div>
 
+            {/* Action Buttons */}
             <div className="pt-6 space-y-3 border-t">
               <Button
                 onClick={applyFilters}

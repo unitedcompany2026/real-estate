@@ -1,21 +1,37 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { LogOut, Menu, X } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
-import { useCurrentUser, useSignOut } from '@/lib/hooks/useAuth'
-import { ROUTES } from '@/constants/routes'
-import { LanguageSwitcher } from '../shared/language-switcher/LanguageSwitcher'
 import { useState } from 'react'
-import { cn } from '@/lib/utils/cn'
+import { LanguageSwitcher } from '../shared/language-switcher/LanguageSwitcher'
 
-export const Header = () => {
+const useTranslation = () => ({
+  t: (key: string, options?: any) => options?.defaultValue || key,
+})
+const useCurrentUser = () => ({ data: null, isLoading: false })
+const useSignOut = () => ({ mutateAsync: async () => {}, isPending: false })
+const Button = ({ children, onClick, disabled, className }: any) => (
+  <button onClick={onClick} disabled={disabled} className={className}>
+    {children}
+  </button>
+)
+
+const cn = (...classes: any[]) => classes.filter(Boolean).join(' ')
+
+const ROUTES = {
+  HOME: '/',
+  ALL_PROJECTS: '/projects',
+  PROPERTY: '/properties',
+  CONTACT: '/contact',
+  PARTNERS: '/partners',
+}
+
+export default function Header() {
   const { t } = useTranslation()
   const { data: user, isLoading } = useCurrentUser()
   const signOut = useSignOut()
-  const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = window.location.pathname
 
-  const isAdminPath = location.pathname.includes('/admin')
+  const isAdminPath = pathname.includes('/admin')
 
   if (isAdminPath) {
     return null
@@ -30,7 +46,7 @@ export const Header = () => {
   }
 
   const isActive = (path: string) => {
-    return location.pathname === path
+    return pathname === path
   }
 
   const navItems = [
@@ -45,10 +61,16 @@ export const Header = () => {
       isComingSoon: true,
     },
     {
-      path: ROUTES.ALL_PROJECTS,
-      label: t('nav.partnerProjects', { defaultValue: 'Partner Projects' }),
+      path: ROUTES.PARTNERS,
+      label: t('nav.partnerProjects', { defaultValue: 'Our Partners' }),
       isComingSoon: false,
     },
+    {
+      path: ROUTES.ALL_PROJECTS,
+      label: t('nav.partnerProjects', { defaultValue: 'All Projects' }),
+      isComingSoon: false,
+    },
+
     {
       path: ROUTES.PROPERTY,
       label: t('nav.properties', { defaultValue: 'Properties' }),
@@ -62,17 +84,17 @@ export const Header = () => {
   ]
 
   return (
-    <header className="  px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm shadow-sm">
-      <div className="container mx-auto  ">
+    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 top-0 z-50 w-full border-b border-gray-200 bg-[#F2F5FF] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)]">
+      <div className="container mx-auto">
         <div className="flex h-20 items-center justify-between">
           <Link
             to={ROUTES.HOME}
             className="flex items-center gap-3 shrink-0 group"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-blue-700 shadow-lg group-hover:shadow-xl transition-all duration-200">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg group-hover:shadow-xl transition-all duration-200">
               <span className="text-xl font-bold text-white">UC</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 hidden sm:inline group-hover:text-blue-600 transition-colors duration-200">
+            <span className="text-xl font-bold text-gray-800 hidden sm:inline group-hover:text-blue-600 transition-colors duration-200">
               United Company
             </span>
           </Link>
@@ -87,10 +109,10 @@ export const Header = () => {
                   className={cn(
                     'relative px-4 py-2 text-[15px] font-semibold rounded-lg transition-all duration-200',
                     isActive(item.path) && !item.isComingSoon
-                      ? 'text-blue-600 bg-blue-50'
+                      ? 'text-blue-700 bg-blue-100'
                       : item.isComingSoon
                         ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                   )}
                 >
                   <span className={cn(item.isComingSoon && 'line-through')}>
@@ -108,16 +130,16 @@ export const Header = () => {
               ))}
             </nav>
 
-            <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
+            <div className="flex items-center gap-3 pl-6 border-l border-gray-300">
               {isLoading ? (
                 <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />
               ) : user ? (
                 <div className="flex items-center gap-3">
                   <div className="flex flex-col items-end">
-                    <span className="text-sm font-semibold text-gray-900">
-                      {user.email?.split('@')[0]}
+                    <span className="text-sm font-semibold text-gray-800">
+                      {/* {user.email?.split('@')[0]} */}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-600">
                       {t('auth.admin', { defaultValue: 'Admin' })}
                     </span>
                   </div>
@@ -126,7 +148,7 @@ export const Header = () => {
                     size="sm"
                     onClick={handleSignOut}
                     disabled={signOut.isPending}
-                    className="gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 h-10 px-3"
+                    className="gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 h-10 px-3 rounded-lg transition-all"
                   >
                     <LogOut className="h-4 w-4" />
                     <span className="text-sm font-medium">
@@ -144,7 +166,7 @@ export const Header = () => {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="lg:hidden p-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -171,10 +193,10 @@ export const Header = () => {
                   className={cn(
                     'relative flex items-center justify-between px-4 py-3 text-base font-semibold rounded-lg transition-all duration-200',
                     isActive(item.path) && !item.isComingSoon
-                      ? 'text-blue-600 bg-blue-50'
+                      ? 'text-blue-700 bg-blue-100'
                       : item.isComingSoon
                         ? 'text-gray-400'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        : 'text-gray-700 hover:bg-blue-50'
                   )}
                 >
                   <span className={cn(item.isComingSoon && 'line-through')}>
@@ -194,11 +216,11 @@ export const Header = () => {
                 <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />
               ) : user ? (
                 <>
-                  <div className="px-4 py-2 bg-gray-50 rounded-lg">
-                    <p className="text-sm font-semibold text-gray-900">
-                      {user.email}
+                  <div className="px-4 py-2 bg-blue-50 rounded-lg">
+                    <p className="text-sm font-semibold text-gray-800">
+                      {/* {user.email} */}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-gray-600 mt-0.5">
                       {t('auth.admin', { defaultValue: 'Admin' })}
                     </p>
                   </div>
@@ -206,7 +228,7 @@ export const Header = () => {
                     variant="ghost"
                     onClick={handleSignOut}
                     disabled={signOut.isPending}
-                    className="w-full gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 h-11 justify-start"
+                    className="w-full gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 h-11 justify-start rounded-lg"
                   >
                     <LogOut className="h-4 w-4" />
                     <span className="font-medium">

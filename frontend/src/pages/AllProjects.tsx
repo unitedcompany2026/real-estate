@@ -3,23 +3,17 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import ProjectCard from '@/components/pages/projects/ProjectCard'
 import { useProjects } from '@/lib/hooks/useProjects'
-import Pagination from '@/components/shared/pagination/Pagination'
 import { ProjectFilters } from '@/components/pages/projects/ProjectsFilter'
+import { Pagination } from '@/components/shared/pagination/Pagination'
 
 export default function AllProjects() {
   const { t, i18n } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, _] = useSearchParams()
 
   const page = parseInt(searchParams.get('page') || '1', 10)
   const location = searchParams.get('location') || undefined
   const priceFrom = searchParams.get('priceFrom')
     ? parseInt(searchParams.get('priceFrom')!)
-    : undefined
-  const priceTo = searchParams.get('priceTo')
-    ? parseInt(searchParams.get('priceTo')!)
-    : undefined
-  const publicFilter = searchParams.get('public')
-    ? searchParams.get('public') === 'true'
     : undefined
 
   const {
@@ -32,19 +26,10 @@ export default function AllProjects() {
     limit: 8,
     location,
     priceFrom,
-    priceTo,
-    public: publicFilter,
   })
 
   const projects = projectsResponse?.data || []
   const meta = projectsResponse?.meta
-
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams)
-    params.set('page', newPage.toString())
-    setSearchParams(params)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   if (isLoading) {
     return (
@@ -113,17 +98,10 @@ export default function AllProjects() {
             </div>
             {meta && (
               <Pagination
-                currentPage={page}
+                currentPage={meta.page}
                 totalPages={meta.totalPages}
                 hasNextPage={meta.hasNextPage}
                 hasPreviousPage={meta.hasPreviousPage}
-                onPageChange={handlePageChange}
-                translations={{
-                  previous: t('pagination.previous', {
-                    defaultValue: 'Previous',
-                  }),
-                  next: t('pagination.next', { defaultValue: 'Next' }),
-                }}
               />
             )}
           </>

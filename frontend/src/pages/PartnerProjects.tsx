@@ -3,15 +3,13 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import ProjectCard from '@/components/pages/projects/ProjectCard'
 import { useProjects } from '@/lib/hooks/useProjects'
-import Pagination from '@/components/shared/pagination/Pagination'
+import { Pagination } from '@/components/shared/pagination/Pagination'
 
 export default function PartnerProjects() {
   const { t, i18n } = useTranslation()
   const { partnerId } = useParams()
-  const [searchParams, setSearchParams] = useSearchParams()
-
+  const [searchParams, _] = useSearchParams()
   const page = parseInt(searchParams.get('page') || '1', 10)
-  const partnerIdNum = partnerId ? parseInt(partnerId, 10) : undefined
 
   const {
     data: projectsResponse,
@@ -21,18 +19,11 @@ export default function PartnerProjects() {
     lang: i18n.language,
     page: page,
     limit: 8,
-    partnerId: partnerIdNum,
+    partnerId,
   })
 
   const projects = projectsResponse?.data || []
   const meta = projectsResponse?.meta
-
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams)
-    params.set('page', newPage.toString())
-    setSearchParams(params)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   if (isLoading) {
     return (
@@ -103,13 +94,6 @@ export default function PartnerProjects() {
                 totalPages={meta.totalPages}
                 hasNextPage={meta.hasNextPage}
                 hasPreviousPage={meta.hasPreviousPage}
-                onPageChange={handlePageChange}
-                translations={{
-                  previous: t('pagination.previous', {
-                    defaultValue: 'Previous',
-                  }),
-                  next: t('pagination.next', { defaultValue: 'Next' }),
-                }}
               />
             )}
           </>

@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import PartnerCard from '@/components/pages/partners/PartnerCard'
-import Pagination from '@/components/shared/pagination/Pagination'
 import { usePartners } from '@/lib/hooks/usePartners'
+import { Pagination } from '@/components/shared/pagination/Pagination'
 
 export default function Partners() {
   const { t, i18n } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, _] = useSearchParams()
 
   const page = parseInt(searchParams.get('page') || '1', 10)
 
@@ -18,11 +18,6 @@ export default function Partners() {
 
   const partners = data?.data || []
   const meta = data?.meta
-
-  const handlePageChange = (newPage: number) => {
-    setSearchParams({ page: newPage.toString() })
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   if (isLoading) {
     return (
@@ -77,11 +72,6 @@ export default function Partners() {
                 totalPages={meta.totalPages}
                 hasNextPage={meta.hasNextPage}
                 hasPreviousPage={meta.hasPreviousPage}
-                onPageChange={handlePageChange}
-                translations={{
-                  previous: t('pagination.previous'),
-                  next: t('pagination.next'),
-                }}
               />
             )}
           </>
