@@ -1,36 +1,11 @@
-import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { useSignUp } from '@/lib/hooks/useAuth'
-import { signUpSchema, type SignUpFormData } from '@/lib/validations/auth'
-import { ROUTES } from '@/constants/routes'
 
 const Signup = () => {
-  const { mutate: signUp, isPending, error } = useSignUp()
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpSchema),
-  })
-
-  const onSubmit = (data: SignUpFormData) => {
-    signUp(data)
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
@@ -42,7 +17,7 @@ const Signup = () => {
             Enter your information to create your account
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {/* <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
@@ -138,7 +113,7 @@ const Signup = () => {
               </Link>
             </p>
           </CardFooter>
-        </form>
+        </form> */}
       </Card>
     </div>
   )
