@@ -28,6 +28,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+    allowedHosts: [
+      'unitedcompany.ge',
+      'www.unitedcompany.ge',
+      'localhost',
+      '127.0.0.1',
+      '167.172.102.45',
+    ],
     watch: {
       usePolling: true,
     },
