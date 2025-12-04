@@ -27,10 +27,8 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://localhost:3000',
-      'http://3.126.82.5:5173', // Add your public IP
-      'http://3.126.82.5:3000', // Add your public IP
-      // Or simply allow all for development:
-      // '*'
+      'https://unitedcompany.ge',
+      'https://api.unitedcompany.ge',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
