@@ -31,10 +31,9 @@ const HomePage = () => {
   const partners = partnersResponse?.data || []
 
   return (
-    <main className="min-h-screen">
-      <section className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28">
-        <Cover />
-      </section>
+    <main className="min-h-screen w-full">
+      <Cover />
+
       <section className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28">
         <PropertyCarousel />
       </section>

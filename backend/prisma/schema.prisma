@@ -250,4 +250,29 @@ model PropertyGalleryImage {
   @@index([propertyId])
 }
 
- 
+
+
+model HomepageSlide {
+  id        Int      @id @default(autoincrement())
+  image     String
+  order     Int      @default(0)
+  isActive  Boolean  @map("is_active") @default(true)
+  createdAt DateTime @map("created_at") @default(now())
+  updatedAt DateTime @map("updated_at") @updatedAt
+
+  translations HomepageSlideTranslations[]
+
+  @@map("homepage_slides")
+}
+
+model HomepageSlideTranslations {
+  id      Int    @id @default(autoincrement())
+  slideId Int    @map("slide_id")
+  language String
+  title   String
+
+  slide HomepageSlide @relation(fields: [slideId], references: [id], onDelete: Cascade)
+
+  @@unique([slideId, language])
+  @@map("homepage_slide_translations")
+}

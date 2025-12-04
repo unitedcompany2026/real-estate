@@ -40,4 +40,12 @@ export const API_ENDPOINTS = {
     GALLERY_IMAGE: (propertyId: string, imageId: number) =>
       `/properties/${propertyId}/images/${imageId}`,
   },
+  HOMEPAGE_SLIDES: {
+    SLIDES: '/homepage-slides',
+    SLIDES_ADMIN: '/homepage-slides/admin',
+    SLIDE_BY_ID: (id: number) => `/homepage-slides/${id}`,
+    TRANSLATIONS: (id: number) => `/homepage-slides/${id}/translations`,
+    TRANSLATION_BY_LANGUAGE: (id: number, language: string) =>
+      `/homepage-slides/${id}/translations/${language}`,
+  },
 } as const

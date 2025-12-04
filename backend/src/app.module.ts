@@ -5,6 +5,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { ApartmentsModule } from './apartments/apartments.module';
 import { PropertiesModule } from './properties/properties.module';
 import { AuthModule } from './auth/auth.module';
+import { HomepageSlidesModule } from './home-page/homepage-slides.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
     ApartmentsModule,
     PropertiesModule,
     AuthModule,
+    HomepageSlidesModule,
   ],
   controllers: [],
   providers: [],

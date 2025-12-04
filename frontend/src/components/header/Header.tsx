@@ -81,7 +81,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
+    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full bg-[#F2F5FF] border-b border-gray-200  shadow-sm">
       <div className="flex h-20 items-center justify-between">
         {/* Updated Logo */}
         <Link
