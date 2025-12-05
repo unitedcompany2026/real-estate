@@ -40,7 +40,7 @@ export const API_ENDPOINTS = {
     GALLERY_IMAGE: (propertyId: string, imageId: number) =>
       `/properties/${propertyId}/images/${imageId}`,
   },
-  HOMEPAGE_SLIDES: {
+  SLIDES: {
     SLIDES: '/homepage-slides',
     SLIDES_ADMIN: '/homepage-slides/admin',
     SLIDE_BY_ID: (id: number) => `/homepage-slides/${id}`,

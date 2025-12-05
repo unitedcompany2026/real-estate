@@ -1,16 +1,14 @@
-// homepage-slides.service.ts
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
-import * as fs from 'fs';
-import * as path from 'path';
 import { CreateHomepageSlideDto } from './dto/CreateHompageSlides.dto';
 import { UpdateHomepageSlideDto } from './dto/UpdateHomepageSlides.dto';
 import { FileUtils } from '@/common/utils/file.utils';
+import { TranslationSyncUtil } from '@/common/utils/translation-sync.util';
+import { LANGUAGES } from '@/common/constants/language';
 
 @Injectable()
 export class HomepageSlidesService {
@@ -33,6 +31,7 @@ export class HomepageSlidesService {
       return {
         id: slide.id,
         image: slide.image,
+        link: slide.link,
         order: slide.order,
         isActive: slide.isActive,
         title: translation?.title || '',
@@ -58,6 +57,7 @@ export class HomepageSlidesService {
       return {
         id: slide.id,
         image: slide.image,
+        link: slide.link,
         order: slide.order,
         isActive: slide.isActive,
         title: translation?.title || '',
@@ -86,6 +86,7 @@ export class HomepageSlidesService {
     return {
       id: slide.id,
       image: slide.image,
+      link: slide.link,
       order: slide.order,
       isActive: slide.isActive,
       title: translation?.title || '',
@@ -107,22 +108,26 @@ export class HomepageSlidesService {
 
     const slide = await this.prisma.homepageSlide.create({
       data: {
-        image: imagePath, // << store full relative path
+        image: imagePath,
+        link: dto.link || null,
         order: dto.order || 0,
         isActive: dto.isActive ?? true,
-        translations: {
-          create: {
-            language: 'en',
-            title: dto.title,
-          },
-        },
       },
       include: {
         translations: true,
       },
     });
 
-    return slide;
+    await this.prisma.homepageSlideTranslations.createMany({
+      data: LANGUAGES.map((lang) => ({
+        slideId: slide.id,
+        language: lang,
+        title: lang === 'en' && dto.title ? dto.title : '',
+      })),
+      skipDuplicates: true,
+    });
+
+    return this.findOne(slide.id);
   }
 
   async updateSlide(
@@ -138,23 +143,20 @@ export class HomepageSlidesService {
       throw new NotFoundException(`Slide with ID ${id} not found`);
     }
 
-    // Delete old image if new one is uploaded
     if (image && existingSlide.image) {
-      const oldImagePath = path.join(
-        process.cwd(),
-        'uploads',
-        'homepage-slides',
-        existingSlide.image,
-      );
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-      }
+      await FileUtils.deleteFile(existingSlide.image);
     }
 
     const updateData: any = {};
     if (dto.order !== undefined) updateData.order = dto.order;
     if (dto.isActive !== undefined) updateData.isActive = dto.isActive;
-    if (image) updateData.image = image.filename;
+    if (dto.link !== undefined) updateData.link = dto.link;
+    if (image) {
+      const imagePath = FileUtils.generateImageUrl(image, 'homepage-slides');
+      if (imagePath) {
+        updateData.image = imagePath;
+      }
+    }
 
     const slide = await this.prisma.homepageSlide.update({
       where: { id },
@@ -164,7 +166,6 @@ export class HomepageSlidesService {
       },
     });
 
-    // Update default translation if title is provided
     if (dto.title) {
       await this.prisma.homepageSlideTranslations.upsert({
         where: {
@@ -184,7 +185,7 @@ export class HomepageSlidesService {
       });
     }
 
-    return slide;
+    return this.findOne(slide.id);
   }
 
   async deleteSlide(id: number) {
@@ -196,17 +197,8 @@ export class HomepageSlidesService {
       throw new NotFoundException(`Slide with ID ${id} not found`);
     }
 
-    // Delete image file
     if (slide.image) {
-      const imagePath = path.join(
-        process.cwd(),
-        'uploads',
-        'homepage-slides',
-        slide.image,
-      );
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
+      await FileUtils.deleteFile(slide.image);
     }
 
     await this.prisma.homepageSlide.delete({
@@ -220,7 +212,9 @@ export class HomepageSlidesService {
     const slide = await this.prisma.homepageSlide.findUnique({
       where: { id },
       include: {
-        translations: true,
+        translations: {
+          orderBy: { language: 'asc' },
+        },
       },
     });
 
@@ -228,7 +222,24 @@ export class HomepageSlidesService {
       throw new NotFoundException(`Slide with ID ${id} not found`);
     }
 
-    return slide.translations;
+    await TranslationSyncUtil.syncMissingTranslations(this.prisma, {
+      entityId: id,
+      entityIdField: 'slideId',
+      translationModel: this.prisma.homepageSlideTranslations,
+      existingTranslations: slide.translations,
+      defaultFields: { title: '' },
+    });
+
+    const updatedSlide = await this.prisma.homepageSlide.findUnique({
+      where: { id },
+      include: {
+        translations: {
+          orderBy: { language: 'asc' },
+        },
+      },
+    });
+
+    return updatedSlide!.translations;
   }
 
   async upsertTranslation(id: number, language: string, title: string) {
@@ -261,6 +272,10 @@ export class HomepageSlidesService {
   }
 
   async deleteTranslation(id: number, language: string) {
+    if (language === 'en') {
+      throw new ConflictException('Cannot delete English translation');
+    }
+
     const translation = await this.prisma.homepageSlideTranslations.findUnique({
       where: {
         slideId_language: {
@@ -284,5 +299,15 @@ export class HomepageSlidesService {
     });
 
     return { message: 'Translation deleted successfully' };
+  }
+
+  async syncAllTranslations() {
+    return TranslationSyncUtil.syncAllEntities(
+      this.prisma,
+      this.prisma.homepageSlide,
+      'slideId',
+      this.prisma.homepageSlideTranslations,
+      () => ({ title: '' }),
+    );
   }
 }

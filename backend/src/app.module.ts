@@ -6,6 +6,7 @@ import { ApartmentsModule } from './apartments/apartments.module';
 import { PropertiesModule } from './properties/properties.module';
 import { AuthModule } from './auth/auth.module';
 import { HomepageSlidesModule } from './home-page/homepage-slides.module';
+import { CalculatorModule } from './calculator/calculator.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HomepageSlidesModule } from './home-page/homepage-slides.module';
     PropertiesModule,
     AuthModule,
     HomepageSlidesModule,
+    CalculatorModule,
   ],
   controllers: [],
   providers: [],

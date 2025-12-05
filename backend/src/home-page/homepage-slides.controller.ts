@@ -1,4 +1,3 @@
-// homepage-slides.controller.ts
 import {
   Body,
   Controller,
@@ -16,7 +15,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { HomepageSlidesService } from './homepage-slides.service';
- 
+
 import {
   ApiBody,
   ApiConsumes,
@@ -29,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from '../common/config/multer.config';
- 
+
 import { AuthGuard } from '@/auth/guards/basic-auth.guard';
 import { UpdateHomepageSlideDto } from './dto/UpdateHomepageSlides.dto';
 import { UpsertSlideTranslationDto } from './dto/UpsertTranslations.dto';
@@ -40,7 +39,6 @@ import { CreateHomepageSlideDto } from './dto/CreateHompageSlides.dto';
 export class HomepageSlidesController {
   constructor(private readonly slidesService: HomepageSlidesService) {}
 
-  // Public route - for displaying slideshow on homepage
   @Get()
   @ApiOperation({ summary: 'Get all active slides for homepage slideshow' })
   @ApiQuery({
@@ -54,7 +52,6 @@ export class HomepageSlidesController {
     return this.slidesService.findAll(lang);
   }
 
-  // Protected route - admin can see all slides including inactive
   @Get('admin')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
@@ -71,7 +68,6 @@ export class HomepageSlidesController {
     return this.slidesService.findAllAdmin(lang);
   }
 
-  // Public route - get single slide
   @Get(':id')
   @ApiOperation({ summary: 'Get a single slide by ID' })
   @ApiParam({ name: 'id', description: 'Slide ID', type: 'number' })
@@ -90,7 +86,6 @@ export class HomepageSlidesController {
     return this.slidesService.findOne(id, lang);
   }
 
-  // Protected route - create new slide
   @Post()
   @UseGuards(AuthGuard)
   @ApiBearerAuth()

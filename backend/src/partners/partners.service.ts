@@ -7,6 +7,7 @@ import { UpdatePartnerDto } from './dto/UpdatePartner.dto';
 import { CreatePartnerDto } from './dto/CreatePartner.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FileUtils } from '@/common/utils/file.utils';
+import { TranslationSyncUtil } from '@/common/utils/translation-sync.util';
 import { LANGUAGES } from '@/common/constants/language';
 
 interface FindAllParams {
@@ -160,7 +161,9 @@ export class PartnersService {
     const partner = await this.prismaService.partners.findUnique({
       where: { id: partnerId },
       include: {
-        translations: true,
+        translations: {
+          orderBy: { language: 'asc' },
+        },
       },
     });
 
@@ -168,10 +171,31 @@ export class PartnersService {
       throw new NotFoundException(`Partner with ID "${partnerId}" not found`);
     }
 
-    return partner.translations;
+    await TranslationSyncUtil.syncMissingTranslations(this.prismaService, {
+      entityId: partnerId,
+      entityIdField: 'partnerId',
+      translationModel: this.prismaService.partnerTranslations,
+      existingTranslations: partner.translations,
+      defaultFields: { companyName: '' },
+    });
+
+    const updatedPartner = await this.prismaService.partners.findUnique({
+      where: { id: partnerId },
+      include: {
+        translations: {
+          orderBy: { language: 'asc' },
+        },
+      },
+    });
+
+    return updatedPartner!.translations;
   }
 
   async deleteTranslation(partnerId: number, language: string) {
+    if (language === 'en') {
+      throw new ConflictException('Cannot delete English translation');
+    }
+
     const translation = await this.prismaService.partnerTranslations.findUnique(
       {
         where: {
@@ -228,5 +252,15 @@ export class PartnersService {
     });
 
     return { message: 'Partner deleted successfully' };
+  }
+
+  async syncAllTranslations() {
+    return TranslationSyncUtil.syncAllEntities(
+      this.prismaService,
+      this.prismaService.partners,
+      'partnerId',
+      this.prismaService.partnerTranslations,
+      () => ({ companyName: '' }),
+    );
   }
 }

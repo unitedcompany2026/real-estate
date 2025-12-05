@@ -255,6 +255,7 @@ model PropertyGalleryImage {
 model HomepageSlide {
   id        Int      @id @default(autoincrement())
   image     String
+  link      String?  
   order     Int      @default(0)
   isActive  Boolean  @map("is_active") @default(true)
   createdAt DateTime @map("created_at") @default(now())
@@ -275,4 +276,18 @@ model HomepageSlideTranslations {
 
   @@unique([slideId, language])
   @@map("homepage_slide_translations")
+}
+
+
+model MortgageRate {
+  id            Int      @id @default(autoincrement())
+  yearFrom      Int      @map("year_from") // e.g., 1
+  yearTo        Int      @map("year_to")   // e.g., 10
+  interestRate  Float    @map("interest_rate") // e.g., 10.0 (percentage)
+  isActive      Boolean  @map("is_active") @default(true)
+  createdAt     DateTime @map("created_at") @default(now())
+  updatedAt     DateTime @map("updated_at") @updatedAt
+
+  @@unique([yearFrom, yearTo])
+  @@map("mortgage_rates")
 }

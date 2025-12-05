@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Users, Building, Home, LogOut } from 'lucide-react'
+import { Users, Building, Home, Image, LogOut } from 'lucide-react'
 import PartnersPanel from '@/components/pages/admin/partners/PartnersPanel'
 import ProjectsPanel from '@/components/pages/admin/projects/ProjectsPanel'
 import ApartmentsPanel from '@/components/pages/admin/apartments/ApartmentsPanel'
+import SlidesPanel from '@/components/pages/admin/slides/SlidesPanel'
 import { Button } from '@/components/ui/button'
 import PropertiesPanel from '@/components/pages/admin/properties/PropertiesPanel'
 
-type MenuType = 'partners' | 'projects' | 'apartments' | 'properties'
+type MenuType = 'partners' | 'projects' | 'apartments' | 'properties' | 'slides'
 
 export default function Admin() {
   const [activeMenu, setActiveMenu] = useState<MenuType>(() => {
@@ -17,7 +18,8 @@ export default function Admin() {
         tab === 'partners' ||
         tab === 'projects' ||
         tab === 'apartments' ||
-        tab === 'properties'
+        tab === 'properties' ||
+        tab === 'slides'
       ) {
         return tab
       }
@@ -42,7 +44,8 @@ export default function Admin() {
         tab === 'partners' ||
         tab === 'projects' ||
         tab === 'apartments' ||
-        tab === 'properties'
+        tab === 'properties' ||
+        tab === 'slides'
       ) {
         setActiveMenu(tab)
       }
@@ -135,6 +138,7 @@ export default function Admin() {
               Apartments
             </span>
           </Button>
+
           <Button
             onClick={() => setActiveMenu('properties')}
             className={`w-full flex justify-start items-center group px-4 py-3 rounded-md transition-all duration-200 ${
@@ -154,6 +158,26 @@ export default function Admin() {
               className={`font-medium ${activeMenu === 'properties' ? 'font-semibold' : ''}`}
             >
               Properties
+            </span>
+          </Button>
+
+          <Button
+            onClick={() => setActiveMenu('slides')}
+            className={`w-full flex justify-start items-center group px-4 py-3 rounded-md transition-all duration-200 ${
+              activeMenu === 'slides'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-400/50 border-l-4 border-blue-400'
+                : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+            }`}
+          >
+            <Image
+              className={`w-5 h-5 mr-3 transition-transform duration-200 ${
+                activeMenu === 'slides' ? 'scale-110' : 'group-hover:scale-105'
+              }`}
+            />
+            <span
+              className={`font-medium ${activeMenu === 'slides' ? 'font-semibold' : ''}`}
+            >
+              Slides
             </span>
           </Button>
         </nav>
@@ -176,6 +200,7 @@ export default function Admin() {
             {activeMenu === 'projects' && <ProjectsPanel />}
             {activeMenu === 'apartments' && <ApartmentsPanel />}
             {activeMenu === 'properties' && <PropertiesPanel />}
+            {activeMenu === 'slides' && <SlidesPanel />}
           </div>
         </div>
       </main>

@@ -1,4 +1,3 @@
-// dto/UpdateHomepageSlide.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
@@ -12,6 +11,15 @@ export class UpdateHomepageSlideDto {
   @IsOptional()
   @IsString()
   title?: string;
+
+  @ApiProperty({
+    description: 'Link URL for the slide',
+    example: '/properties/123',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  link?: string;
 
   @ApiProperty({
     description: 'Order of the slide',

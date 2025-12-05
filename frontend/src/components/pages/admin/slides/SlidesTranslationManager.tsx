@@ -1,45 +1,46 @@
 import { useState } from 'react'
 import { Edit, Save } from 'lucide-react'
 import {
-  usePropertyTranslations,
-  useUpsertPropertyTranslation,
-} from '@/lib/hooks/useProperties'
+  useSlideTranslations,
+  useUpsertSlideTranslation,
+} from '@/lib/hooks/useSlides'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { LANGUAGE_OPTIONS } from '@/constants/languages'
-import type { UpsertPropertyTranslationDto } from '@/lib/types/properties'
 
-interface PropertyTranslationsManagerProps {
-  propertyId: string
+interface SlideTranslationsManagerProps {
+  slideId: number
 }
 
-interface Translation {
+interface SlideTranslation {
   id: number
   language: string
   title: string
-  description: string | null
-  propertyId: string
+  slideId: number
 }
 
-export function PropertyTranslationsManager({
-  propertyId,
-}: PropertyTranslationsManagerProps) {
-  const [editingTranslation, setEditingTranslation] =
-    useState<UpsertPropertyTranslationDto | null>(null)
+interface UpsertTranslationDto {
+  language: string
+  title: string
+}
 
-  const { data: translations = [], isLoading } =
-    usePropertyTranslations(propertyId)
-  const upsertTranslation = useUpsertPropertyTranslation()
+export function SlideTranslationsManager({
+  slideId,
+}: SlideTranslationsManagerProps) {
+  const [editingTranslation, setEditingTranslation] =
+    useState<UpsertTranslationDto | null>(null)
+
+  const { data: translations = [], isLoading } = useSlideTranslations(slideId)
+  const upsertTranslation = useUpsertSlideTranslation()
 
   const handleSaveTranslation = async () => {
     if (!editingTranslation?.title.trim()) return
 
     try {
       await upsertTranslation.mutateAsync({
-        id: propertyId,
+        id: slideId,
         data: editingTranslation,
       })
       setEditingTranslation(null)
@@ -59,9 +60,11 @@ export function PropertyTranslationsManager({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="font-semibold text-foreground">Property Translations</h3>
+        <h3 className="font-semibold text-foreground">
+          Slide Title Translations
+        </h3>
         <p className="text-xs text-muted-foreground mt-1">
-          Manage title and description in different languages
+          Manage translations for this slide
         </p>
       </div>
 
@@ -75,7 +78,7 @@ export function PropertyTranslationsManager({
             </CardContent>
           </Card>
         ) : (
-          translations.map((translation: Translation) => (
+          translations.map((translation: SlideTranslation) => (
             <Card key={translation.language} className="border-border">
               <CardContent className="pt-6">
                 {editingTranslation?.language === translation.language ? (
@@ -84,7 +87,11 @@ export function PropertyTranslationsManager({
                       <Label className="text-sm font-medium">Language</Label>
                       <Input
                         type="text"
-                        value={editingTranslation.language}
+                        value={
+                          LANGUAGE_OPTIONS.find(
+                            l => l.value === editingTranslation.language
+                          )?.label || editingTranslation.language
+                        }
                         disabled
                         className="bg-muted border-border text-muted-foreground"
                       />
@@ -92,7 +99,7 @@ export function PropertyTranslationsManager({
 
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">
-                        Title <span className="text-red-500">*</span>
+                        Translated Title <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         type="text"
@@ -104,21 +111,7 @@ export function PropertyTranslationsManager({
                           })
                         }
                         className="bg-background border-border"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Description</Label>
-                      <Textarea
-                        value={editingTranslation.description || ''}
-                        onChange={e =>
-                          setEditingTranslation({
-                            ...editingTranslation,
-                            description: e.target.value,
-                          })
-                        }
-                        className="bg-background border-border"
-                        rows={4}
+                        placeholder="Enter translated title"
                       />
                     </div>
 
@@ -131,7 +124,10 @@ export function PropertyTranslationsManager({
                       </Button>
                       <Button
                         onClick={handleSaveTranslation}
-                        disabled={upsertTranslation.isPending}
+                        disabled={
+                          upsertTranslation.isPending ||
+                          !editingTranslation.title.trim()
+                        }
                       >
                         <Save className="w-4 h-4 mr-2" />
                         Save
@@ -139,8 +135,8 @@ export function PropertyTranslationsManager({
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2 flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1 flex-1">
                       <p className="font-medium">
                         {
                           LANGUAGE_OPTIONS.find(
@@ -148,35 +144,24 @@ export function PropertyTranslationsManager({
                           )?.label
                         }
                       </p>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-foreground">
-                          {translation.title}
-                        </p>
-                        {translation.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {translation.description}
-                          </p>
+                      <p className="text-sm text-muted-foreground">
+                        {translation.title || (
+                          <span className="italic text-muted-foreground/60">
+                            No translation
+                          </span>
                         )}
-                      </div>
+                      </p>
                     </div>
 
                     <div className="flex gap-2 ml-4">
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() =>
-                          setEditingTranslation({
-                            language: translation.language,
-                            title: translation.title,
-                            description: translation.description ?? undefined,
-                          })
-                        }
+                        onClick={() => setEditingTranslation(translation)}
                         className="text-foreground/60 hover:text-foreground"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-
-                      {/* ❌ DELETE REMOVED */}
                     </div>
                   </div>
                 )}

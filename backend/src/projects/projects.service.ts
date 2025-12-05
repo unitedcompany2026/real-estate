@@ -8,6 +8,7 @@ import {
 import { CreateProjectDto } from './dto/CreateProject.dto';
 import { FileUtils } from '@/common/utils/file.utils';
 import { UpdateProjectDto } from './dto/UpdateProject.dto';
+import { TranslationSyncUtil } from '@/common/utils/translation-sync.util';
 import { LANGUAGES } from '@/common/constants/language';
 
 interface FindAllParams {
@@ -79,9 +80,9 @@ export class ProjectsService {
       skip,
       take: limit,
       orderBy: [
-        { hotSale: 'desc' }, // 1st priority: hot sales first
-        { updatedAt: 'desc' }, // 2nd priority: most recently updated
-        { createdAt: 'desc' }, // 3rd priority: most recently created
+        { hotSale: 'desc' },
+        { updatedAt: 'desc' },
+        { createdAt: 'desc' },
       ],
       include: {
         partner: {
@@ -112,7 +113,7 @@ export class ProjectsService {
       hotSale: project.hotSale,
       public: project.public,
       createdAt: project.createdAt,
-      updatedAt: project.updatedAt, // Add this to the response if you want
+      updatedAt: project.updatedAt,
       translation: project.translations[0] || null,
       partner: project.partner
         ? {
@@ -290,7 +291,6 @@ export class ProjectsService {
       galleryUrls = [...galleryUrls, ...newGalleryUrls];
     }
 
-    // Build update data object - only include fields that are actually provided
     const updateData: any = {
       image: imagePath,
       gallery: galleryUrls,
@@ -409,7 +409,9 @@ export class ProjectsService {
     const project = await this.prismaService.projects.findUnique({
       where: { id: projectId },
       include: {
-        translations: true,
+        translations: {
+          orderBy: { language: 'asc' },
+        },
       },
     });
 
@@ -417,10 +419,31 @@ export class ProjectsService {
       throw new NotFoundException(`Project with ID "${projectId}" not found`);
     }
 
-    return project.translations;
+    await TranslationSyncUtil.syncMissingTranslations(this.prismaService, {
+      entityId: projectId,
+      entityIdField: 'projectId',
+      translationModel: this.prismaService.projectTranslations,
+      existingTranslations: project.translations,
+      defaultFields: { projectName: '', projectLocation: '' },
+    });
+
+    const updatedProject = await this.prismaService.projects.findUnique({
+      where: { id: projectId },
+      include: {
+        translations: {
+          orderBy: { language: 'asc' },
+        },
+      },
+    });
+
+    return updatedProject!.translations;
   }
 
   async deleteTranslation(projectId: number, language: string) {
+    if (language === 'en') {
+      throw new ConflictException('Cannot delete English translation');
+    }
+
     const translation = await this.prismaService.projectTranslations.findUnique(
       {
         where: {
@@ -474,6 +497,16 @@ export class ProjectsService {
     });
 
     return { message: 'Project deleted successfully' };
+  }
+
+  async syncAllTranslations() {
+    return TranslationSyncUtil.syncAllEntities(
+      this.prismaService,
+      this.prismaService.projects,
+      'projectId',
+      this.prismaService.projectTranslations,
+      () => ({ projectName: '', projectLocation: '' }),
+    );
   }
 
   private async validatePartnerExists(partnerId: number): Promise<void> {

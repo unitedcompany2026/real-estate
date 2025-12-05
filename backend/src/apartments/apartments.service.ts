@@ -2,11 +2,13 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { UpdateApartmentDto } from './dto/UpdateApartment.dto';
 import { CreateApartmentDto } from './dto/CreateApartment.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FileUtils } from '@/common/utils/file.utils';
+import { TranslationSyncUtil } from '@/common/utils/translation-sync.util';
 import { LANGUAGES } from '@/common/constants/language';
 
 interface FindAllParams {
@@ -26,11 +28,10 @@ export class ApartmentsService {
 
     const skip = (page - 1) * limit;
 
-    // Add filtering for project.hotSale
     const where: any = {};
     if (projectId) where.projectId = projectId;
     if (hotSale !== undefined) {
-      where.project = { hotSale }; // filter apartments where project.hotSale = true
+      where.project = { hotSale };
     }
 
     const total = await this.prismaService.apartments.count({ where });
@@ -53,7 +54,7 @@ export class ApartmentsService {
             deliveryDate: true,
             numFloors: true,
             numApartments: true,
-            hotSale: true, // include hotSale flag
+            hotSale: true,
           },
         },
       },
@@ -120,7 +121,6 @@ export class ApartmentsService {
     dto: CreateApartmentDto,
     images?: Express.Multer.File[],
   ) {
-    // Verify project exists
     const project = await this.prismaService.projects.findUnique({
       where: { id: dto.projectId },
     });
@@ -131,7 +131,6 @@ export class ApartmentsService {
       );
     }
 
-    // Generate image URLs
     const imageUrls = images
       ? images
           .map((image) => FileUtils.generateImageUrl(image, 'apartments'))
@@ -172,7 +171,6 @@ export class ApartmentsService {
       throw new NotFoundException(`Apartment with ID "${id}" not found`);
     }
 
-    // If projectId is being updated, verify the new project exists
     if (dto.projectId) {
       const project = await this.prismaService.projects.findUnique({
         where: { id: dto.projectId },
@@ -185,12 +183,10 @@ export class ApartmentsService {
       }
     }
 
-    // Filter existing images to ensure no nulls
     let imageUrls: string[] = apartment.images.filter(
       (url): url is string => url !== null,
     );
 
-    // If new images are uploaded, add them to existing images
     if (images && images.length > 0) {
       const newImageUrls = images
         .map((image) => FileUtils.generateImageUrl(image, 'apartments'))
@@ -198,7 +194,6 @@ export class ApartmentsService {
       imageUrls = [...imageUrls, ...newImageUrls];
     }
 
-    // Update data object with only provided fields
     const updateData: any = {
       images: imageUrls,
     };
@@ -241,10 +236,8 @@ export class ApartmentsService {
 
     const imageToDelete = apartment.images[imageIndex];
 
-    // Delete the file from storage
     await FileUtils.deleteFile(imageToDelete);
 
-    // Remove image from array
     const updatedImages = apartment.images.filter(
       (_, index) => index !== imageIndex,
     );
@@ -298,7 +291,9 @@ export class ApartmentsService {
     const apartment = await this.prismaService.apartments.findUnique({
       where: { id: apartmentId },
       include: {
-        translations: true,
+        translations: {
+          orderBy: { language: 'asc' },
+        },
       },
     });
 
@@ -308,10 +303,33 @@ export class ApartmentsService {
       );
     }
 
-    return apartment.translations;
+    // Auto-sync missing language translations using the utility
+    await TranslationSyncUtil.syncMissingTranslations(this.prismaService, {
+      entityId: apartmentId,
+      entityIdField: 'apartmentId',
+      translationModel: this.prismaService.apartmentTranslations,
+      existingTranslations: apartment.translations,
+      defaultFields: { description: '' },
+    });
+
+    // Re-fetch to include newly created translations if any were added
+    const updatedApartment = await this.prismaService.apartments.findUnique({
+      where: { id: apartmentId },
+      include: {
+        translations: {
+          orderBy: { language: 'asc' },
+        },
+      },
+    });
+
+    return updatedApartment!.translations;
   }
 
   async deleteTranslation(apartmentId: number, language: string) {
+    if (language === 'en') {
+      throw new ConflictException('Cannot delete English translation');
+    }
+
     const translation =
       await this.prismaService.apartmentTranslations.findUnique({
         where: {
@@ -349,7 +367,6 @@ export class ApartmentsService {
       throw new NotFoundException(`Apartment with ID "${id}" not found`);
     }
 
-    // Delete all images from storage
     if (apartment.images && apartment.images.length > 0) {
       for (const imagePath of apartment.images) {
         await FileUtils.deleteFile(imagePath);
@@ -361,5 +378,15 @@ export class ApartmentsService {
     });
 
     return { message: 'Apartment deleted successfully' };
+  }
+
+  async syncAllTranslations() {
+    return TranslationSyncUtil.syncAllEntities(
+      this.prismaService,
+      this.prismaService.apartments,
+      'apartmentId',
+      this.prismaService.apartmentTranslations,
+      () => ({ description: '' }),
+    );
   }
 }

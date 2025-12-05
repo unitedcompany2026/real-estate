@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { Edit, Trash2, Save } from 'lucide-react'
+import { Edit, Save } from 'lucide-react'
 import {
   usePartnerTranslations,
   useUpsertTranslation,
-  useDeleteTranslation,
 } from '@/lib/hooks/usePartners'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,7 +29,6 @@ export function TranslationsManager({ partnerId }: TranslationsManagerProps) {
   const { data: translations = [], isLoading } =
     usePartnerTranslations(partnerId)
   const upsertTranslation = useUpsertTranslation()
-  const deleteTranslation = useDeleteTranslation()
 
   const handleSaveTranslation = async () => {
     if (!editingTranslation?.companyName.trim()) return
@@ -43,16 +41,6 @@ export function TranslationsManager({ partnerId }: TranslationsManagerProps) {
       setEditingTranslation(null)
     } catch (error) {
       console.error('Error saving translation:', error)
-    }
-  }
-
-  const handleDeleteTranslation = async (language: string) => {
-    if (!window.confirm(`Delete ${language} translation?`)) return
-
-    try {
-      await deleteTranslation.mutateAsync({ id: partnerId, language })
-    } catch (error) {
-      console.error('Error deleting translation:', error)
     }
   }
 
@@ -149,27 +137,14 @@ export function TranslationsManager({ partnerId }: TranslationsManagerProps) {
                       </p>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setEditingTranslation(translation)}
-                        className="text-foreground/60 hover:text-foreground"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          handleDeleteTranslation(translation.language)
-                        }
-                        className="text-red-500/60 hover:text-red-500 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setEditingTranslation(translation)}
+                      className="text-foreground/60 hover:text-foreground"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
                   </div>
                 )}
               </CardContent>

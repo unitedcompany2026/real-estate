@@ -16,7 +16,6 @@ export class FileUtils {
   static async deleteFile(relativePath: string) {
     if (!relativePath) return;
 
-    // Handle both formats: with or without leading slash
     const cleanPath = relativePath.startsWith('/')
       ? relativePath.substring(1)
       : relativePath;

@@ -9,6 +9,7 @@ import SuggestSection from '@/components/pages/home/SuggestionsSection'
 import FeaturesSection from '@/components/pages/home/FeaturesSection'
 import Cover from '@/components/pages/home/Cover'
 import PartnersCarousel from '@/components/pages/home/PartnerCarousel'
+import { MortgageCalculator } from '@/components/shared/calculator/MortgageCalculator'
 
 const HomePage = () => {
   const { i18n } = useTranslation()
@@ -33,6 +34,7 @@ const HomePage = () => {
   return (
     <main className="min-h-screen w-full">
       <Cover />
+      <MortgageCalculator />
 
       <section className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28">
         <PropertyCarousel />

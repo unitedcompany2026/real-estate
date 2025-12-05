@@ -7,6 +7,7 @@ import { CreatePropertyDto } from './dto/CreateProperty.dto';
 import { UpdatePropertyDto } from './dto/UpdateProperty.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { FileUtils } from '@/common/utils/file.utils';
+import { TranslationSyncUtil } from '@/common/utils/translation-sync.util';
 import { LANGUAGES } from '@/common/constants/language';
 
 interface FindAllParams {
@@ -37,19 +38,14 @@ interface FindAllParams {
 export class PropertiesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  /**
-   * Helper function to generate a unique 6-digit external ID
-   */
   private async generateUniqueExternalId(): Promise<string> {
     let externalId = '';
     let isUnique = false;
 
     while (!isUnique) {
-      // Generate a random integer between 100000 and 999999
       const randomNum = Math.floor(100000 + Math.random() * 900000);
       externalId = randomNum.toString();
 
-      // Check if this ID already exists in the database
       const existing = await this.prismaService.property.findUnique({
         where: { externalId },
       });
@@ -89,28 +85,23 @@ export class PropertiesService {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause dynamically
     const where: any = {};
 
-    // Property type and status filters
     if (propertyType) where.propertyType = propertyType;
     if (status) where.status = status;
 
-    // Price range filter
     if (priceFrom !== undefined || priceTo !== undefined) {
       where.price = {};
       if (priceFrom !== undefined) where.price.gte = priceFrom;
       if (priceTo !== undefined) where.price.lte = priceTo;
     }
 
-    // Area range filter
     if (areaFrom !== undefined || areaTo !== undefined) {
       where.totalArea = {};
       if (areaFrom !== undefined) where.totalArea.gte = areaFrom;
       if (areaTo !== undefined) where.totalArea.lte = areaTo;
     }
 
-    // Numeric filters
     if (rooms !== undefined) {
       if (rooms >= 5) {
         where.rooms = { gte: 5 };
@@ -134,12 +125,10 @@ export class PropertiesService {
     }
     if (floors !== undefined) where.floors = floors;
 
-    // String enum filters
     if (condition) where.condition = condition;
     if (heating) where.heating = heating;
     if (parking) where.parking = parking;
 
-    // Boolean filters
     if (hasConditioner === true) where.hasConditioner = true;
     if (hasFurniture === true) where.hasFurniture = true;
     if (hasBalcony === true) where.hasBalcony = true;
@@ -209,12 +198,11 @@ export class PropertiesService {
   }
 
   async createProperty(dto: CreatePropertyDto, images?: Express.Multer.File[]) {
-    // Generate the unique 6-digit ID
     const generatedExternalId = await this.generateUniqueExternalId();
 
     const property = await this.prismaService.property.create({
       data: {
-        externalId: generatedExternalId, // Automatically assigned
+        externalId: generatedExternalId,
         propertyType: dto.propertyType,
         status: dto.status,
         address: dto.address,
@@ -440,7 +428,9 @@ export class PropertiesService {
     const property = await this.prismaService.property.findUnique({
       where: { id: propertyId },
       include: {
-        translations: true,
+        translations: {
+          orderBy: { language: 'asc' },
+        },
       },
     });
 
@@ -448,7 +438,24 @@ export class PropertiesService {
       throw new NotFoundException(`Property with ID "${propertyId}" not found`);
     }
 
-    return property.translations;
+    await TranslationSyncUtil.syncMissingTranslations(this.prismaService, {
+      entityId: propertyId as any,
+      entityIdField: 'propertyId',
+      translationModel: this.prismaService.propertyTranslations,
+      existingTranslations: property.translations,
+      defaultFields: { title: '', description: null },
+    });
+
+    const updatedProperty = await this.prismaService.property.findUnique({
+      where: { id: propertyId },
+      include: {
+        translations: {
+          orderBy: { language: 'asc' },
+        },
+      },
+    });
+
+    return updatedProperty!.translations;
   }
 
   async upsertTranslation(
@@ -488,6 +495,10 @@ export class PropertiesService {
   }
 
   async deleteTranslation(propertyId: string, language: string) {
+    if (language === 'en') {
+      throw new ConflictException('Cannot delete English translation');
+    }
+
     const translation =
       await this.prismaService.propertyTranslations.findUnique({
         where: {
@@ -532,5 +543,15 @@ export class PropertiesService {
     });
 
     return { message: 'Image deleted successfully' };
+  }
+
+  async syncAllTranslations() {
+    return TranslationSyncUtil.syncAllEntities(
+      this.prismaService,
+      this.prismaService.property,
+      'propertyId',
+      this.prismaService.propertyTranslations,
+      () => ({ title: '', description: null }),
+    );
   }
 }

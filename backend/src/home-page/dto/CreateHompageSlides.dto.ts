@@ -11,6 +11,15 @@ export class CreateHomepageSlideDto {
   title: string;
 
   @ApiProperty({
+    description: 'Link URL for the slide',
+    example: '/properties/123',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  link?: string;
+
+  @ApiProperty({
     description: 'Order of the slide in the slideshow',
     example: 1,
     required: false,
