@@ -12,15 +12,81 @@
     "noResults": "შედეგები არ მოიძებნა",
     "seeAll": "სრულად ნახვა"
   },
+
   "nav": {
     "home": "მთავარი",
+    "ourProjects": "ჩვენი პროექტები",
+    "partnerProjects": "პროექტები დეველოპერებისგან",
+    "properties": "უძრავი ქონება",
     "projects": "პროექტები",
     "partners": "პარტნიორები",
     "about": "ჩვენ შესახებ",
-    "contact": "კონტაქტი"
+    "contact": "კონტაქტი",
+    "allProjects": "ყველა პროექტი",
+    "property": "ობიექტი"
   },
+  "contact": {
+    "title": "დაგვიკავშირდით",
+    "sendMessage": "გაგზავნეთ לנו მესიჯი",
+    "fullName": "სრული სახელი",
+    "emailAddress": "ელ.ფოსტის მისამართი",
+    "phoneNumber": "ტელეფონის ნომერი",
+    "message": "მესიჯი",
+    "send": "გაგზავნა",
+    "address": "მისამართი",
+    "phone": "ტელეფონი",
+    "email": "ელ.ფოსტა",
+    "locationGeorgia": "ბათუმი, ადლია ქ.#1",
+    "locationIsrael": "ბეთლემი - ალ-დოჰა",
+    "followUs": "გამოგვყევით",
+    "formSubmitted": "თქვენი მესიჯი წარმატებით გაიგზავნა",
+    "formError": "სრულიად ვერ მოხერხდა, გთხოვთ, სცადეთ კვლავ"
+  },
+  "home": {
+    "findYourDreamProperty": "გაარკვიეთ თქვენი ოცნების უძრავი ქონება",
+    "findMore": "გაიგეთ მეტი",
+    "projectsFromDevelopers": "პროექტები დეველოპერებისგან",
+    "apartmentsForSale": "ბინები გაყიდვისთვის",
+    "apartmentsForRent": "ბინები ქირავდება",
+    "commercial": "კომერციული",
+    "landForSale": "მიწის ნაკვეთები გაყიდვისთვის",
+    "featuredProperties": "გამორჩეული ობიექტები",
+    "seeAll": "ყველა →",
+    "priceOnRequest": "ფასი მოთხოვნისას",
+    "rooms": "ოთახები",
+    "area": "ფართობი",
+    "perSquareMeter": "/ მ²"
+  },
+  "calculator": {
+    "title": "იპოთეკური კალკულატორი",
+    "propertyPrice": "ქონების ღირებულება",
+    "downPayment": "წინასწარი შენატანი",
+    "loanTerm": "სესხის ვადა",
+    "year": "წელი",
+    "years": "წელი",
+    "loading": "იტვირთება...",
+
+    "interest": "პროცენტი",
+    "downPaymentLabel": "წინასწარი შენატანი",
+    "principal": "ძირი",
+
+    "monthlyPayment": "ყოველთვიური შენატანი",
+    "interestRate": "საპროცენტო განაკვეთი წელიწადში",
+
+    "loanAmountAfterDown": "სესხის თანხა (წინასწარი შენატანის შემდეგ)",
+    "totalPayment": "სულ გადასახდელი (წინასწარი შენატანის ჩათვლით)",
+
+    "requestLoan": "მოითხოვე სესხი"
+  },
+
+  "auth": {
+    "admin": "ადმინი",
+    "logout": "გამოსვლა",
+    "signingOut": "გამოსვლა..."
+  },
+
   "projects": {
-    "title": "პროექტები",
+    "title": "პროექტები დეველოპერებისგან",
     "addProject": "პროექტის დამატება",
     "editProject": "პროექტის რედაქტირება",
     "deleteProject": "პროექტის წაშლა",
@@ -36,6 +102,7 @@
     "deleteSuccess": "პროექტი წარმატებით წაიშალა",
     "deleteConfirm": "დარწმუნებული ხართ, რომ გსურთ პროექტის წაშლა?"
   },
+
   "partners": {
     "title": "პარტნიორები",
     "addPartner": "პარტნიორის დამატება",
@@ -47,6 +114,7 @@
     "updateSuccess": "პარტნიორი წარმატებით განახლდა",
     "deleteSuccess": "პარტნიორი წარმატებით წაიშალა"
   },
+
   "translations": {
     "addTranslation": "თარგმანის დამატება",
     "editTranslation": "თარგმანის რედაქტირება",
@@ -56,22 +124,38 @@
     "noTranslations": "თარგმანები ჯერ არ არის",
     "saveTranslation": "თარგმანის შენახვა"
   },
-  "search": {
-    "propertyType": "Property Type",
-    "location": "Location",
-    "locationPlaceholder": "City, Address, ID",
-    "rooms": "Rooms",
-    "any": "Any",
-    "allTypes": "All Types",
-    "apartment": "Apartment",
-    "house": "House",
-    "commercial": "Commercial",
-    "search": "Search"
+
+  "cover": {
+    "exploreTitle": "ბინები და ახალი მშენებლობები",
+    "exploreDescription": "იპოვეთ იდეალური უძრავი ქონება საუკეთესო ლოკაციებში",
+    "sellTitle": "გსურთ ბინის, სახლის ან მიწის გაყიდვა?",
+    "sellDescription": "დაამატეთ თქვენი განცხადება და იპოვეთ მყიდველი სწრაფად",
+    "addProperty": "ობიექტის დამატება"
   },
+
+  "search": {
+    "propertyType": "უძრავი ქონების ტიპი",
+    "location": "ლოკაცია",
+    "locationPlaceholder": "ქალაქი, მისამართი, ID",
+    "rooms": "ოთახები",
+    "any": "ნებისმიერი",
+    "allTypes": "ყველა ტიპი",
+    "apartment": "ბინა",
+    "house": "სახლი",
+    "commercial": "კომერციული",
+    "search": "ძიება"
+  },
+
   "categories": {
-    "apartments": "Apartments from Developers",
-    "apartmentsDesc": "Find your perfect home",
-    "projects": "Construction Projects",
-    "projectsDesc": "Explore new developments"
+    "constructionProjects": "მშენებლობის პროექტები",
+    "apartmentsFromDevelopers": "ბინები დეველოპერებისგან",
+    "residentialApartments": "საცხოვრებელი ბინები",
+    "commercialProperties": "კომერციული უძრავი ქონება",
+    "landsForSale": "მიწები გასაყიდად",
+    "projectsCount": "{{count}} პროექტი",
+    "apartmentsCount": "{{count}} ბინა",
+    "residentialCount": "{{count}} ბინა",
+    "commercialCount": "{{count}} ობიექტი",
+    "landsCount": "{{count}} მიწა"
   }
 }

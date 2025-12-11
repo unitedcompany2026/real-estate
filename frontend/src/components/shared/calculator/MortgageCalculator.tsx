@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-
+import { useTranslation } from 'react-i18next'
 import { useMortgageRates } from '@/lib/hooks/useCalculator'
 
 interface MortgageResult {
@@ -14,6 +14,7 @@ interface MortgageResult {
 }
 
 const MortgageCalculator = () => {
+  const { t } = useTranslation()
   const [price, setPrice] = useState<number>(100000)
   const [downPayment, setDownPayment] = useState<number>(10000)
   const [months, setMonths] = useState<number>(12)
@@ -120,26 +121,26 @@ const MortgageCalculator = () => {
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <div className="text-gray-600">Loading...</div>
+          <div className="text-gray-600">{t('calculator.loading')}</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-auto  p-6">
+    <div className="min-h-auto p-6">
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">
-              იპოთეკარი კალკულატორი
+              {t('calculator.title')}
             </h2>
 
             <div className="space-y-8">
               <div>
                 <div className="flex justify-between items-baseline mb-3">
                   <label className="text-sm text-gray-600">
-                    ქონების ღირებულება
+                    {t('calculator.propertyPrice')}
                   </label>
                   <div className="text-2xl font-bold text-gray-900">
                     {formatCurrency(price)} ₾
@@ -159,7 +160,7 @@ const MortgageCalculator = () => {
               <div>
                 <div className="flex justify-between items-baseline mb-3">
                   <label className="text-sm text-gray-600">
-                    წინასწარი შენატანი {downPaymentPercent}%
+                    {t('calculator.downPayment')} {downPaymentPercent}%
                   </label>
                   <div className="text-2xl font-bold text-gray-900">
                     {formatCurrency(downPayment)} ₾
@@ -178,10 +179,14 @@ const MortgageCalculator = () => {
 
               <div>
                 <div className="flex justify-between items-baseline mb-3">
-                  <label className="text-sm text-gray-600">სესხის ვადა</label>
+                  <label className="text-sm text-gray-600">
+                    {t('calculator.loanTerm')}
+                  </label>
                   <div className="text-2xl font-bold text-gray-900">
                     {years}{' '}
-                    <span className="text-base text-gray-400">წელი</span>
+                    <span className="text-base text-gray-400">
+                      {t('calculator.year')}
+                    </span>
                   </div>
                 </div>
                 <input
@@ -199,6 +204,7 @@ const MortgageCalculator = () => {
 
           <div className="space-y-6">
             <div className="bg-white rounded-lg p-6">
+              {/* Bars */}
               <div className="flex items-center h-4 rounded-full overflow-hidden mb-4">
                 <div
                   className="bg-red-400 h-full"
@@ -214,39 +220,47 @@ const MortgageCalculator = () => {
                 />
               </div>
 
+              {/* Labels */}
               <div className="flex items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-red-400"></span>
-                  <span className="text-gray-600">პროცენტი</span>
+                  <span className="text-gray-600">
+                    {t('calculator.interest')}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-yellow-300"></span>
-                  <span className="text-gray-600">წინასწარი შენატანი</span>
+                  <span className="text-gray-600">
+                    {t('calculator.downPaymentLabel')}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-blue-400"></span>
-                  <span className="text-gray-600">ძირი</span>
+                  <span className="text-gray-600">
+                    {t('calculator.principal')}
+                  </span>
                 </div>
               </div>
 
+              {/* Results */}
               {result && (
                 <>
                   <div className="mt-6 pt-6 border-t border-gray-200">
                     <div className="text-sm text-gray-600 mb-1">
-                      ყოველთვიური შენატანი
+                      {t('calculator.monthlyPayment')}
                     </div>
                     <div className="text-3xl font-bold text-gray-900">
                       {formatCurrency(result.monthlyPayment)} ₾
                     </div>
                     <div className="text-sm text-gray-500 mt-2">
-                      საპროცენტო განაკვეთი: {result.interestRate}% წელიწადში
+                      {t('calculator.interestRate')}: {result.interestRate}%
                     </div>
                   </div>
 
                   <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
                     <div>
                       <div className="text-sm text-gray-600 mb-1">
-                        სესხის თანხა (წინასწარი შენატანის შემდეგ)
+                        {t('calculator.loanAmountAfterDown')}
                       </div>
                       <div className="text-2xl font-bold text-gray-900">
                         {formatCurrency(result.loanAmount)} ₾
@@ -254,7 +268,7 @@ const MortgageCalculator = () => {
                     </div>
                     <div>
                       <div className="text-sm text-gray-600 mb-1">
-                        სულ გადასახდელი (წინასწარი შენატანის ჩათვლით)
+                        {t('calculator.totalPayment')}
                       </div>
                       <div className="text-3xl font-bold text-gray-900">
                         {formatCurrency(
@@ -266,7 +280,7 @@ const MortgageCalculator = () => {
                   </div>
 
                   <button className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-4 px-6 rounded-lg transition-colors">
-                    მოითხოვე სესხი
+                    {t('calculator.requestLoan')}
                   </button>
                 </>
               )}

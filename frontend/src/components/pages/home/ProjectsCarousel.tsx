@@ -16,30 +16,28 @@ interface ProjectsCarouselProps {
 
 const ProjectsCarousel = ({ projectsResponse }: ProjectsCarouselProps) => {
   const { t } = useTranslation()
-
   const projects = projectsResponse?.data || []
 
-  if (projects.length === 0) {
-    return null
-  }
+  if (projects.length === 0) return null
 
   return (
     <div className="py-8">
       <div className="w-full">
         <div className="flex justify-between items-center px-4">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-            {t('projects.title')}
+            {t('home.projectsTitle')}
           </h1>
+
           <Link
             to="/projects"
             className="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap"
           >
-            {t('common.seeAll')} →
+            {t('home.seeAll')} →
           </Link>
         </div>
 
-        <Carousel opts={{ align: 'start', loop: true }} className="w-full ">
-          <CarouselContent className="my-7 ">
+        <Carousel opts={{ align: 'start', loop: true }} className="w-full">
+          <CarouselContent className="my-7">
             {projects.map(project => (
               <CarouselItem
                 key={project.id}
@@ -51,8 +49,9 @@ const ProjectsCarousel = ({ projectsResponse }: ProjectsCarouselProps) => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className=" md:flex bg-gray-100" />
-          <CarouselNext className=" md:flex bg-gray-100" />
+
+          <CarouselPrevious className="md:flex bg-gray-100" />
+          <CarouselNext className="md:flex bg-gray-100" />
         </Carousel>
       </div>
     </div>

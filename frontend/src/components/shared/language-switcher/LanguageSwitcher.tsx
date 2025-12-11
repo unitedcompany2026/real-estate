@@ -9,11 +9,11 @@ import {
 import { Globe } from 'lucide-react'
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'ka', name: 'ქართული', flag: '🇬🇪' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'he', name: 'עברית', flag: '🇮🇱' },
+  { code: 'en', name: 'English', flag: 'EN' },
+  { code: 'ka', name: 'ქართული', flag: 'GE' },
+  { code: 'ru', name: 'Русский', flag: 'RU' },
+  { code: 'ar', name: 'العربية', flag: 'AR' },
+  { code: 'he', name: 'עברית', flag: 'IS' },
 ]
 
 export function LanguageSwitcher() {
@@ -38,7 +38,10 @@ export function LanguageSwitcher() {
           <span className="text-sm font-medium">{currentLanguage.flag}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-44 shadow-2xl cursor-pointer">
+      <DropdownMenuContent
+        align="end"
+        className="min-w-44 shadow-2xl cursor-pointer"
+      >
         {languages.map(lang => (
           <DropdownMenuItem
             key={lang.code}

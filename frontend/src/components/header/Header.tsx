@@ -2,10 +2,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { LanguageSwitcher } from '../shared/language-switcher/LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
-const useTranslation = () => ({
-  t: (key: string, options?: any) => options?.defaultValue || key,
-})
 const useCurrentUser = () => ({ data: null, isLoading: false })
 const useSignOut = () => ({ mutateAsync: async () => {}, isPending: false })
 const Button = ({ children, onClick, disabled, className }: any) => (
@@ -81,53 +79,37 @@ export default function Header() {
   ]
 
   return (
-    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full bg-[#F2F5FF] border-b border-gray-200  shadow-sm">
+    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full bg-[#F2F5FF] border-b border-gray-200 shadow-sm">
       <div className="flex h-20 items-center justify-between">
-        {/* Updated Logo */}
         <Link
           to={ROUTES.HOME}
-          className="flex items-center gap-2.5 shrink-0 group"
+          className="flex items-center gap-5 shrink-0 group"
         >
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-200">
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-          </div>
+          <img src="./Logo.png" className="w-20 h-20" alt="Logo" />
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors duration-200">
-              United Construction
+            <span className="text-xl font-bold text-gray-900 leading-tight">
+              United
             </span>
-            <span className="text-xs font-semibold text-blue-600 leading-tight">
-              Company
+            <span className="text-sm font-semibold text-gray-700">
+              Construction and Real Estate
             </span>
           </div>
         </Link>
 
         <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
-          {/* Updated Navigation with Pill Style */}
-          <nav className="flex items-center gap-2">
+          <nav className="flex items-center gap-5">
             {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.isComingSoon ? '#' : item.path}
                 onClick={e => item.isComingSoon && e.preventDefault()}
                 className={cn(
-                  'relative px-5 py-2.5 text-[15px] font-medium rounded-full transition-all duration-300',
+                  'relative px-4 py-1.5 text-[15px] font-semibold rounded-lg transition-all duration-300',
                   isActive(item.path) && !item.isComingSoon
-                    ? 'text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-md'
+                    ? 'text-white !bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-2 border-blue-700'
                     : item.isComingSoon
-                      ? 'text-gray-400 cursor-not-allowed bg-gray-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50/80'
+                      ? 'text-gray-400 cursor-not-allowed !bg-gray-100 border-2 border-gray-200'
+                      : 'text-gray-800 hover:text-blue-700 hover:bg-blue-50 bg-white border-2 border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-md'
                 )}
               >
                 <span className={cn(item.isComingSoon && 'line-through')}>
@@ -148,10 +130,8 @@ export default function Header() {
             ) : user ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
-                  <span className="text-sm font-semibold text-gray-800">
-                    {/* {user.email?.split('@')[0]} */}
-                  </span>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-sm font-bold text-gray-900">Admin</span>
+                  <span className="text-xs font-semibold text-gray-700">
                     {t('auth.admin', { defaultValue: 'Admin' })}
                   </span>
                 </div>
@@ -160,7 +140,7 @@ export default function Header() {
                   size="sm"
                   onClick={handleSignOut}
                   disabled={signOut.isPending}
-                  className="gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 h-10 px-3 rounded-lg transition-all"
+                  className="gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-10 px-4 rounded-lg transition-all border-2 border-gray-200 hover:border-red-300 font-semibold shadow-sm hover:shadow-md"
                 >
                   <LogOut className="h-4 w-4" />
                   <span className="text-sm font-medium">
@@ -203,12 +183,12 @@ export default function Header() {
                   }
                 }}
                 className={cn(
-                  'relative flex items-center justify-between px-4 py-3 text-base font-medium rounded-xl transition-all duration-200',
+                  'relative flex items-center justify-between px-4 py-3 text-base font-bold rounded-xl transition-all duration-200 border-2',
                   isActive(item.path) && !item.isComingSoon
-                    ? 'text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-md'
+                    ? 'text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-blue-700'
                     : item.isComingSoon
-                      ? 'text-gray-400 bg-gray-50'
-                      : 'text-gray-700 hover:bg-blue-50'
+                      ? 'text-gray-400 bg-gray-100 border-gray-200'
+                      : 'text-gray-800 hover:bg-blue-50 bg-white border-gray-200 hover:border-blue-300 shadow-sm'
                 )}
               >
                 <span className={cn(item.isComingSoon && 'line-through')}>
@@ -228,11 +208,9 @@ export default function Header() {
               <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />
             ) : user ? (
               <>
-                <div className="px-4 py-2 bg-blue-50 rounded-lg">
-                  <p className="text-sm font-semibold text-gray-800">
-                    {/* {user.email} */}
-                  </p>
-                  <p className="text-xs text-gray-600 mt-0.5">
+                <div className="px-4 py-2 bg-blue-50 rounded-lg border-2 border-blue-200">
+                  <p className="text-sm font-bold text-gray-900">Admin</p>
+                  <p className="text-xs font-semibold text-gray-700 mt-0.5">
                     {t('auth.admin', { defaultValue: 'Admin' })}
                   </p>
                 </div>
@@ -240,7 +218,7 @@ export default function Header() {
                   variant="ghost"
                   onClick={handleSignOut}
                   disabled={signOut.isPending}
-                  className="w-full gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 h-11 justify-start rounded-lg"
+                  className="w-full gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-11 justify-start rounded-lg border-2 border-gray-200 hover:border-red-300 font-semibold shadow-sm hover:shadow-md"
                 >
                   <LogOut className="h-4 w-4" />
                   <span className="font-medium">

@@ -2,6 +2,7 @@ import { Calendar, MapPin, Square, Sofa } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Switch } from '@/components/ui/switch'
+import { useTranslation } from 'react-i18next'
 
 interface PropertyCardProps {
   property: {
@@ -22,6 +23,7 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property }: PropertyCardProps) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [currency, setCurrency] = useState<'USD' | 'GEL'>('USD')
 
@@ -46,7 +48,6 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
       onClick={handleCardClick}
       className="bg-white rounded-xl border border-gray-300 transition-all duration-300 h-full cursor-pointer hover:shadow-lg"
     >
-      {/* Image Section */}
       <div className="relative h-52 overflow-hidden rounded-t-xl">
         <img
           src={imageUrl}
@@ -54,11 +55,8 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />
       </div>
-
-      {/* Content Section */}
       <div className="p-3 sm:p-4">
         <div className="space-y-3">
-          {/* Price Section */}
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-bold text-gray-900">
               {property.priceUSD ? (
@@ -69,11 +67,9 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
                     : Math.round(property.priceUSD * 2.8).toLocaleString()}
                 </>
               ) : (
-                'Price on request'
+                t('home.priceOnRequest')
               )}
             </h3>
-
-            {/* Currency Toggle Switch */}
             <div
               className="flex items-center gap-2"
               onClick={e => e.stopPropagation()}
@@ -88,7 +84,6 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
               <span className="text-xs font-medium text-gray-600">₾</span>
             </div>
 
-            {/* Price per m² */}
             {property.priceUSD && property.totalArea && (
               <span className="text-sm text-gray-500">
                 {currency === 'USD' ? '$' : '₾'}{' '}
@@ -97,29 +92,26 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
                   : Math.round(
                       (property.priceUSD * 2.8) / property.totalArea
                     )}{' '}
-                / m²
+                {t('home.perSquareMeter')}
               </span>
             )}
           </div>
 
-          {/* Title */}
           <h4 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors line-clamp-1">
             {property.title}
           </h4>
 
-          {/* Address */}
           <div className="flex items-start gap-2 text-gray-600 text-sm">
             <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-gray-400" />
             <span className="line-clamp-1">{property.location}</span>
           </div>
 
-          {/* Property Details Icons */}
           <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
             {property.rooms > 0 && (
               <div className="flex items-center gap-1.5 text-gray-700">
                 <Sofa className="w-4 h-4" />
                 <span className="text-sm font-medium">
-                  Rooms: {property.rooms}
+                  {t('home.rooms')}: {property.rooms}
                 </span>
               </div>
             )}
@@ -128,7 +120,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
               <div className="flex items-center gap-1.5 text-gray-700">
                 <Square className="w-4 h-4" />
                 <span className="text-sm font-medium">
-                  Area: {property.totalArea} m²
+                  {t('home.area')}: {property.totalArea} m²
                 </span>
               </div>
             )}

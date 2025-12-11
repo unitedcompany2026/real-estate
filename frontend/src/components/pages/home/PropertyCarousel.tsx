@@ -8,16 +8,16 @@ import {
 } from '@/components/ui/carousel'
 import PropertyCard from '../properties/PropertyCard'
 import { useProperties } from '@/lib/hooks/useProperties'
+import { useTranslation } from 'react-i18next'
 
 const PropertyCarousel = () => {
-  // Fetch properties with pagination
+  const { t } = useTranslation()
   const { data, isLoading, isError } = useProperties({
     page: 1,
     limit: 12,
     lang: 'en',
   })
 
-  // Transform API property to card format
   const transformProperty = (property: any) => ({
     id: property.id,
     image: property.galleryImages?.[0]?.imageUrl || '/placeholder-property.jpg',
@@ -42,7 +42,7 @@ const PropertyCarousel = () => {
       <div className="py-8">
         <div className="w-full">
           <div className="flex justify-center items-center h-64">
-            <div className="text-gray-500">Loading properties...</div>
+            <div className="text-gray-500">{t('common.loading')}</div>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@ const PropertyCarousel = () => {
       <div className="py-8">
         <div className="w-full">
           <div className="flex justify-center items-center h-64">
-            <div className="text-red-500">Error loading properties</div>
+            <div className="text-red-500">{t('common.error')}</div>
           </div>
         </div>
       </div>
@@ -63,22 +63,20 @@ const PropertyCarousel = () => {
 
   const properties = data?.data?.map(transformProperty) || []
 
-  if (properties.length === 0) {
-    return null
-  }
+  if (properties.length === 0) return null
 
   return (
     <div className="py-8">
       <div className="w-full">
         <div className="flex justify-between items-center px-4">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-            Featured Properties
+            {t('home.featuredProperties')}
           </h1>
           <Link
             to="/properties"
             className="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap"
           >
-            See All →
+            {t('home.seeAll')}
           </Link>
         </div>
 

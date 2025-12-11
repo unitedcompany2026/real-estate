@@ -11,8 +11,10 @@ import {
 
 import { getImageUrl } from '@/lib/utils/image-utils'
 import { useSlides } from '@/lib/hooks/useSlides'
+import { useTranslation } from 'react-i18next'
 
 export default function Cover() {
+  const { t } = useTranslation()
   const { data: slidesResponse, isLoading, isError } = useSlides()
   const slides = slidesResponse?.data || []
 
@@ -61,20 +63,17 @@ export default function Cover() {
           <div className="relative z-10 container mx-auto w-full h-full flex flex-col justify-center items-center text-center px-4">
             <div className="w-96 h-16 bg-white/20 rounded-lg animate-pulse"></div>
           </div>
-          {/* Property cards on image for desktop */}
           <div className="hidden md:block absolute bottom-8 left-0 right-0 z-20 px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28">
-            <PropertyTypeCards />
+            <PropertyTypeCards t={t} />
           </div>
         </div>
-        {/* Property cards below image for mobile */}
         <div className="md:hidden">
-          <PropertyTypeCards />
+          <PropertyTypeCards t={t} />
         </div>
       </div>
     )
   }
 
-  // Error state
   if (isError || slides.length === 0) {
     return (
       <div className="w-full">
@@ -90,17 +89,15 @@ export default function Cover() {
                   '0 8px 24px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4)',
               }}
             >
-              Find Your Dream Property
+              {t('home.findYourDreamProperty')}
             </h1>
           </div>
-          {/* Property cards on image for desktop */}
           <div className="hidden md:block absolute bottom-8 left-0 right-0 z-20 px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28">
-            <PropertyTypeCards />
+            <PropertyTypeCards t={t} />
           </div>
         </div>
-        {/* Property cards below image for mobile */}
         <div className="md:hidden">
-          <PropertyTypeCards />
+          <PropertyTypeCards t={t} />
         </div>
       </div>
     )
@@ -108,9 +105,7 @@ export default function Cover() {
 
   return (
     <div className="w-full">
-      {/* Hero Section - Full screen height */}
       <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden">
-        {/* Background Slides */}
         <div className="absolute w-full h-full">
           {slides.map((slide, index) => (
             <div
@@ -127,38 +122,25 @@ export default function Cover() {
           ))}
         </div>
 
-        {/* Arrows Left / Right */}
         {slides.length > 1 && (
           <>
-            {/* Left Arrow */}
             <button
               onClick={handlePrev}
               disabled={isTransitioning}
-              className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 
-                         w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/40 
-                         hover:bg-black/60 transition-all duration-300 
-                         flex items-center justify-center group 
-                         disabled:opacity-50 disabled:cursor-not-allowed z-20"
+              className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed z-20"
             >
               <ChevronLeft className="w-6 h-6 md:w-7 md:h-7 text-white group-hover:scale-110 transition-transform" />
             </button>
-
-            {/* Right Arrow */}
             <button
               onClick={handleNext}
               disabled={isTransitioning}
-              className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 
-                         w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/40 
-                         hover:bg-black/60 transition-all duration-300 
-                         flex items-center justify-center group 
-                         disabled:opacity-50 disabled:cursor-not-allowed z-20"
+              className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed z-20"
             >
               <ChevronRight className="w-6 h-6 md:w-7 md:h-7 text-white group-hover:scale-110 transition-transform" />
             </button>
           </>
         )}
 
-        {/* Slide Indicators */}
         {slides.length > 1 && (
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {slides.map((_, index) => (
@@ -166,14 +148,16 @@ export default function Cover() {
                 key={index}
                 onClick={() => goToSlide(index)}
                 disabled={isTransitioning}
-                className={`transition-all duration-300 rounded-full 
-                  ${index === currentSlide ? 'w-8 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/80'}`}
+                className={`transition-all duration-300 rounded-full ${
+                  index === currentSlide
+                    ? 'w-8 h-2 bg-white'
+                    : 'w-2 h-2 bg-white/50 hover:bg-white/80'
+                }`}
               />
             ))}
           </div>
         )}
 
-        {/* Title and Button */}
         <div className="relative z-10 container mx-auto w-full h-full flex flex-col justify-center items-center text-center px-4 -mt-20 md:-mt-24">
           <div className="relative w-full max-w-5xl flex items-center justify-center">
             {slides.map((slide, index) => (
@@ -202,7 +186,7 @@ export default function Cover() {
                       textShadow: '0 2px 4px rgba(0,0,0,0.2)',
                     }}
                   >
-                    Find More
+                    {t('home.findMore')}
                   </a>
                 )}
               </div>
@@ -211,90 +195,82 @@ export default function Cover() {
         </div>
 
         <div className="hidden md:block absolute bottom-8 left-0 right-0 z-20 px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28">
-          <PropertyTypeCards />
+          <PropertyTypeCards t={t} />
         </div>
       </div>
 
       <div className="md:hidden">
-        <PropertyTypeCards />
+        <PropertyTypeCards t={t} />
       </div>
     </div>
   )
 }
 
-function PropertyTypeCards() {
+function PropertyTypeCards({ t }: { t: (key: string) => string }) {
+  const cards = [
+    {
+      label: t('home.projectsFromDevelopers'),
+      icon: <Building2 />,
+      bg: 'bg-blue-50/90',
+      border: 'border-blue-200',
+      color: 'bg-blue-600',
+      link: '/projects',
+    },
+    {
+      label: t('home.apartmentsForSale'),
+      icon: <Building />,
+      bg: 'bg-emerald-50/90',
+      border: 'border-emerald-200',
+      color: 'bg-emerald-600',
+      link: '/properties',
+    },
+    {
+      label: t('home.apartmentsForRent'),
+      icon: <Home />,
+      bg: 'bg-amber-50/90',
+      border: 'border-amber-200',
+      color: 'bg-amber-600',
+      link: '/properties',
+    },
+    {
+      label: t('home.commercial'),
+      icon: <Store />,
+      bg: 'bg-purple-50/90',
+      border: 'border-purple-200',
+      color: 'bg-purple-600',
+      link: '/properties',
+    },
+    {
+      label: t('home.landForSale'),
+      icon: <MapPin />,
+      bg: 'bg-teal-50/90',
+      border: 'border-teal-200',
+      color: 'bg-teal-600',
+      link: '/properties',
+    },
+  ]
+
   return (
     <div className="w-full bg-white md:bg-transparent py-8 md:py-0">
       <div className="grid w-full px-6 md:px-0 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-8 auto-rows-fr">
-        <a
-          href="/projects"
-          className="group relative w-full h-full bg-blue-50/90 md:bg-blue-50/95 md:backdrop-blur-sm hover:bg-blue-100/95 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 md:p-4 border border-blue-200 hover:border-blue-300"
-        >
-          <div className="flex flex-col h-full w-full items-center justify-center text-center gap-1.5 md:gap-2.5">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-              <Building2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+        {cards.map((card, index) => (
+          <a
+            key={index}
+            href={card.link}
+            className={`group relative w-full h-full ${card.bg} md:backdrop-blur-sm hover:${card.bg} rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 md:p-4 border ${card.border} hover:border-opacity-100`}
+          >
+            <div className="flex flex-col h-full w-full items-center justify-center text-center gap-1.5 md:gap-2.5">
+              <div
+                className={`w-8 h-8 md:w-10 md:h-10 ${card.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md`}
+              >
+                {card.icon}
+              </div>
+              <h3 className="text-xs md:text-sm font-semibold text-gray-900 leading-tight">
+                {card.label}
+              </h3>
             </div>
-            <h3 className="text-xs md:text-sm font-semibold text-gray-900 leading-tight">
-              Projects from developers
-            </h3>
-          </div>
-        </a>
-
-        <a
-          href="/properties"
-          className="group relative h-full bg-emerald-50/90 md:bg-emerald-50/95 md:backdrop-blur-sm hover:bg-emerald-100/95 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 md:p-4 border border-emerald-200 hover:border-emerald-300"
-        >
-          <div className="flex flex-col h-full items-center justify-center text-center gap-1.5 md:gap-2.5">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-              <Building className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-            </div>
-            <h3 className="text-xs md:text-sm font-semibold text-gray-900 leading-tight">
-              Apartments for sale
-            </h3>
-          </div>
-        </a>
-
-        <a
-          href="/properties"
-          className="group relative h-full bg-amber-50/90 md:bg-amber-50/95 md:backdrop-blur-sm hover:bg-amber-100/95 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 md:p-4 border border-amber-200 hover:border-amber-300"
-        >
-          <div className="flex flex-col h-full items-center justify-center text-center gap-1.5 md:gap-2.5">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-              <Home className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-            </div>
-            <h3 className="text-xs md:text-sm font-semibold text-gray-900 leading-tight">
-              Apartments for rent
-            </h3>
-          </div>
-        </a>
-
-        <a
-          href="/properties"
-          className="group relative h-full bg-purple-50/90 md:bg-purple-50/95 md:backdrop-blur-sm hover:bg-purple-100/95 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 md:p-4 border border-purple-200 hover:border-purple-300"
-        >
-          <div className="flex flex-col h-full items-center justify-center text-center gap-1.5 md:gap-2.5">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-              <Store className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-            </div>
-            <h3 className="text-xs md:text-sm font-semibold text-gray-900 leading-tight">
-              Commercial
-            </h3>
-          </div>
-        </a>
-
-        <a
-          href="/properties"
-          className="group relative h-full bg-teal-50/90 md:bg-teal-50/95 md:backdrop-blur-sm hover:bg-teal-100/95 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 md:p-4 border border-teal-200 hover:border-teal-300"
-        >
-          <div className="flex flex-col h-full items-center justify-center text-center gap-1.5 md:gap-2.5">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-teal-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
-              <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-            </div>
-            <h3 className="text-xs md:text-sm font-semibold text-gray-900 leading-tight">
-              Land for Sale
-            </h3>
-          </div>
-        </a>
+          </a>
+        ))}
       </div>
     </div>
   )

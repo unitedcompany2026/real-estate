@@ -24,14 +24,14 @@ const PartnersCarousel = ({ partners }: PartnersCarouselProps) => {
       <div className="w-full">
         <div className="flex justify-between items-center px-4">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-            {t('partners.title')}
+            {t('home.partnersTitle')}
           </h1>
 
           <Link
             to="/partners"
             className="text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap"
           >
-            {t('common.seeAll')} →
+            {t('home.seeAll')} →
           </Link>
         </div>
 

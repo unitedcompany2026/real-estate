@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MapPin } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { getImageUrl } from '@/lib/utils/image-utils'
 import type { Project } from '@/lib/types/projects'
 
@@ -7,10 +8,10 @@ type TranslatableFields = 'projectName' | 'projectLocation'
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const [imageError, setImageError] = useState(false)
+  const { t } = useTranslation()
 
-  const getTranslatedValue = (field: TranslatableFields) => {
-    return project.translation?.[field] ?? project[field] ?? ''
-  }
+  const getTranslatedValue = (field: TranslatableFields) =>
+    project.translation?.[field] ?? project[field] ?? ''
 
   const projectImage = getImageUrl(project.image ?? undefined)
   const projectName = getTranslatedValue('projectName')
@@ -48,7 +49,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
         {project.hotSale && (
           <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden pointer-events-none">
             <div className="absolute top-4 -right-8 w-32 bg-linear-to-r from-red-600 to-red-500 text-white text-xs font-bold py-1.5 text-center shadow-lg transform rotate-45">
-              HOT SALE
+              {t('home.hotSale')}
             </div>
           </div>
         )}
@@ -72,7 +73,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
             {project.priceFrom && (
               <span className="text-sm font-semibold text-blue-900 whitespace-nowrap">
-                From: ${project.priceFrom.toLocaleString()}
+                {t('home.fromPrice')}${project.priceFrom.toLocaleString()}
               </span>
             )}
           </div>

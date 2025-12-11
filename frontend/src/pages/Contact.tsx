@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { Facebook, Instagram, Mail, Phone, MapPin, Send } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Facebook, Mail, Phone, MapPin, Send } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 const Contact = () => {
+  const { t } = useTranslation()
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -31,164 +33,173 @@ const Contact = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Hero Section */}
-       
+    <div className="min-h-screen relative flex justify-center items-center w-full">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            'url(https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=2070)',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-gray-900/80 to-slate-800/75"></div>
+      </div>
 
-      {/* Contact Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
-        <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
-          {/* Contact Info Sidebar */}
-          <div className="md:col-span-2 space-y-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-                Contact Information
-              </h2>
-              <p className="text-gray-600 mb-8">
-                Reach out to us and we'll respond as soon as possible
-              </p>
+      <div className="relative z-10 px-6 sm:px-8 md:px-12 lg:px-16 py-10 w-full xl:max-w-7xl">
+        <div className="grid md:grid-cols-5 gap-8 lg:gap-12 md:items-start">
+          {/* Contact Info */}
+          <div className="md:col-span-2 space-y-6 flex flex-col">
+            <div className="flex flex-col gap-6 flex-1">
+              {[
+                {
+                  location: t('contact.locationGeorgia'),
+                  phone: '+995 595 80 47 95',
+                  email: 'unitedcompany2026@gmail.com',
+                },
+                {
+                  location: t('contact.locationIsrael'),
+                  phone: '+972 52-866-2380',
+                  email: 'unitedcompany2026@gmail.com',
+                },
+              ].map((info, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 space-y-6 flex-1"
+                >
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 bg-amber-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center shrink-0 border border-amber-400/30">
+                      <MapPin className="w-6 h-6 text-amber-300" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white mb-1">
+                        {t('contact.address')}
+                      </h3>
+                      <a
+                        href="https://maps.app.goo.gl/hWmyEjYsR3uDBTRi7"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-gray-300 leading-relaxed hover:text-amber-300 transition-colors cursor-pointer block"
+                      >
+                        {info.location}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 bg-emerald-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center shrink-0 border border-emerald-400/30">
+                      <Phone className="w-6 h-6 text-emerald-300" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white mb-1">
+                        {t('contact.phone')}
+                      </h3>
+                      <a
+                        href={`tel:${info.phone}`}
+                        className="text-sm text-gray-300 hover:text-emerald-300 transition-colors cursor-pointer block"
+                      >
+                        {info.phone}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 bg-purple-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center shrink-0 border border-purple-400/30">
+                      <Mail className="w-6 h-6 text-purple-300" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white mb-1">
+                        {t('contact.email')}
+                      </h3>
+                      <a
+                        href={`mailto:${info.email}`}
+                        className="text-sm text-gray-300 hover:text-purple-300 transition-colors cursor-pointer block"
+                      >
+                        {info.email}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <Card className="border-none shadow-lg">
-              <CardContent className="p-6 space-y-6">
-                {/* Address */}
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
-                    <MapPin className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      Our Office
-                    </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      123 Realty Blvd, Suite 456
-                      <br />
-                      Metropolis, CA 90210
-                    </p>
-                  </div>
-                </div>
-
-                {/* Phone */}
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center shrink-0">
-                    <Phone className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                    <p className="text-sm text-gray-600">(555) 123-467</p>
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
-                    <Mail className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-sm text-gray-600">
-                      Info@realestates.com
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Social Media */}
-            <div className="pt-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
+            <div className="pt-2">
+              <h3 className="font-semibold text-white mb-4">
+                {t('contact.followUs')}
+              </h3>
               <div className="flex gap-3">
                 <a
-                  href="#"
-                  className="w-12 h-12 bg-white rounded-lg shadow-md hover:shadow-lg flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-all duration-300"
+                  href="https://www.facebook.com/profile.php?id=61581642350013"
+                  className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 flex items-center justify-center text-amber-300 hover:text-amber-200 transition-all duration-300"
                 >
                   <Facebook className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
-                  className="w-12 h-12 bg-white rounded-lg shadow-md hover:shadow-lg flex items-center justify-center text-pink-600 hover:bg-pink-50 transition-all duration-300"
-                >
-                  <Instagram className="w-5 h-5" />
                 </a>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="md:col-span-3">
-            <Card className="border-none shadow-xl">
-              <CardContent className="p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Send us a message
+          <div className="md:col-span-3 flex flex-col">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 flex flex-col h-full">
+              <div className="p-6 md:p-8 h-full flex flex-col">
+                <h2 className="text-2xl font-bold text-white mb-6">
+                  {t('contact.sendMessage')}
                 </h2>
-                <div className="space-y-5">
+                <div className="space-y-5 flex-1">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
+                    <label className="block text-sm font-medium text-white mb-2">
+                      {t('contact.fullName')}
                     </label>
                     <Input
                       type="text"
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleChange}
-                      placeholder="John Doe"
-                      className="h-12"
                     />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {t('contact.emailAddress')}
                       </label>
                       <Input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="john@example.com"
-                        className="h-12"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number
+                      <label className="block text-sm font-medium text-white mb-2">
+                        {t('contact.phoneNumber')}
                       </label>
                       <Input
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+1 (555) 000-0000"
-                        className="h-12"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Message
+                  <div className="flex-1 flex flex-col">
+                    <label className="block text-sm font-medium text-white mb-2">
+                      {t('contact.message')}
                     </label>
                     <Textarea
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      placeholder="Tell us about your property needs..."
                       rows={6}
-                      className="resize-none"
                     />
                   </div>
 
-                  <Button
-                    onClick={handleSubmit}
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base"
-                  >
-                    <Send className="w-5 h-5 mr-2" />
-                    Send Message
+                  <Button className="w-full" onClick={handleSubmit}>
+                    <Send className="w-5 h-5" />
+                    {t('contact.send')}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>

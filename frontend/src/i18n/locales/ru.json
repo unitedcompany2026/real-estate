@@ -2,51 +2,95 @@
   "common": {
     "loading": "Загрузка...",
     "error": "Ошибка",
-    "success": "Успех",
+    "success": "Успешно",
     "cancel": "Отмена",
     "save": "Сохранить",
     "delete": "Удалить",
     "edit": "Редактировать",
     "add": "Добавить",
     "search": "Поиск",
-    "noResults": "Результаты не найдены",
-    "seeAll": "Увидеть все"
+    "noResults": "Ничего не найдено",
+    "seeAll": "Показать все"
   },
+
   "nav": {
     "home": "Главная",
+    "ourProjects": "Наши проекты",
+    "partnerProjects": "Проекты от застройщиков",
+    "properties": "Недвижимость",
     "projects": "Проекты",
-    "partners": "Партнеры",
+    "partners": "Партнёры",
     "about": "О нас",
-    "contact": "Контакты"
+    "contact": "Контакты",
+    "allProjects": "Все проекты",
+    "property": "Объект"
   },
+  "contact": {
+    "address": "Адрес",
+    "phone": "Телефон",
+    "email": "Электронная почта",
+    "fullName": "ФИО",
+    "emailAddress": "Электронная почта",
+    "phoneNumber": "Номер телефона",
+    "message": "Сообщение",
+    "send": "Отправить",
+    "sendMessage": "Отправьте сообщение",
+    "followUs": "Следите за нами",
+    "locationGeorgia": "Батуми, улица Адлия #1",
+    "locationIsrael": "Вифлеем - Аль-Доха"
+  },
+  "home": {
+    "findYourDreamProperty": "Найдите недвижимость вашей мечты",
+    "findMore": "Узнать больше",
+    "projectsFromDevelopers": "Проекты от застройщиков",
+    "apartmentsForSale": "Квартиры на продажу",
+    "apartmentsForRent": "Квартиры в аренду",
+    "commercial": "Коммерческая недвижимость",
+    "landForSale": "Земля на продажу",
+    "featuredProperties": "Популярные объекты",
+    "seeAll": "Смотреть все →",
+    "priceOnRequest": "Цена по запросу",
+    "rooms": "Комнаты",
+    "area": "Площадь",
+    "perSquareMeter": "/ м²"
+  },
+
+  "auth": {
+    "admin": "Администратор",
+    "logout": "Выйти",
+    "signingOut": "Выход..."
+  },
+
   "projects": {
-    "title": "Проекты",
+    "title": "Проекты от застройщиков",
     "addProject": "Добавить проект",
     "editProject": "Редактировать проект",
     "deleteProject": "Удалить проект",
     "projectName": "Название проекта",
     "projectLocation": "Местоположение проекта",
-    "partner": "Партнер",
+    "partner": "Партнёр",
     "image": "Изображение",
     "translations": "Переводы",
     "details": "Детали",
-    "noProjects": "Проектов нет",
+    "noProjects": "Нет проектов",
     "createSuccess": "Проект успешно создан",
-    "updateSuccess": "Проект успешно обновлен",
-    "deleteSuccess": "Проект успешно удален",
+    "updateSuccess": "Проект успешно обновлён",
+    "deleteSuccess": "Проект успешно удалён",
     "deleteConfirm": "Вы уверены, что хотите удалить этот проект?"
   },
+
   "partners": {
-    "title": "Партнеры",
-    "addPartner": "Добавить партнера",
-    "editPartner": "Редактировать партнера",
-    "deletePartner": "Удалить партнера",
+    "title": "Партнёры",
+    "addPartner": "Добавить партнёра",
+    "editPartner": "Редактировать партнёра",
+    "deletePartner": "Удалить партнёра",
     "companyName": "Название компании",
-    "noPartners": "Партнеров нет",
-    "createSuccess": "Партнер успешно создан",
-    "updateSuccess": "Партнер успешно обновлен",
-    "deleteSuccess": "Партнер успешно удален"
+    "noPartners": "Нет партнёров",
+    "createSuccess": "Партнёр успешно создан",
+    "updateSuccess": "Партнёр успешно обновлён",
+    "deleteSuccess": "Партнёр успешно удалён"
   },
+
   "translations": {
     "addTranslation": "Добавить перевод",
     "editTranslation": "Редактировать перевод",
@@ -56,22 +100,38 @@
     "noTranslations": "Переводов пока нет",
     "saveTranslation": "Сохранить перевод"
   },
-  "search": {
-    "propertyType": "Property Type",
-    "location": "Location",
-    "locationPlaceholder": "City, Address, ID",
-    "rooms": "Rooms",
-    "any": "Any",
-    "allTypes": "All Types",
-    "apartment": "Apartment",
-    "house": "House",
-    "commercial": "Commercial",
-    "search": "Search"
+
+  "cover": {
+    "exploreTitle": "Квартиры и новые застройки",
+    "exploreDescription": "Найдите идеальную недвижимость в лучших локациях",
+    "sellTitle": "Хотите продать квартиру, дом или землю?",
+    "sellDescription": "Разместите свой объект и быстро найдите покупателя",
+    "addProperty": "Добавить объект"
   },
+
+  "search": {
+    "propertyType": "Тип недвижимости",
+    "location": "Локация",
+    "locationPlaceholder": "Город, адрес, ID",
+    "rooms": "Комнаты",
+    "any": "Любой",
+    "allTypes": "Все типы",
+    "apartment": "Квартира",
+    "house": "Дом",
+    "commercial": "Коммерческая",
+    "search": "Поиск"
+  },
+
   "categories": {
-    "apartments": "Apartments from Developers",
-    "apartmentsDesc": "Find your perfect home",
-    "projects": "Construction Projects",
-    "projectsDesc": "Explore new developments"
+    "constructionProjects": "Строительные проекты",
+    "apartmentsFromDevelopers": "Квартиры от застройщиков",
+    "residentialApartments": "Жилые квартиры",
+    "commercialProperties": "Коммерческая недвижимость",
+    "landsForSale": "Земельные участки",
+    "projectsCount": "{{count}} проектов",
+    "apartmentsCount": "{{count}} квартир",
+    "residentialCount": "{{count}} квартир",
+    "commercialCount": "{{count}} объектов",
+    "landsCount": "{{count}} участков"
   }
 }
