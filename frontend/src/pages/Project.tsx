@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useProject } from '@/lib/hooks/useProjects'
 import { ProjectImageCarousel } from '@/components/pages/projects/ProjectImageCarousel'
 import { ProjectApartmentCard } from '@/components/pages/projects/ProjectApartmentCard'
+import { useTranslation } from 'react-i18next'
 
 const getQuarter = (dateString: string | null | undefined): string | null => {
   if (!dateString) return null
@@ -17,6 +18,7 @@ const getQuarter = (dateString: string | null | undefined): string | null => {
 }
 
 export default function ProjectPage() {
+  const { t } = useTranslation()
   const { id } = useParams()
   const navigate = useNavigate()
   const projectId = Number(id)
@@ -38,10 +40,10 @@ export default function ProjectPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-blue-900 animate-spin" />
-          <p className="text-gray-600">Loading project details...</p>
+          <p className="text-gray-600">{t('projectPage.loadingProject')}</p>
         </div>
       </div>
     )
@@ -49,20 +51,20 @@ export default function ProjectPage() {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen  flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Project not found
+            {t('projectPage.projectNotFound')}
           </h2>
           <p className="text-gray-600 mb-4">
-            The project you're looking for doesn't exist or has been removed.
+            {t('projectPage.projectNotFoundDescription')}
           </p>
           <Button
             variant="default"
             size="lg"
             onClick={() => navigate('/projects')}
           >
-            Back to Projects
+            {t('projectPage.backToProjects')}
           </Button>
         </div>
       </div>
@@ -70,98 +72,100 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className="min-h-screen pt-16 pb-24">
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-8 lg:px-16 xl:px-20 ">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
-          <div className="lg:col-span-2 h-[400px] lg:h-[500px]">
-            <ProjectImageCarousel
-              gallery={project.gallery || []}
-              image={project.image || ''}
-              projectName={project.projectName || ''}
-            />
+    <div className="min-h-screen pt-16 pb-12 md:pb-16 lg:pb-24">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 xl:px-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 mb-8 lg:mb-12">
+          <div className="lg:col-span-2">
+            <div className="h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px]">
+              <ProjectImageCarousel
+                gallery={project.gallery || []}
+                image={project.image || ''}
+                projectName={project.projectName || ''}
+              />
+            </div>
           </div>
 
-          <div className="lg:col-span-1 h-[400px] lg:h-[500px]">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5 h-full flex flex-col sticky top-8">
-              <div className="mb-4 pb-4 border-b-2 border-gray-300">
-                <h1 className="text-xl font-bold text-gray-900 mb-1">
-                  {project.projectName || 'No name'}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-5 lg:p-6 lg:sticky lg:top-20">
+              <div className="mb-4 sm:mb-5 pb-4 border-b-2 border-gray-300">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
+                  {project.projectName || t('projectPage.noName')}
                 </h1>
-                <p className="text-sm text-gray-600">
-                  {project.projectLocation || 'No location'}
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {project.projectLocation || t('projectPage.noLocation')}
                 </p>
               </div>
 
-              <div className="space-y-3 mb-4 flex-1   rounded-lg p-4">
-                <div className="flex items-center justify-between py-2.5 border-b border-gray-200">
-                  <span className="text-sm font-medium text-gray-600">
-                    Starting Price
+              <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-5 rounded-lg p-3 sm:p-4">
+                <div className="flex items-center justify-between py-2 sm:py-2.5 border-b border-gray-200">
+                  <span className="text-xs sm:text-sm font-medium text-gray-600">
+                    {t('projectPage.startingPrice')}
                   </span>
-                  <span className="text-lg font-bold text-gray-900">
+                  <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">
                     {project.priceFrom
                       ? `${project.priceFrom.toLocaleString()}`
-                      : 'N/A'}
+                      : t('projectPage.notAvailable')}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between py-2.5 border-b border-gray-200">
-                  <span className="text-sm font-medium text-gray-600">
-                    Delivery
+                <div className="flex items-center justify-between py-2 sm:py-2.5 border-b border-gray-200">
+                  <span className="text-xs sm:text-sm font-medium text-gray-600">
+                    {t('projectPage.delivery')}
                   </span>
-                  <span className="text-base font-semibold text-blue-900">
+                  <span className="text-sm sm:text-base font-semibold text-blue-900">
                     {project.deliveryDate
                       ? getQuarter(project.deliveryDate)
-                      : 'N/A'}
+                      : t('projectPage.notAvailable')}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between py-2.5 border-b border-gray-200">
-                  <span className="text-sm font-medium text-gray-600">
-                    Floors
+                <div className="flex items-center justify-between py-2 sm:py-2.5 border-b border-gray-200">
+                  <span className="text-xs sm:text-sm font-medium text-gray-600">
+                    {t('projectPage.floors')}
                   </span>
-                  <span className="text-base font-semibold text-gray-900">
-                    {project.numFloors || 'N/A'}
+                  <span className="text-sm sm:text-base font-semibold text-gray-900">
+                    {project.numFloors || t('projectPage.notAvailable')}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between py-2.5">
-                  <span className="text-sm font-medium text-gray-600">
-                    Total Units
+                <div className="flex items-center justify-between py-2 sm:py-2.5">
+                  <span className="text-xs sm:text-sm font-medium text-gray-600">
+                    {t('projectPage.totalUnits')}
                   </span>
-                  <span className="text-base font-semibold text-gray-900">
-                    {project.numApartments || 'N/A'}
+                  <span className="text-sm sm:text-base font-semibold text-gray-900">
+                    {project.numApartments || t('projectPage.notAvailable')}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-2.5 pt-3 mt-auto">
+              <div className="space-y-2 sm:space-y-2.5 pt-3 sm:pt-4">
                 <Button
                   size="lg"
-                  className="w-full bg-blue-900 hover:bg-blue-800 h-12"
+                  className="w-full bg-blue-900 hover:bg-blue-800 h-10 sm:h-11 lg:h-12 text-sm sm:text-base"
                 >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Show Phone Number
+                  <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
+                  +995 595 80 47 95
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full border-green-600 text-green-600 hover:bg-green-50 h-12"
+                  className="w-full border-green-600 text-green-600 hover:bg-green-50 h-10 sm:h-11 lg:h-12 text-sm sm:text-base bg-transparent"
                 >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Contact via WhatsApp
+                  <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
+                  {t('projectPage.contactWhatsApp')}
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div>
+        <div className="mt-8 lg:mt-12">
           {apartments.length > 0 ? (
             <>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Available Apartments
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
+                {t('projectPage.availableApartments')}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
                 {apartments.map(apartment => (
                   <ProjectApartmentCard
                     key={apartment.id}
@@ -171,9 +175,9 @@ export default function ProjectPage() {
               </div>
             </>
           ) : (
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
-              <p className="text-gray-600">
-                No apartments available for this project yet.
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 sm:p-12 text-center">
+              <p className="text-sm sm:text-base text-gray-600">
+                {t('projectPage.noApartments')}
               </p>
             </div>
           )}

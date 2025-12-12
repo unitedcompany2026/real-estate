@@ -42,15 +42,15 @@ const Section = memo(({ section, isLast, isActive, onClick }: any) => (
         <h2
           className={`font-light mb-4 transition-all duration-700 ${
             isActive
-              ? 'text-4xl lg:text-5xl text-blue-400 drop-shadow-[0_0_20px_rgba(59,130,246,0.8)]'
-              : 'text-3xl lg:text-4xl text-white'
+              ? 'text-3xl lg:text-4xl text-blue-400 drop-shadow-[0_0_20px_rgba(59,130,246,0.8)]'
+              : 'text-2xl lg:text-3xl text-white'
           }`}
         >
           {section.title}
         </h2>
 
         <p
-          className={`text-sm lg:text-base mb-4 max-w-md leading-relaxed transition-all duration-700 ${
+          className={`text-xs lg:text-sm mb-4 max-w-md leading-relaxed transition-all duration-700 ${
             isActive ? 'text-blue-100' : 'text-white'
           }`}
         >
@@ -95,7 +95,9 @@ const FeaturesSection = () => {
   const { t } = useTranslation()
 
   const backgroundImages = ['/Feature1.png', '/Feature2.png', '/Feature3.png']
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
+  // Dependency change here: added currentImageIndex to ensure re-calculation on slide change
   const sections = useMemo(
     () => [
       {
@@ -123,10 +125,8 @@ const FeaturesSection = () => {
         }) || []) as string[],
       },
     ],
-    [t]
+    [t, currentImageIndex]
   )
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -134,17 +134,17 @@ const FeaturesSection = () => {
     }, 6000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [backgroundImages.length]) // Added dependency
 
   const nextSlide = useCallback(() => {
     setCurrentImageIndex(prev => (prev + 1) % backgroundImages.length)
-  }, [])
+  }, [backgroundImages.length]) // Added dependency
 
   const prevSlide = useCallback(() => {
     setCurrentImageIndex(prev =>
       prev === 0 ? backgroundImages.length - 1 : prev - 1
     )
-  }, [])
+  }, [backgroundImages.length]) // Added dependency
 
   const goToSlide = useCallback(
     (index: number) => setCurrentImageIndex(index),
@@ -192,10 +192,10 @@ const FeaturesSection = () => {
       <div className="relative z-10 md:hidden h-full">
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/50 to-transparent pointer-events-none" />
         <div className="relative z-20 flex flex-col justify-end pb-16 items-center h-full px-6 text-center">
-          <h2 className="text-3xl font-light text-white mb-4">
+          <h2 className="text-2xl font-light text-white mb-4">
             {currentMobileSection.title}
           </h2>
-          <p className="text-white text-sm lg:text-base mb-4 max-w-sm leading-relaxed">
+          <p className="text-white text-xs lg:text-sm mb-4 max-w-sm leading-relaxed">
             {currentMobileSection.description}
           </p>
           <div className="flex flex-wrap justify-center gap-2">

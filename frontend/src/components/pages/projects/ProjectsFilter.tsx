@@ -111,11 +111,11 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
           >
             <SlidersHorizontal className="w-5 h-5" />
             <span className="font-semibold">
-              {t('projects.filters.title', { defaultValue: 'Filters' })}
+              {t('filters.title', { defaultValue: 'Filters' })}
             </span>
             {hasActiveFilters && (
               <span className="bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                {t('projects.filters.active', { defaultValue: 'Active' })}
+                {t('filters.active', { defaultValue: 'Active' })}
               </span>
             )}
           </Button>
@@ -130,10 +130,10 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
               <div className="p-2 bg-blue-500 rounded-lg">
                 <SlidersHorizontal className="w-6 h-6 text-white" />
               </div>
-              {t('projects.filters.title', { defaultValue: 'Filters' })}
+              {t('filters.title', { defaultValue: 'Filters' })}
             </SheetTitle>
             <SheetDescription>
-              {t('projects.filters.description', {
+              {t('filters.description', {
                 defaultValue:
                   'Customize your project search with these filters',
               })}
@@ -147,7 +147,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                 className="text-base font-semibold text-foreground flex items-center gap-2"
               >
                 <div className="w-1 h-5 bg-blue-500 rounded-full" />
-                {t('projects.filters.location', { defaultValue: 'Location' })}
+                {t('filters.location', { defaultValue: 'Location' })}
               </Label>
               <Select
                 value={filters.location}
@@ -160,14 +160,14 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                   className="h-12 border-2 focus:border-blue-500 transition-colors"
                 >
                   <SelectValue
-                    placeholder={t('projects.filters.allLocations', {
+                    placeholder={t('filters.allLocations', {
                       defaultValue: 'All Locations',
                     })}
                   />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all" className="font-medium">
-                    {t('projects.filters.allLocations', {
+                    {t('filters.allLocations', {
                       defaultValue: 'All Locations',
                     })}
                   </SelectItem>
@@ -189,7 +189,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                 className="text-base font-semibold text-foreground flex items-center gap-2"
               >
                 <div className="w-1 h-5 bg-blue-400 rounded-full" />
-                {t('projects.filters.partner', { defaultValue: 'Developer' })}
+                {t('filters.partner', { defaultValue: 'Developer' })}
               </Label>
               <Select
                 value={filters.partnerId}
@@ -202,14 +202,14 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                   className="h-12 border-2 focus:border-blue-400 transition-colors"
                 >
                   <SelectValue
-                    placeholder={t('projects.filters.allPartners', {
+                    placeholder={t('filters.allPartners', {
                       defaultValue: 'All Developers',
                     })}
                   />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all" className="font-medium">
-                    {t('projects.filters.allPartners', {
+                    {t('filters.allPartners', {
                       defaultValue: 'All Developers',
                     })}
                   </SelectItem>
@@ -232,14 +232,14 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                   className="text-base font-semibold text-foreground flex items-center gap-2"
                 >
                   <div className="w-1 h-5 bg-blue-500 rounded-full" />
-                  {t('projects.filters.priceFrom', {
+                  {t('filters.priceFrom', {
                     defaultValue: 'Min Price',
                   })}
                 </Label>
                 <span className="text-lg font-bold text-blue-600">
                   {filters.priceFrom > 0
                     ? `$${filters.priceFrom.toLocaleString()}`
-                    : t('projects.filters.any', { defaultValue: 'Any' })}
+                    : t('filters.any', { defaultValue: 'Any' })}
                 </span>
               </div>
 
@@ -272,7 +272,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                 size="lg"
               >
                 <Search className="w-5 h-5 mr-2" />
-                {t('projects.filters.apply', { defaultValue: 'Apply Filters' })}
+                {t('filters.apply', { defaultValue: 'Apply Filters' })}
               </Button>
 
               {hasActiveFilters && (
@@ -283,7 +283,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                   size="lg"
                 >
                   <X className="w-5 h-5 mr-2" />
-                  {t('projects.filters.clear', {
+                  {t('filters.clear', {
                     defaultValue: 'Clear All Filters',
                   })}
                 </Button>

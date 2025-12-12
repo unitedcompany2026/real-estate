@@ -79,7 +79,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full bg-[#F2F5FF] border-b border-gray-200 shadow-sm">
+    <header className="px-6 sm:px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full bg-[#F2F5FF]/60 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
       <div className="flex h-20 items-center justify-between">
         <Link
           to={ROUTES.HOME}
@@ -97,26 +97,30 @@ export default function Header() {
         </Link>
 
         <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
-          <nav className="flex items-center gap-5">
+          <nav className="flex items-center gap-1">
             {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.isComingSoon ? '#' : item.path}
                 onClick={e => item.isComingSoon && e.preventDefault()}
                 className={cn(
-                  'relative px-4 py-1.5 text-[15px] font-semibold rounded-lg transition-all duration-300',
-                  isActive(item.path) && !item.isComingSoon
-                    ? 'text-white !bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-2 border-blue-700'
-                    : item.isComingSoon
-                      ? 'text-gray-400 cursor-not-allowed !bg-gray-100 border-2 border-gray-200'
-                      : 'text-gray-800 hover:text-blue-700 hover:bg-blue-50 bg-white border-2 border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-md'
+                  'relative px-4 py-2 text-[15px] font-medium transition-all duration-300 group/nav',
+                  item.isComingSoon
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-700 hover:text-blue-600'
                 )}
               >
                 <span className={cn(item.isComingSoon && 'line-through')}>
                   {item.label}
                 </span>
+                {isActive(item.path) && !item.isComingSoon && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-[calc(100%-2rem)] bg-gradient-to-r from-blue-600 to-blue-700 rounded-full" />
+                )}
+                {!item.isComingSoon && !isActive(item.path) && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-0 bg-blue-400 rounded-full transition-all duration-300 group-hover/nav:w-[calc(100%-2rem)]" />
+                )}
                 {item.isComingSoon && (
-                  <span className="absolute -top-2 -right-2 text-[9px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-2 py-0.5 rounded-full shadow-sm">
+                  <span className="absolute -top-1 -right-1 text-[9px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-2 py-0.5 rounded-full shadow-sm">
                     SOON
                   </span>
                 )}
@@ -140,7 +144,7 @@ export default function Header() {
                   size="sm"
                   onClick={handleSignOut}
                   disabled={signOut.isPending}
-                  className="gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-10 px-4 rounded-lg transition-all border-2 border-gray-200 hover:border-red-300 font-semibold shadow-sm hover:shadow-md"
+                  className="gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-10 px-4 rounded-lg transition-all font-medium"
                 >
                   <LogOut className="h-4 w-4" />
                   <span className="text-sm font-medium">
@@ -169,8 +173,8 @@ export default function Header() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-200 py-4 animate-fade-in">
-          <nav className="flex flex-col gap-2">
+        <div className="lg:hidden border-t border-gray-200/50 py-4 animate-fade-in bg-[#F2F5FF]/60 backdrop-blur-md">
+          <nav className="flex flex-col gap-1">
             {navItems.map(item => (
               <Link
                 key={item.path}
@@ -183,17 +187,20 @@ export default function Header() {
                   }
                 }}
                 className={cn(
-                  'relative flex items-center justify-between px-4 py-3 text-base font-bold rounded-xl transition-all duration-200 border-2',
-                  isActive(item.path) && !item.isComingSoon
-                    ? 'text-white bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg border-blue-700'
-                    : item.isComingSoon
-                      ? 'text-gray-400 bg-gray-100 border-gray-200'
-                      : 'text-gray-800 hover:bg-blue-50 bg-white border-gray-200 hover:border-blue-300 shadow-sm'
+                  'relative flex items-center justify-between px-4 py-3 text-base font-medium transition-all duration-200',
+                  item.isComingSoon
+                    ? 'text-gray-400'
+                    : isActive(item.path)
+                      ? 'text-blue-600 bg-blue-50/50'
+                      : 'text-gray-700 hover:bg-white/60'
                 )}
               >
                 <span className={cn(item.isComingSoon && 'line-through')}>
                   {item.label}
                 </span>
+                {isActive(item.path) && !item.isComingSoon && (
+                  <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+                )}
                 {item.isComingSoon && (
                   <span className="text-[10px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-2 py-1 rounded-full shadow-sm">
                     COMING SOON
@@ -208,7 +215,7 @@ export default function Header() {
               <div className="h-12 w-full animate-pulse rounded-lg bg-gray-200" />
             ) : user ? (
               <>
-                <div className="px-4 py-2 bg-blue-50 rounded-lg border-2 border-blue-200">
+                <div className="px-4 py-2 bg-blue-50/70 rounded-lg">
                   <p className="text-sm font-bold text-gray-900">Admin</p>
                   <p className="text-xs font-semibold text-gray-700 mt-0.5">
                     {t('auth.admin', { defaultValue: 'Admin' })}
@@ -218,7 +225,7 @@ export default function Header() {
                   variant="ghost"
                   onClick={handleSignOut}
                   disabled={signOut.isPending}
-                  className="w-full gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-11 justify-start rounded-lg border-2 border-gray-200 hover:border-red-300 font-semibold shadow-sm hover:shadow-md"
+                  className="w-full gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-11 justify-start rounded-lg font-medium"
                 >
                   <LogOut className="h-4 w-4" />
                   <span className="font-medium">

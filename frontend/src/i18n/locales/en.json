@@ -10,7 +10,9 @@
     "add": "Add",
     "search": "Search",
     "noResults": "No results found",
-    "seeAll": "See All"
+    "seeAll": "See All",
+    "company": "Construction Company",
+    "allRightsReserved": "All rights reserved."
   },
 
   "nav": {
@@ -23,8 +25,11 @@
     "about": "About",
     "contact": "Contact",
     "allProjects": "All Projects",
-    "property": "Property"
+    "property": "Property",
+    "quickLinks": "Quick Links",
+    "company": "Company"
   },
+
   "contact": {
     "title": "Contact Us",
     "sendMessage": "Send us a message",
@@ -40,8 +45,10 @@
     "locationIsrael": "Bethlehem - Al-doha",
     "followUs": "Follow Us",
     "formSubmitted": "Your message has been sent",
-    "formError": "Something went wrong, please try again"
+    "formError": "Something went wrong, please try again",
+    "getInTouch": "Get in touch"
   },
+
   "home": {
     "findYourDreamProperty": "Find Your Dream Property",
     "findMore": "Find More",
@@ -67,7 +74,6 @@
       "Smart Home Tech",
       "Premium Location"
     ],
-
     "featuresSectionTitleEmaar": "Emaar Eagle Hills",
     "featuresSectionDescriptionEmaar": "A world-class waterfront development by Emaar, combining luxury residential living with stunning marina views.",
     "featuresSectionFeaturesEmaar": [
@@ -75,7 +81,6 @@
       "Luxury Residences",
       "Resort Amenities"
     ],
-
     "featuresSectionTitleAmbassadori": "Ambassadori Island",
     "featuresSectionDescriptionAmbassadori": "An exclusive island development offering unparalleled luxury living with panoramic sea views and world-class facilities.",
     "featuresSectionFeaturesAmbassadori": [
@@ -83,7 +88,6 @@
       "Waterfront Living",
       "Premium Lifestyle"
     ],
-
     "featuresPrev": "Previous Project",
     "featuresNext": "Next Project",
     "featuresSlideLabel": "Project Gallery"
@@ -97,19 +101,16 @@
     "year": "year",
     "years": "years",
     "loading": "Loading...",
-
     "interest": "Interest",
     "downPaymentLabel": "Down Payment",
     "principal": "Principal",
-
     "monthlyPayment": "Monthly Payment",
     "interestRate": "Interest Rate per Year",
-
     "loanAmountAfterDown": "Loan Amount (after down payment)",
     "totalPayment": "Total Payment (including down payment)",
-
     "requestLoan": "Request a Loan"
   },
+
   "auth": {
     "admin": "Admin",
     "logout": "Logout",
@@ -131,7 +132,52 @@
     "createSuccess": "Project created successfully",
     "updateSuccess": "Project updated successfully",
     "deleteSuccess": "Project deleted successfully",
-    "deleteConfirm": "Are you sure you want to delete this project?"
+    "deleteConfirm": "Are you sure you want to delete this project?",
+    "totalProjects": "{{count}} projects found",
+    "errorLoading": "Error loading projects",
+    "tryDifferentFilters": "Try adjusting your filters"
+  },
+
+  "projectPage": {
+    "loadingProject": "Loading project details...",
+    "projectNotFound": "Project not found",
+    "projectNotFoundDescription": "The project you're looking for doesn't exist or has been removed.",
+    "backToProjects": "Back to Projects",
+    "noName": "No name",
+    "noLocation": "No location",
+    "startingPrice": "Starting Price",
+    "delivery": "Delivery",
+    "floors": "Floors",
+    "totalUnits": "Total Units",
+    "showPhoneNumber": "Show Phone Number",
+    "contactWhatsApp": "Contact via WhatsApp",
+    "availableApartments": "Available Apartments",
+    "noApartments": "No apartments available for this project yet.",
+    "notAvailable": "N/A"
+  },
+
+  "apartmentCard": {
+    "roomApartment": "{{count}}-room apartment",
+    "area": "Area",
+    "noImages": "No images available",
+    "noDescription": "No description available for this apartment.",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "goToImage": "Go to image {{number}}"
+  },
+
+  "filters": {
+    "title": "Filters",
+    "active": "Active",
+    "description": "Customize your project search with these filters",
+    "location": "Location",
+    "allLocations": "All Locations",
+    "partner": "Developer",
+    "allPartners": "All Developers",
+    "priceFrom": "Min Price",
+    "any": "Any",
+    "apply": "Apply Filters",
+    "clear": "Clear All Filters"
   },
 
   "partners": {

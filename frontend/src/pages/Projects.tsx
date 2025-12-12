@@ -28,7 +28,7 @@ export default function Projects() {
     limit: 8,
     location,
     priceFrom,
-    partnerId, // ✅ Add this!
+    partnerId,
   })
 
   const projects = projectsResponse?.data || []

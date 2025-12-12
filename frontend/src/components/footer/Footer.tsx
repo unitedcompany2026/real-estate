@@ -1,26 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-const Logo = ({ className }: { className?: string }) => (
-  <div
-    className={`h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-md ${className}`}
-  >
-    <svg
-      className="w-6 h-6 text-white"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2.5}
-        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-      />
-    </svg>
-  </div>
-)
-
 const PhoneIcon = ({ className }: { className?: string }) => (
   <span className={className}>📞</span>
 )
@@ -43,34 +23,34 @@ export default function Footer() {
   const isActive = (path: string) => pathname === path
 
   const quickLinks = [
-    { path: '/', label: t('nav.home') },
-    { path: '/our-projects', label: t('nav.ourProjects') },
-    { path: '/projects', label: t('nav.projects') },
-    { path: '/properties', label: t('nav.properties') },
+    { path: '/', label: t('nav.home'), isComingSoon: false },
+    { path: '/our-projects', label: t('nav.ourProjects'), isComingSoon: true },
+    { path: '/projects', label: t('nav.projects'), isComingSoon: false },
+    { path: '/properties', label: t('nav.properties'), isComingSoon: false },
   ]
 
-  const companyLinks = [{ path: '/contact', label: t('nav.contact') }]
+  const companyLinks = [
+    { path: '/contact', label: t('nav.contact'), isComingSoon: false },
+  ]
 
   return (
     <footer className="w-full bg-[#F2F5FF] border-t border-gray-200 px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 shadow-[0_-2px_4px_-1px_rgba(0,0,0,0.06)]">
       <div className="container mx-auto pt-12 pb-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
-          {/* Logo Section */}
           <div className="space-y-5 col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-2.5 group cursor-pointer">
-              <Logo />
+            <div className="flex items-center gap-3 group cursor-pointer">
+              <img src="./Logo.png" className="w-24 h-24" alt="Logo" />
               <div className="flex flex-col">
                 <span className="text-base font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors duration-200">
-                  United Construction
+                  United
                 </span>
-                <span className="text-xs font-semibold text-blue-600 leading-tight">
-                  {t('common.company')}
+                <span className="text-xs font-semibold text-gray-700 leading-tight">
+                  Construction and Real Estate
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h3 className="text-base font-bold mb-5 text-gray-900">
               {t('nav.quickLinks')}
@@ -79,22 +59,31 @@ export default function Footer() {
               {quickLinks.map(link => (
                 <li key={link.path}>
                   <a
-                    href={link.path}
+                    href={link.isComingSoon ? '#' : link.path}
+                    onClick={e => link.isComingSoon && e.preventDefault()}
                     className={`text-sm transition-all duration-200 inline-flex items-center gap-2 ${
-                      isActive(link.path)
-                        ? 'text-blue-600 font-semibold'
-                        : 'text-gray-600 hover:text-blue-600 hover:translate-x-1'
+                      link.isComingSoon
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : isActive(link.path)
+                          ? 'text-blue-600 font-semibold'
+                          : 'text-gray-600 hover:text-blue-600 hover:translate-x-1'
                     }`}
                   >
                     <span className="text-blue-600">›</span>
-                    {link.label}
+                    <span className={link.isComingSoon ? 'line-through' : ''}>
+                      {link.label}
+                    </span>
+                    {link.isComingSoon && (
+                      <span className="text-[8px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-1.5 py-0.5 rounded-full shadow-sm ml-1">
+                        SOON
+                      </span>
+                    )}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Company Links */}
           <div>
             <h3 className="text-base font-bold mb-5 text-gray-900">
               {t('nav.company')}
@@ -118,8 +107,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Section */}
-          <div>
+          <div className="hidden md:block">
             <h3 className="text-base font-bold mb-5 text-gray-900">
               {t('contact.getInTouch')}
             </h3>

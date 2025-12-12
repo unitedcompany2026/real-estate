@@ -3,7 +3,6 @@ import { useState, useCallback, useEffect } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 
 import {
-  ArrowLeft,
   MapPin,
   Home,
   Bed,
@@ -15,18 +14,7 @@ import {
   Thermometer,
   Droplet,
   Car,
-  Wind,
-  Wifi,
-  Tv,
-  Flame,
-  Sofa,
-  UtensilsCrossed,
-  WashingMachine,
-  Fence,
-  Shield,
-  Zap,
   CheckCircle2,
-  XCircle,
   Loader2,
   ChevronLeft,
   ChevronRight,

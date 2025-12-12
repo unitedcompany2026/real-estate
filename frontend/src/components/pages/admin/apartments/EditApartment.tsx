@@ -46,7 +46,6 @@ export function EditApartment({
     projectId: apartment.project?.id.toString() || '',
     room: apartment.room.toString(),
     area: apartment.area.toString(),
-    description: apartment.description || '',
   })
 
   const [images, setImages] = useState({
@@ -112,10 +111,7 @@ export function EditApartment({
       data.append('area', formData.area)
       hasUpdates = true
     }
-    if (formData.description !== (apartment.description || '')) {
-      data.append('description', formData.description)
-      hasUpdates = true
-    }
+
     if (
       formData.projectId &&
       formData.projectId !== (apartment.project?.id.toString() || '')
@@ -145,7 +141,6 @@ export function EditApartment({
   const hasChanges =
     formData.room !== apartment.room.toString() ||
     formData.area !== apartment.area.toString() ||
-    formData.description !== (apartment.description || '') ||
     (formData.projectId &&
       formData.projectId !== (apartment.project?.id.toString() || '')) ||
     images.newFiles.length > 0
@@ -263,16 +258,6 @@ export function EditApartment({
                   onChange={e => updateFormField('area', e.target.value)}
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Primary Description (English)</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={e => updateFormField('description', e.target.value)}
-                className="min-h-[120px] resize-y bg-background"
-              />
             </div>
 
             <div className="flex gap-3 pt-4">

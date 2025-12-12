@@ -1,3 +1,6 @@
+ 
+import type React from 'react'
+
 import { useState } from 'react'
 import { Facebook, Mail, Phone, MapPin, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -38,10 +41,10 @@ const Contact = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
-            'url(https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=2070)',
+            'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070)',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-gray-900/80 to-slate-800/75"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/55 via-gray-900/60 to-slate-800/65"></div>
       </div>
 
       <div className="relative z-10 px-6 sm:px-8 md:px-12 lg:px-16 py-10 w-full xl:max-w-7xl">
@@ -63,7 +66,7 @@ const Contact = () => {
               ].map((info, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 space-y-6 flex-1"
+                  className="bg-white/15 backdrop-blur-lg border border-white/25 rounded-2xl p-6 space-y-6 flex-1 shadow-xl"
                 >
                   <div className="flex gap-4">
                     <div className="w-12 h-12 bg-amber-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center shrink-0 border border-amber-400/30">
@@ -128,7 +131,7 @@ const Contact = () => {
               <div className="flex gap-3">
                 <a
                   href="https://www.facebook.com/profile.php?id=61581642350013"
-                  className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 flex items-center justify-center text-amber-300 hover:text-amber-200 transition-all duration-300"
+                  className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-lg border border-white/25 hover:bg-white/25 flex items-center justify-center text-amber-300 hover:text-amber-200 transition-all duration-300 shadow-lg"
                 >
                   <Facebook className="w-5 h-5" />
                 </a>
@@ -138,7 +141,7 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="md:col-span-3 flex flex-col">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 flex flex-col h-full">
+            <div className="bg-white/15 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/25 flex flex-col h-full">
               <div className="p-6 md:p-8 h-full flex flex-col">
                 <h2 className="text-2xl font-bold text-white mb-6">
                   {t('contact.sendMessage')}
