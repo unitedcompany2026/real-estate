@@ -27,9 +27,9 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      # ❌ DON'T sync ./backend - this overwrites uploads!
+      - ./backend:/app # Sync code for hot reload
       - /app/node_modules
-      - ./uploads:/app/public/uploads # ✅ Production uploads (separate folder)
+      - ./backend/public/uploads:/app/public/uploads # Local uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,7 +44,7 @@ services:
     env_file:
       - ./frontend/.env
     volumes:
-      # ❌ DON'T sync ./frontend in production
+      - ./frontend:/app # Sync code for hot reload
       - /app/node_modules
     depends_on:
       - backend
