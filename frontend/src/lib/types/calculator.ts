@@ -1,4 +1,3 @@
-// src/types/calculator.ts
 export interface MortgageRate {
   id: number
   yearFrom: number
@@ -40,13 +39,11 @@ export interface UpdateMortgageRateDto {
   isActive?: boolean
 }
 
-
 export interface MortgageRate {
   id: number
   yearFrom: number
   yearTo: number
   interestRate: number
-  description?: string
   createdAt: string
   updatedAt: string
 }

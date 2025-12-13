@@ -89,7 +89,6 @@ export default function CalculatorPanel() {
           <div className="grid grid-cols-12 gap-4 items-center p-4 bg-muted/50 border-b border-border font-medium text-sm text-muted-foreground">
             <div className="col-span-3">Year Range</div>
             <div className="col-span-3">Interest Rate</div>
-            <div className="col-span-4">Description</div>
             <div className="col-span-2 text-right">Actions</div>
           </div>
 

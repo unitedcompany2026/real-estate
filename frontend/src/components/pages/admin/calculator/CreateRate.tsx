@@ -1,12 +1,9 @@
-import type React from 'react'
 import { useState } from 'react'
 import { X, Save } from 'lucide-react'
 import { useCreateMortgageRate } from '@/lib/hooks/useCalculator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Textarea } from '@/components/ui/textarea'
 
 interface CreateRateProps {
   onBack: () => void
@@ -18,7 +15,6 @@ export function CreateRate({ onBack, onSuccess }: CreateRateProps) {
     yearFrom: 1,
     yearTo: 5,
     interestRate: 5.0,
-    description: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -158,33 +154,6 @@ export function CreateRate({ onBack, onSuccess }: CreateRateProps) {
             </p>
           )}
         </div>
-
-        <div className="space-y-2">
-          <Label
-            htmlFor="description"
-            className="text-sm font-medium text-foreground"
-          >
-            Description (Optional)
-          </Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={e =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="e.g., Standard rate for 1-5 year loans"
-            className="bg-background border border-border"
-            rows={3}
-          />
-        </div>
-
-        {errors.submit && (
-          <Alert variant="destructive" className="border-red-200 bg-red-50">
-            <AlertDescription className="text-red-800">
-              {errors.submit}
-            </AlertDescription>
-          </Alert>
-        )}
 
         <div className="flex gap-3 pt-4">
           <Button

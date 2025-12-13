@@ -26,12 +26,6 @@ export function AdminRateCard({ rate, onEdit, onDelete }: AdminRateCardProps) {
         </span>
       </div>
 
-      <div className="col-span-4">
-        <p className="text-sm text-muted-foreground">
-          {rate.description || 'No description'}
-        </p>
-      </div>
-
       <div className="col-span-2 flex items-center justify-end gap-2">
         <Button
           variant="ghost"

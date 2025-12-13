@@ -1,4 +1,3 @@
-import type React from 'react'
 import { useState } from 'react'
 import { X, Save } from 'lucide-react'
 import { useUpdateMortgageRate } from '@/lib/hooks/useCalculator'
@@ -19,7 +18,6 @@ export function EditRate({ rate, onBack, onSuccess }: EditRateProps) {
     yearFrom: rate.yearFrom,
     yearTo: rate.yearTo,
     interestRate: rate.interestRate,
-    description: rate.description || '',
   })
 
   const updateRate = useUpdateMortgageRate()
@@ -121,25 +119,6 @@ export function EditRate({ rate, onBack, onSuccess }: EditRateProps) {
               })
             }
             className="bg-background border border-border"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label
-            htmlFor="description"
-            className="text-sm font-medium text-foreground"
-          >
-            Description
-          </Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={e =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-            placeholder="e.g., Standard rate for 1-5 year loans"
-            className="bg-background border border-border"
-            rows={3}
           />
         </div>
 

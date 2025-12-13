@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-
 import { useMortgageRates } from '@/lib/hooks/useCalculator'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -131,27 +130,25 @@ const MortgageCalculator = () => {
   }
 
   return (
-    <div className="min-h-auto p-3 md:p-6">
+    <div className="min-h-auto p-3 md:p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 items-center">
-          <div className="bg-white rounded-md p-3 md:p-8">
-            <div className="flex items-center justify-between mb-4 md:mb-8">
-              <h2 className="text-md md:text-2xl font-bold text-gray-900">
-                {t('calculator.title')}
-              </h2>
-            </div>
+        <div className="grid md:grid-cols-2 gap-3 md:gap-4 items-start">
+          <div className="bg-white rounded-md p-4 md:p-5">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
+              {t('calculator.title')}
+            </h2>
 
-            <div className="space-y-4 md:space-y-8">
+            <div className="space-y-4">
               <div>
-                <div className="flex justify-between items-baseline mb-2 md:mb-4">
-                  <label className="text-sm font-medium text-gray-600">
+                <div className="flex justify-between items-baseline mb-2">
+                  <label className="text-xs md:text-sm font-medium text-gray-600">
                     {t('calculator.propertyPrice')}
                   </label>
-                  <div className="text-xl md:text-2xl font-bold text-gray-900">
+                  <div className="text-base md:text-lg font-bold text-gray-900">
                     {formatCurrency(price)} ₾
                   </div>
                 </div>
-                <div className="px-1 py-1 md:py-3">
+                <div className="py-1">
                   <Slider
                     min={10000}
                     max={1000000}
@@ -162,17 +159,16 @@ const MortgageCalculator = () => {
                   />
                 </div>
               </div>
-
               <div>
-                <div className="flex justify-between items-baseline mb-2 md:mb-4">
-                  <label className="text-sm font-medium text-gray-600">
+                <div className="flex justify-between items-baseline mb-2">
+                  <label className="text-xs md:text-sm font-medium text-gray-600">
                     {t('calculator.downPayment')} ({downPaymentPercent}%)
                   </label>
-                  <div className="text-xl md:text-2xl font-bold text-gray-900">
+                  <div className="text-base md:text-lg font-bold text-gray-900">
                     {formatCurrency(downPayment)} ₾
                   </div>
                 </div>
-                <div className="px-1 py-1 md:py-3">
+                <div className="py-1">
                   <Slider
                     min={minDownPayment}
                     max={price}
@@ -183,20 +179,19 @@ const MortgageCalculator = () => {
                   />
                 </div>
               </div>
-
               <div>
-                <div className="flex justify-between items-baseline mb-2 md:mb-4">
-                  <label className="text-sm font-medium text-gray-600">
+                <div className="flex justify-between items-baseline mb-2">
+                  <label className="text-xs md:text-sm font-medium text-gray-600">
                     {t('calculator.loanTerm')}
                   </label>
-                  <div className="text-xl md:text-2xl font-bold text-gray-900">
+                  <div className="text-base md:text-lg font-bold text-gray-900">
                     {years}{' '}
-                    <span className="text-base text-gray-400">
+                    <span className="text-sm text-gray-400">
                       {t('calculator.year')}
                     </span>
                   </div>
                 </div>
-                <div className="px-1 py-1 md:py-3">
+                <div className="py-1">
                   <Slider
                     min={minMonths}
                     max={maxMonths}
@@ -209,9 +204,8 @@ const MortgageCalculator = () => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-md p-3 md:p-6">
-            <div className="flex items-center h-3 md:h-4 rounded-full overflow-hidden mb-3 md:mb-4">
+          <div className="bg-white rounded-md p-4 md:p-5">
+            <div className="flex items-center h-2 md:h-3 rounded-full overflow-hidden mb-3">
               <div
                 className="bg-red-400 h-full"
                 style={{ width: `${interestPercent}%` }}
@@ -225,22 +219,21 @@ const MortgageCalculator = () => {
                 style={{ width: `${principalPercent}%` }}
               />
             </div>
-
-            <div className="flex flex-wrap items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-400"></span>
+            <div className="flex flex-wrap items-center gap-3 text-xs mb-4">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
                 <span className="text-gray-600">
                   {t('calculator.interest')}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-yellow-300"></span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-300"></span>
                 <span className="text-gray-600">
                   {t('calculator.downPaymentLabel')}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-blue-400"></span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
                 <span className="text-gray-600">
                   {t('calculator.principal')}
                 </span>
@@ -249,39 +242,37 @@ const MortgageCalculator = () => {
 
             {result && (
               <>
-                <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-gray-200">
-                  <div className="text-sm text-gray-600 mb-1">
+                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-3 md:p-4 mb-3">
+                  <div className="text-xs md:text-sm text-gray-600 mb-1">
                     {t('calculator.monthlyPayment')}
                   </div>
-                  <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  <div className="text-xl md:text-2xl font-bold text-gray-900">
                     {formatCurrency(result.monthlyPayment)} ₾
                   </div>
-                  <div className="text-sm text-gray-500 mt-2">
+                  <div className="text-xs text-gray-500 mt-1">
                     {t('calculator.interestRate')}: {result.interestRate}%
                   </div>
                 </div>
-
-                <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-gray-200 space-y-2 md:space-y-3">
-                  <div>
-                    <div className="text-sm text-gray-600 mb-1">
+                <div className="space-y-2.5 mb-4">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <div className="text-xs md:text-sm text-gray-600">
                       {t('calculator.loanAmountAfterDown')}
                     </div>
-                    <div className="text-xl md:text-2xl font-bold text-gray-900">
+                    <div className="text-sm md:text-base font-bold text-gray-900">
                       {formatCurrency(result.loanAmount)} ₾
                     </div>
                   </div>
-                  <div>
-                    <div className="text-sm text-gray-600 mb-1">
+                  <div className="flex justify-between items-center py-2">
+                    <div className="text-xs md:text-sm text-gray-600">
                       {t('calculator.totalPayment')}
                     </div>
-                    <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                    <div className="text-sm md:text-base font-bold text-gray-900">
                       {formatCurrency(result.totalPayment + result.downPayment)}{' '}
                       ₾
                     </div>
                   </div>
                 </div>
-
-                <Button className="w-full mt-4 md:mt-6 bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-3 md:py-4 px-6 rounded-md transition-colors">
+                <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium py-2.5 md:py-3 rounded-md transition-colors text-sm md:text-base">
                   {t('calculator.requestLoan')}
                 </Button>
               </>

@@ -49,7 +49,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
         {project.hotSale && (
           <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden pointer-events-none">
             <div className="absolute top-4 -right-8 w-32 bg-linear-to-r from-red-600 to-red-500 text-white text-xs font-bold py-1.5 text-center shadow-lg transform rotate-45">
-              {t('home.hotSale')}
+              HOT SALE
             </div>
           </div>
         )}
