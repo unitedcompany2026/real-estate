@@ -3,16 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
   Query,
+  Res,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { PropertiesService } from './properties.service';
 import {
   ApiBearerAuth,
@@ -36,6 +39,146 @@ import { Region } from '@prisma/client';
 @Controller('properties')
 export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
+
+  @Get('seo-preview/:id')
+  @ApiOperation({
+    summary: 'Internal: Get HTML with meta tags for social media bots',
+  })
+  @ApiParam({ name: 'id', description: 'Property ID' })
+  @Header('Content-Type', 'text/html; charset=utf-8')
+  async getSeoPreview(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const property = await this.propertiesService.findOne(id, 'en', false);
+
+      if (!property) {
+        return res.status(404).send(`
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <title>Property Not Found</title>
+            </head>
+            <body>
+              <h1>Property Not Found</h1>
+            </body>
+          </html>
+        `);
+      }
+
+      const title = property.translation?.title || 'Real Estate in Georgia';
+      const description = (
+        property.translation?.description ||
+        'Premium real estate in Georgia - apartments, villas, and commercial properties'
+      ).substring(0, 160);
+
+      // Handle image URL correctly to avoid duplicate /uploads
+      let imageUrl = 'https://api.unitedcompany.ge/uploads/logo.png';
+
+      if (property.galleryImages && property.galleryImages.length > 0) {
+        const imgPath = property.galleryImages[0].imageUrl;
+
+        if (imgPath) {
+          // If it's already a full URL
+          if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+            imageUrl = imgPath;
+          }
+          // If path already contains 'uploads/' anywhere
+          else if (imgPath.includes('uploads/')) {
+            imageUrl = `https://api.unitedcompany.ge/${imgPath.replace(/^\/+/, '')}`; // Remove leading slashes
+          }
+          // If path starts with /uploads/
+          else if (imgPath.startsWith('/uploads/')) {
+            imageUrl = `https://api.unitedcompany.ge${imgPath}`;
+          }
+          // If path starts with /
+          else if (imgPath.startsWith('/')) {
+            imageUrl = `https://api.unitedcompany.ge${imgPath}`;
+          }
+          // Plain filename without path
+          else {
+            imageUrl = `https://api.unitedcompany.ge/uploads/${imgPath}`;
+          }
+        }
+      }
+
+      const canonicalUrl = `https://unitedcompany.ge/properties/${id}`;
+
+      // Escape HTML special characters
+      const escapeHtml = (text: string): string => {
+        const map: { [key: string]: string } = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;',
+        };
+        return text.replace(/[&<>"']/g, (m) => map[m]);
+      };
+
+      const safeTitle = escapeHtml(title);
+      const safeDescription = escapeHtml(description);
+
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${safeTitle}</title>
+  <meta name="description" content="${safeDescription}" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${canonicalUrl}" />
+  <meta property="og:title" content="${safeTitle}" />
+  <meta property="og:description" content="${safeDescription}" />
+  <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:image:secure_url" content="${imageUrl}" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="United Company" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${safeTitle}" />
+  <meta name="twitter:description" content="${safeDescription}" />
+  <meta name="twitter:image" content="${imageUrl}" />
+  <meta name="twitter:site" content="@unitedcompany" />
+
+  <!-- Redirect non-bots to React app -->
+  <script>
+    if (!/bot|crawler|spider|crawling|facebookexternalhit|whatsapp|twitter|telegram|linkedin|discord|slack/i.test(navigator.userAgent)) {
+      window.location.href = "${canonicalUrl}";
+    }
+  </script>
+</head>
+<body>
+  <h1>${safeTitle}</h1>
+  <img src="${imageUrl}" alt="${safeTitle}" style="max-width:100%; height:auto;" />
+  <p>${safeDescription}</p>
+  <p>If you're not redirected, <a href="${canonicalUrl}">click here</a>.</p>
+</body>
+</html>`;
+
+      return res.send(html);
+    } catch (error) {
+      console.error('❌ Error in getSeoPreview:', error);
+      return res.status(500).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Error</title>
+          </head>
+          <body>
+            <h1>Internal Server Error</h1>
+            <p>${error instanceof Error ? error.message : 'Unknown error'}</p>
+          </body>
+        </html>
+      `);
+    }
+  }
 
   @Get()
   @ApiOperation({
