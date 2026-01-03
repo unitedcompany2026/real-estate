@@ -1,7 +1,5 @@
 version: "3.8"
 
-name: realestate-prod
-
 services:
   postgres:
     image: postgres:15-alpine
