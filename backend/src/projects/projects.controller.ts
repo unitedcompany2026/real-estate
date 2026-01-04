@@ -49,10 +49,11 @@ export class ProjectsController {
   @Header('Content-Type', 'text/html; charset=utf-8')
   async getSeoPreview(
     @Param('id', ParseIntPipe) id: number,
+    @Query('lang') lang: string = 'en',
     @Res() res: Response,
   ) {
     try {
-      const project = await this.projectsService.findOne(id, 'en');
+      const project = await this.projectsService.findOne(id, lang);
 
       if (!project) {
         return res.status(404).send(`

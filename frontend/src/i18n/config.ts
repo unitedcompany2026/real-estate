@@ -22,7 +22,6 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    lng: 'en',
     debug: false,
 
     interpolation: {
@@ -30,10 +29,17 @@ i18n
     },
 
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['querystring', 'localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
+      lookupQuerystring: 'lang',
       lookupLocalStorage: 'i18nextLng',
     },
   })
+
+i18n.on('languageChanged', lng => {
+  const url = new URL(window.location.href)
+  url.searchParams.set('lang', lng)
+  window.history.replaceState({}, '', url.toString())
+})
 
 export default i18n
