@@ -5,16 +5,18 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import enTranslations from './locales/en.json'
 import kaTranslations from './locales/ka.json'
 import ruTranslations from './locales/ru.json'
-import isTranslations from './locales/he.json'
+import heTranslations from './locales/he.json'
 import arTranslations from './locales/ar.json'
 
 const resources = {
   en: { translation: enTranslations },
   ka: { translation: kaTranslations },
   ru: { translation: ruTranslations },
-  he: { translation: isTranslations },
+  he: { translation: heTranslations },
   ar: { translation: arTranslations },
 }
+
+const SUPPORTED_LANGS = ['en', 'ka', 'ru', 'he', 'ar']
 
 i18n
   .use(LanguageDetector)
@@ -30,16 +32,32 @@ i18n
 
     detection: {
       order: ['querystring', 'localStorage', 'navigator', 'htmlTag'],
-      caches: ['localStorage'],
       lookupQuerystring: 'lang',
       lookupLocalStorage: 'i18nextLng',
+      caches: ['localStorage'],
     },
   })
 
-i18n.on('languageChanged', lng => {
+/**
+ * ✅ Ensure ?lang= is ALWAYS present
+ */
+const syncLangToUrl = (lng: string) => {
+  if (!SUPPORTED_LANGS.includes(lng)) return
+
   const url = new URL(window.location.href)
-  url.searchParams.set('lang', lng)
-  window.history.replaceState({}, '', url.toString())
+
+  if (url.searchParams.get('lang') !== lng) {
+    url.searchParams.set('lang', lng)
+    window.history.replaceState({}, '', url.toString())
+  }
+}
+
+// ✅ Handle FIRST load
+syncLangToUrl(i18n.language)
+
+// ✅ Handle language changes
+i18n.on('languageChanged', lng => {
+  syncLangToUrl(lng)
 })
 
 export default i18n
