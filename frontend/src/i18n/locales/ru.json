@@ -247,6 +247,35 @@
       "clear": "Сбросить"
     }
   },
+  "property": {
+    "amenitiesTitle": "Удобства и особенности",
+    "amenities": {
+      "conditioner": "Кондиционер",
+      "furniture": "Мебель",
+      "bed": "Кровать",
+      "sofa": "Диван",
+      "table": "Стол",
+      "chairs": "Стулья",
+      "stove": "Плита",
+      "refrigerator": "Холодильник",
+      "oven": "Духовка",
+      "washingMachine": "Стиральная машина",
+      "kitchenAppliances": "Кухонная техника",
+      "balcony": "Балкон",
+      "naturalGas": "Природный газ",
+      "internet": "Интернет",
+      "tv": "Телевизор",
+      "sewerage": "Канализация",
+      "fenced": "Огороженная территория",
+      "yardLighting": "Освещение двора",
+      "grill": "Гриль",
+      "alarm": "Сигнализация",
+      "ventilation": "Вентиляция",
+      "water": "Водоснабжение",
+      "electricity": "Электричество",
+      "gate": "Ворота"
+    }
+  },
   "meta": {
     "home": {
       "title": "United Construction and Real Estate | Премиум недвижимость в Батуми",

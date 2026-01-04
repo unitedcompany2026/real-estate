@@ -174,8 +174,8 @@ model Property {
   propertyType    PropertyType     @map("property_type")
   dealType        DealType         @map("deal_type")
   location        String?         
-  region          Region?          // Region enum (BATUMI, KOBULETI, etc.)
-  address         String?          // Street address
+  region          Region?      
+  address         String?         
   price           Int?
   hotSale         Boolean          @map("hot_sale") @default(false)
   public          Boolean          @default(true)
@@ -240,7 +240,7 @@ model PropertyTranslations {
   language        String
   
   title           String
-  address         String?  // Translatable street address
+  address         String?   
   description     String?  @db.Text
 
   @@unique([propertyId, language])

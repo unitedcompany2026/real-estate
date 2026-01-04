@@ -247,6 +247,35 @@
       "clear": "ფილტრების გასუფთავება"
     }
   },
+  "property": {
+    "amenitiesTitle": "კომფორტი და მახასიათებლები",
+    "amenities": {
+      "conditioner": "კონდიციონერი",
+      "furniture": "ავეჯი",
+      "bed": "საწოლი",
+      "sofa": "დივანი",
+      "table": "მაგიდა",
+      "chairs": "სკამები",
+      "stove": "ქურა",
+      "refrigerator": "მაცივარი",
+      "oven": "ღუმელი",
+      "washingMachine": "სარეცხი მანქანა",
+      "kitchenAppliances": "სამზარეულოს ტექნიკა",
+      "balcony": "აივანი",
+      "naturalGas": "ბუნებრივი გაზი",
+      "internet": "ინტერნეტი",
+      "tv": "ტელევიზორი",
+      "sewerage": "კანალიზაცია",
+      "fenced": "შემოღობილი",
+      "yardLighting": "ეზოს განათება",
+      "grill": "გრილი",
+      "alarm": "სიგნალიზაცია",
+      "ventilation": "ვენტილაცია",
+      "water": "წყალმომარაგება",
+      "electricity": "ელექტროენერგია",
+      "gate": "ჭიშკარი"
+    }
+  },
   "meta": {
     "home": {
       "title": "United Construction and Real Estate | პრემიუმ უძრავი ქონება ბათუმში",

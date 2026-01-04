@@ -243,6 +243,35 @@
       "clear": "נקה מסננים"
     }
   },
+  "property": {
+    "amenitiesTitle": "נוחות ומאפיינים",
+    "amenities": {
+      "conditioner": "מזגן",
+      "furniture": "ריהוט",
+      "bed": "מיטה",
+      "sofa": "ספה",
+      "table": "שולחן",
+      "chairs": "כיסאות",
+      "stove": "כיריים",
+      "refrigerator": "מקרר",
+      "oven": "תנור",
+      "washingMachine": "מכונת כביסה",
+      "kitchenAppliances": "מכשירי מטבח",
+      "balcony": "מרפסת",
+      "naturalGas": "גז טבעי",
+      "internet": "אינטרנט",
+      "tv": "טלוויזיה",
+      "sewerage": "ביוב",
+      "fenced": "מגודר",
+      "yardLighting": "תאורת חצר",
+      "grill": "גריל",
+      "alarm": "מערכת אזעקה",
+      "ventilation": "אוורור",
+      "water": "אספקת מים",
+      "electricity": "חשמל",
+      "gate": "שער"
+    }
+  },
   "meta": {
     "home": {
       "title": "United Construction and Real Estate | נכסי פרימיום בבאטומי",

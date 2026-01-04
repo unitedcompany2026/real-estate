@@ -247,6 +247,35 @@
       "clear": "مسح الفلاتر"
     }
   },
+  "property": {
+    "amenitiesTitle": "المرافق والميزات",
+    "amenities": {
+      "conditioner": "مكيف هواء",
+      "furniture": "أثاث",
+      "bed": "سرير",
+      "sofa": "أريكة",
+      "table": "طاولة",
+      "chairs": "كراسي",
+      "stove": "موقد",
+      "refrigerator": "ثلاجة",
+      "oven": "فرن",
+      "washingMachine": "غسالة",
+      "kitchenAppliances": "أجهزة المطبخ",
+      "balcony": "شرفة",
+      "naturalGas": "غاز طبيعي",
+      "internet": "إنترنت",
+      "tv": "تلفزيون",
+      "sewerage": "صرف صحي",
+      "fenced": "مسور",
+      "yardLighting": "إضاءة الفناء",
+      "grill": "شواية",
+      "alarm": "نظام إنذار",
+      "ventilation": "تهوية",
+      "water": "إمداد المياه",
+      "electricity": "كهرباء",
+      "gate": "بوابة"
+    }
+  },
   "meta": {
     "home": {
       "title": "United Construction and Real Estate | عقارات مميزة في باتومي",

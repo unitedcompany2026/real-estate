@@ -261,6 +261,35 @@
       "clear": "Clear Filters"
     }
   },
+  "property": {
+    "amenitiesTitle": "Amenities & Features",
+    "amenities": {
+      "conditioner": "Air Conditioner",
+      "furniture": "Furniture",
+      "bed": "Bed",
+      "sofa": "Sofa",
+      "table": "Table",
+      "chairs": "Chairs",
+      "stove": "Stove",
+      "refrigerator": "Refrigerator",
+      "oven": "Oven",
+      "washingMachine": "Washing Machine",
+      "kitchenAppliances": "Kitchen Appliances",
+      "balcony": "Balcony",
+      "naturalGas": "Natural Gas",
+      "internet": "Internet",
+      "tv": "TV",
+      "sewerage": "Sewerage",
+      "fenced": "Fenced",
+      "yardLighting": "Yard Lighting",
+      "grill": "Grill",
+      "alarm": "Alarm System",
+      "ventilation": "Ventilation",
+      "water": "Water Supply",
+      "electricity": "Electricity",
+      "gate": "Gate"
+    }
+  },
 
   "meta": {
     "home": {
