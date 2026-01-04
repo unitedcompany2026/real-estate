@@ -46,9 +46,13 @@ export class PropertiesController {
   })
   @ApiParam({ name: 'id', description: 'Property ID' })
   @Header('Content-Type', 'text/html; charset=utf-8')
-  async getSeoPreview(@Param('id') id: string, @Res() res: Response) {
+  async getSeoPreview(
+    @Query('lang') lang: string = 'en',
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
     try {
-      const property = await this.propertiesService.findOne(id, 'en', false);
+      const property = await this.propertiesService.findOne(id, lang, false);
 
       if (!property) {
         return res.status(404).send(`

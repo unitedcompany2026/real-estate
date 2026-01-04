@@ -12,7 +12,8 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
   const getTranslatedValue = (field: TranslatableFields): string => {
     if (project.translation && field in project.translation) {
-      const value = project.translation[field as keyof typeof project.translation]
+      const value =
+        project.translation[field as keyof typeof project.translation]
       return typeof value === 'string' ? value : ''
     }
     const value = project[field as keyof Project]
@@ -24,7 +25,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
   const projectLocation = getTranslatedValue('projectLocation')
 
   return (
-    <div className="bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full p-1 cursor-pointer shadow-md hover:shadow-lg">
+    <div className="bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full p-1 cursor-pointer shadow-md hover:shadow-lg w-full max-w-[340px] mx-auto">
       <div className="relative h-72 overflow-hidden rounded-lg">
         {!imageError ? (
           <img
@@ -59,9 +60,8 @@ const ProjectCard = ({ project }: { project: Project }) => {
             </div>
           </div>
         )}
-       
       </div>
-      
+
       <div className="p-3 sm:p-4">
         <div className="space-y-3">
           <h3 className="text-base sm:text-lg font-semibold text-gray-800 hover:text-blue-900 transition-colors line-clamp-2">

@@ -10,7 +10,6 @@ import {
   ChevronRight,
   Flame,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Switch } from '@/components/ui/switch'
 import { useTranslation } from 'react-i18next'
@@ -38,7 +37,6 @@ interface PropertyCardProps {
 
 const PropertyCard = ({ property }: PropertyCardProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { currency, setCurrency, exchangeRate } = useCurrency()
   const [copied, setCopied] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -53,10 +51,6 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           : []
 
   const hasMultipleImages = allImages.length > 1
-
-  const handleCardClick = () => {
-    navigate(`/properties/${property.id}`)
-  }
 
   const handleCopyId = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -104,10 +98,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
   }
 
   return (
-    <div
-      onClick={handleCardClick}
-      className="bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full cursor-pointer shadow-md hover:shadow-lg"
-    >
+    <div className="bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full cursor-pointer shadow-md hover:shadow-lg w-full max-w-[340px] mx-auto">
       <div className="relative h-52 overflow-hidden rounded-t-xl bg-gray-100">
         {allImages.length > 0 ? (
           <div className="relative h-full bg-gray-900">

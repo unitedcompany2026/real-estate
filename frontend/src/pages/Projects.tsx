@@ -99,7 +99,10 @@ export default function Projects() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 mb-4">
               {projects.map(project => (
-                <Link key={project.id} to={`/projects/${project.id}`}>
+                <Link
+                  key={project.id}
+                  to={`/projects/${project.id}?lang=${i18n.language}`}
+                >
                   <ProjectCard project={project} />
                 </Link>
               ))}

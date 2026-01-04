@@ -15,7 +15,7 @@ interface ProjectsCarouselProps {
 }
 
 const ProjectsCarousel = ({ projectsResponse }: ProjectsCarouselProps) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const projects = projectsResponse?.data || []
 
   if (projects.length === 0) return null
@@ -43,7 +43,7 @@ const ProjectsCarousel = ({ projectsResponse }: ProjectsCarouselProps) => {
                 key={project.id}
                 className="cursor-default basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
               >
-                <Link to={`/projects/${project.id}`}>
+                <Link to={`/projects/${project.id}?lang=${i18n.language}`}>
                   <ProjectCard project={project} />
                 </Link>
               </CarouselItem>

@@ -74,7 +74,7 @@ const PropertyCarousel = () => {
                 key={property.id}
                 className="cursor-default basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
               >
-                <Link to={`/properties/${property.id}`}>
+                <Link to={`/properties/${property.id}?lang=${i18n.language}`}>
                   <PropertyCard property={property} />
                 </Link>
               </CarouselItem>

@@ -30,18 +30,16 @@ const ROUTES = {
 }
 
 export default function Header() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { data: user, isLoading } = useCurrentUser()
   const signOut = useSignOut()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
-  const pathname = location.pathname
 
+  const pathname = location.pathname
   const isAdminPath = pathname.includes('/admin')
 
-  if (isAdminPath) {
-    return null
-  }
+  if (isAdminPath) return null
 
   const handleSignOut = async () => {
     try {
@@ -51,9 +49,10 @@ export default function Header() {
     }
   }
 
-  const isActive = (path: string) => {
-    return pathname === path
-  }
+  /** ✅ helper to append lang */
+  const withLang = (path: string) => `${path}?lang=${i18n.language}`
+
+  const isActive = (path: string) => pathname === path
 
   const navItems = [
     {
@@ -88,8 +87,9 @@ export default function Header() {
   return (
     <header className="px-8 md:px-12 lg:px-16 xl:px-28 top-0 z-50 w-full bg-[#F2F5FF]/60 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
       <div className="flex h-20 items-center justify-between">
+        {/* LOGO */}
         <Link
-          to={ROUTES.HOME}
+          to={withLang(ROUTES.HOME)}
           className="flex items-center gap-5 shrink-0 group"
         >
           <img src="/Logo.png" className="w-20 h-20" alt="Logo" />
@@ -103,12 +103,13 @@ export default function Header() {
           </div>
         </Link>
 
+        {/* DESKTOP NAV */}
         <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
           <nav className="flex items-center gap-1">
             {navItems.map(item => (
               <Link
                 key={item.path}
-                to={item.isComingSoon ? '#' : item.path}
+                to={item.isComingSoon ? '#' : withLang(item.path)}
                 onClick={e => item.isComingSoon && e.preventDefault()}
                 className={cn(
                   'relative px-4 py-2 text-[15px] font-medium transition-all duration-300 group/nav',
@@ -120,12 +121,15 @@ export default function Header() {
                 <span className={cn(item.isComingSoon && 'line-through')}>
                   {item.label}
                 </span>
+
                 {isActive(item.path) && !item.isComingSoon && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-[calc(100%-2rem)] bg-gradient-to-r from-blue-600 to-blue-700 rounded-full" />
                 )}
+
                 {!item.isComingSoon && !isActive(item.path) && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-0 bg-blue-400 rounded-full transition-all duration-300 group-hover/nav:w-[calc(100%-2rem)]" />
                 )}
+
                 {item.isComingSoon && (
                   <span className="absolute -top-1 -right-1 text-[9px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-2 py-0.5 rounded-full shadow-sm">
                     SOON
@@ -146,19 +150,14 @@ export default function Header() {
                     {t('auth.admin', { defaultValue: 'Admin' })}
                   </span>
                 </div>
+
                 <Button
-                  variant="ghost"
-                  size="sm"
                   onClick={handleSignOut}
                   disabled={signOut.isPending}
                   className="gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-10 px-4 rounded-lg transition-all font-medium"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span className="text-sm font-medium">
-                    {signOut.isPending
-                      ? t('auth.signingOut')
-                      : t('auth.logout')}
-                  </span>
+                  {signOut.isPending ? t('auth.signingOut') : t('auth.logout')}
                 </Button>
               </div>
             ) : null}
@@ -167,88 +166,44 @@ export default function Header() {
           </div>
         </div>
 
+        {/* MOBILE */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
-            <button className="lg:hidden p-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-colors">
+            <button className="lg:hidden p-2 text-gray-700 hover:bg-blue-50 rounded-lg">
               <Menu className="h-6 w-6" />
             </button>
           </SheetTrigger>
-          <SheetContent
-            side="right"
-            className="w-[300px] sm:w-[400px] bg-white/95 backdrop-blur-md"
-          >
+
+          <SheetContent side="right" className="w-[300px] bg-white/95">
             <SheetHeader>
-              <SheetTitle className="text-left text-gray-900">Menu</SheetTitle>
+              <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
 
-            <div className="flex flex-col gap-6 mt-8">
-              <nav className="flex flex-col gap-2">
-                {navItems.map(item => (
-                  <Link
-                    key={item.path}
-                    to={item.isComingSoon ? '#' : item.path}
-                    onClick={e => {
-                      if (item.isComingSoon) {
-                        e.preventDefault()
-                      } else {
-                        setMobileMenuOpen(false)
-                      }
-                    }}
-                    className={cn(
-                      'relative flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium transition-all duration-200',
-                      item.isComingSoon
-                        ? 'text-gray-400'
-                        : isActive(item.path)
-                          ? 'text-blue-600 bg-blue-50'
-                          : 'text-gray-700 hover:bg-gray-50'
-                    )}
-                  >
-                    <span className={cn(item.isComingSoon && 'line-through')}>
-                      {item.label}
-                    </span>
-                    {isActive(item.path) && !item.isComingSoon && (
-                      <div className="h-2 w-2 rounded-full bg-blue-600" />
-                    )}
-                    {item.isComingSoon && (
-                      <span className="text-[10px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-2 py-1 rounded-full shadow-sm">
-                        SOON
-                      </span>
-                    )}
-                  </Link>
-                ))}
-              </nav>
+            <nav className="mt-8 flex flex-col gap-2">
+              {navItems.map(item => (
+                <Link
+                  key={item.path}
+                  to={item.isComingSoon ? '#' : withLang(item.path)}
+                  onClick={e => {
+                    if (item.isComingSoon) e.preventDefault()
+                    else setMobileMenuOpen(false)
+                  }}
+                  className={cn(
+                    'px-4 py-3 rounded-lg font-medium',
+                    item.isComingSoon
+                      ? 'text-gray-400'
+                      : isActive(item.path)
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:bg-gray-50'
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
 
-              <div className="pt-4 border-t border-gray-200 space-y-4">
-                {isLoading ? (
-                  <div className="h-16 w-full animate-pulse rounded-lg bg-gray-200" />
-                ) : user ? (
-                  <>
-                    <div className="px-4 py-3 bg-blue-50 rounded-lg">
-                      <p className="text-sm font-bold text-gray-900">Admin</p>
-                      <p className="text-xs font-semibold text-gray-700 mt-0.5">
-                        {t('auth.admin', { defaultValue: 'Admin' })}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      onClick={handleSignOut}
-                      disabled={signOut.isPending}
-                      className="w-full gap-2 text-gray-800 hover:text-red-600 hover:bg-red-50 h-11 justify-start rounded-lg font-medium px-4"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span className="font-medium">
-                        {signOut.isPending
-                          ? t('auth.signingOut')
-                          : t('auth.logout')}
-                      </span>
-                    </Button>
-                  </>
-                ) : null}
-
-                <div className="px-4">
-                  <LanguageSwitcher />
-                </div>
-              </div>
+            <div className="mt-6 px-4">
+              <LanguageSwitcher />
             </div>
           </SheetContent>
         </Sheet>
