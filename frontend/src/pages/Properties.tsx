@@ -1,6 +1,6 @@
 import PropertyCard from '@/components/pages/properties/PropertyCard'
 import { useTranslation } from 'react-i18next'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import { useProperties } from '@/lib/hooks/useProperties'
 import { PropertyFilters } from '@/components/pages/properties/PropertFilter'
@@ -65,18 +65,9 @@ export default function Properties() {
   const meta = propertiesResponse?.meta
 
   useDocumentMeta({
-    title: t(
-      'meta.properties.title',
-      'All Properties | United Construction and Real Estate'
-    ),
-    description: t(
-      'meta.properties.description',
-      'Explore all available properties in Batumi, Georgia. Find apartments, houses, commercial spaces for sale or rent. Filter by location, price, area, and property type.'
-    ),
-    keywords: t(
-      'meta.properties.keywords',
-      'properties Batumi, real estate for sale, apartments for rent, houses Batumi, commercial property Georgia'
-    ),
+    title: t('meta.properties.title'),
+    description: t('meta.properties.description'),
+    keywords: t('meta.properties.keywords'),
     ogImage: '/Logo.png',
     lang: i18n.language,
   })
@@ -114,27 +105,25 @@ export default function Properties() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 mb-4">
               {properties.map(property => (
-                <Link key={property.id} to={`/properties/${property.id}`}>
-                  <PropertyCard
-                    property={{
-                      id: property.id,
-                      externalId: property.externalId,
-                      image: property.galleryImages?.[0]?.imageUrl
-                        ? property.galleryImages[0].imageUrl
-                        : 'https://via.placeholder.com/800x600?text=No+Image',
-                      galleryImages: property.galleryImages,
-                      priceUSD: property.price ?? null,
-                      priceGEL: property.price ? property.price * 2.8 : 0,
-                      rooms: property.rooms ?? 0,
-                      dateAdded: property.createdAt,
-                      title: property.translation?.title ?? 'Untitled Property',
-                      totalArea: property.totalArea ?? null,
-                      propertyType: property.propertyType,
-                      hotSale: property.hotSale,
-                      regionName: property.regionName,
-                    }}
-                  />
-                </Link>
+                <PropertyCard
+                  property={{
+                    id: property.id,
+                    externalId: property.externalId,
+                    image: property.galleryImages?.[0]?.imageUrl
+                      ? property.galleryImages[0].imageUrl
+                      : 'https://via.placeholder.com/800x600?text=No+Image',
+                    galleryImages: property.galleryImages,
+                    priceUSD: property.price ?? null,
+                    priceGEL: property.price ? property.price * 2.8 : 0,
+                    rooms: property.rooms ?? 0,
+                    dateAdded: property.createdAt,
+                    title: property.translation?.title ?? 'Untitled Property',
+                    totalArea: property.totalArea ?? null,
+                    propertyType: property.propertyType,
+                    hotSale: property.hotSale,
+                    regionName: property.regionName,
+                  }}
+                />
               ))}
             </div>
 

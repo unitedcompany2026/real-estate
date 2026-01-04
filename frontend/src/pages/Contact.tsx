@@ -11,18 +11,9 @@ const Contact = () => {
   const { t, i18n } = useTranslation()
 
   useDocumentMeta({
-    title: t(
-      'meta.contact.title',
-      'Contact Us | United Construction and Real Estate'
-    ),
-    description: t(
-      'meta.contact.description',
-      'Get in touch with United Construction and Real Estate. Contact us in Georgia or Israel for property inquiries, consultations, and real estate services.'
-    ),
-    keywords: t(
-      'meta.contact.keywords',
-      'contact United Construction, real estate Georgia contact, property inquiry Batumi, real estate consultation'
-    ),
+    title: t('meta.contact.title'),
+    description: t('meta.contact.description'),
+    keywords: t('meta.contact.keywords'),
     ogImage: '/Logo.png',
     lang: i18n.language,
   })
@@ -87,8 +78,7 @@ const Contact = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage:
-            'url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070)',
+          backgroundImage: 'url(/Contact-bg.avif)',
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/55 via-gray-900/60 to-slate-800/65"></div>

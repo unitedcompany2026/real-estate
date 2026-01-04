@@ -24,7 +24,6 @@ export default function PropertiesPanel() {
 
   const page = parseInt(searchParams.get('page') || '1', 10)
 
-  // Use usePropertiesAdmin to get ALL properties (public + private)
   const {
     data: propertiesResponse,
     isLoading,

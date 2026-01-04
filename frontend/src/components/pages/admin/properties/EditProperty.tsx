@@ -1,5 +1,4 @@
 import type React from 'react'
-
 import { useState, useEffect } from 'react'
 import { X, Save, Home, ImageIcon, MapPin } from 'lucide-react'
 import { useUpdateProperty } from '@/lib/hooks/useProperties'

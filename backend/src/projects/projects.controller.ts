@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
@@ -10,10 +11,12 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/CreateProject.dto';
 import { UpdateProjectDto } from './dto/UpdateProject.dto';
@@ -37,6 +40,174 @@ import { Region } from '@prisma/client';
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
+
+  @Get('seo-preview/:id')
+  @ApiOperation({
+    summary: 'Get HTML with meta tags for social media bots',
+  })
+  @ApiParam({ name: 'id', description: 'Project ID', type: 'number' })
+  @Header('Content-Type', 'text/html; charset=utf-8')
+  async getSeoPreview(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const project = await this.projectsService.findOne(id, 'en');
+
+      if (!project) {
+        return res.status(404).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Project Not Found | United Construction and Real Estate</title>
+            <meta name="robots" content="noindex">
+          </head>
+          <body>
+            <h1>Project Not Found</h1>
+            <p>The project you're looking for doesn't exist or has been removed.</p>
+          </body>
+        </html>
+      `);
+      }
+
+      const getQuarter = (dateString: Date | string | null): string | null => {
+        if (!dateString) return null;
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return null;
+        const month = date.getMonth();
+        const quarter = Math.floor(month / 3) + 1;
+        const year = date.getFullYear();
+        return `Q${quarter} ${year}`;
+      };
+
+      const projectName =
+        project.translation?.projectName || project.projectName;
+      const priceText = project.priceFrom
+        ? `Starting from $${project.priceFrom.toLocaleString()}`
+        : '';
+      const deliveryText = project.deliveryDate
+        ? `Delivery ${getQuarter(project.deliveryDate)}`
+        : '';
+
+      const title = projectName
+        ? `${projectName} | United Construction and Real Estate`
+        : 'Project Details | United Construction and Real Estate';
+
+      const description = `Explore ${projectName || 'this premium real estate project'} in ${project.regionName || 'Batumi'}. ${priceText}${priceText && deliveryText ? '. ' : ''}${deliveryText}. View available apartments and project details.`;
+
+      const keywords = `${projectName || 'project'}, real estate ${project.regionName || 'Batumi'}, apartments ${project.regionName || 'Batumi'}, new construction, ${project.regionName || 'Batumi'} property, developer project`;
+
+      let imageUrl = 'https://unitedcompany.ge/Logo.png';
+
+      if (project.image) {
+        const imgPath = project.image;
+        if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+          imageUrl = imgPath;
+        } else if (imgPath.includes('uploads/')) {
+          imageUrl = `https://api.unitedcompany.ge/${imgPath.replace(/^\/+/, '')}`;
+        } else if (imgPath.startsWith('/uploads/')) {
+          imageUrl = `https://api.unitedcompany.ge${imgPath}`;
+        } else if (imgPath.startsWith('/')) {
+          imageUrl = `https://api.unitedcompany.ge${imgPath}`;
+        } else {
+          imageUrl = `https://api.unitedcompany.ge/uploads/${imgPath}`;
+        }
+      } else if (project.gallery && project.gallery.length > 0) {
+        const imgPath = project.gallery[0];
+        if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+          imageUrl = imgPath;
+        } else if (imgPath.includes('uploads/')) {
+          imageUrl = `https://api.unitedcompany.ge/${imgPath.replace(/^\/+/, '')}`;
+        } else if (imgPath.startsWith('/uploads/')) {
+          imageUrl = `https://api.unitedcompany.ge${imgPath}`;
+        } else if (imgPath.startsWith('/')) {
+          imageUrl = `https://api.unitedcompany.ge${imgPath}`;
+        } else {
+          imageUrl = `https://api.unitedcompany.ge/uploads/${imgPath}`;
+        }
+      }
+
+      const canonicalUrl = `https://unitedcompany.ge/projects/${id}`;
+
+      const escapeHtml = (text: string): string => {
+        const map: { [key: string]: string } = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;',
+        };
+        return text.replace(/[&<>"']/g, (m) => map[m]);
+      };
+
+      const safeTitle = escapeHtml(title);
+      const safeDescription = escapeHtml(description.substring(0, 160));
+      const safeKeywords = escapeHtml(keywords);
+      const safeProjectName = escapeHtml(projectName || 'Project');
+
+      const html = `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${safeTitle}</title>
+        <meta name="description" content="${safeDescription}" />
+        <meta name="keywords" content="${safeKeywords}" />
+        <link rel="canonical" href="${canonicalUrl}" />
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="${canonicalUrl}" />
+        <meta property="og:title" content="${safeTitle}" />
+        <meta property="og:description" content="${safeDescription}" />
+        <meta property="og:image" content="${imageUrl}" />
+        <meta property="og:image:secure_url" content="${imageUrl}" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="United Construction and Real Estate" />
+        <meta property="og:locale" content="en_US" />
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="${safeTitle}" />
+        <meta name="twitter:description" content="${safeDescription}" />
+        <meta name="twitter:image" content="${imageUrl}" />
+
+        <!-- Redirect non-bots to React app -->
+        <script>
+          if (!/bot|crawler|spider|crawling|facebookexternalhit|whatsapp|twitter|telegram|linkedin|discord|slack/i.test(navigator.userAgent)) {
+            window.location.href = "${canonicalUrl}";
+          }
+        </script>
+      </head>
+      <body>
+        <h1>${safeProjectName}</h1>
+        <img src="${imageUrl}" alt="${safeProjectName}" style="max-width:100%; height:auto;" />
+        <p>${safeDescription}</p>
+        <p>If you're not redirected, <a href="${canonicalUrl}">click here</a>.</p>
+      </body>
+      </html>`;
+
+      return res.send(html);
+    } catch (error) {
+      console.error('❌ Error in getSeoPreview:', error);
+      return res.status(500).send(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>Error | United Construction and Real Estate</title>
+        </head>
+        <body>
+          <h1>Internal Server Error</h1>
+          <p>${error instanceof Error ? error.message : 'Unknown error'}</p>
+        </body>
+      </html>
+    `);
+    }
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get all projects with filters and pagination' })

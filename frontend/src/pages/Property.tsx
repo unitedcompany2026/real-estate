@@ -51,7 +51,6 @@ export default function PropertyDetail() {
 
   const { data: property, isLoading, error } = useProperty(id!, i18n.language)
 
-  // Prepare document meta data
   const priceText = property?.price
     ? `$${property.price.toLocaleString()}`
     : 'Price on request'
@@ -85,7 +84,6 @@ export default function PropertyDetail() {
     ? getImageUrl(property.galleryImages[0].imageUrl)
     : undefined
 
-  // Call useDocumentMeta at top level
   useDocumentMeta({
     title: documentTitle,
     description: documentDescription,

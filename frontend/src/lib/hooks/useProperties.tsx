@@ -1,4 +1,3 @@
-// hooks/useProperties.ts
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { queryClient } from '../tanstack/query-client'
 import type {

@@ -14,18 +14,9 @@ const HomePage = () => {
   const { i18n, t } = useTranslation()
 
   useDocumentMeta({
-    title: t(
-      'meta.home.title',
-      'United Construction and Real Estate | Premium Properties in Batumi'
-    ),
-    description: t(
-      'meta.home.description',
-      'Find your dream property in Batumi, Georgia. Explore apartments, houses, and commercial real estate from trusted developers. Expert construction and real estate services.'
-    ),
-    keywords: t(
-      'meta.home.keywords',
-      'real estate Batumi, property Georgia, apartments Batumi, construction Georgia, real estate investment, Batumi developers, buy apartment Batumi'
-    ),
+    title: t('meta.home.title'),
+    description: t('meta.home.description'),
+    keywords: t('meta.home.keywords'),
     ogImage: '/Logo.png',
     lang: i18n.language,
   })

@@ -1,7 +1,6 @@
 import {
   Phone,
   MessageCircle,
-  Loader2,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -20,6 +19,7 @@ import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
 import MapboxMap from '@/components/shared/map/MapboxMap'
 import { useDocumentMeta } from '@/lib/hooks/useDocumentMeta'
+import { LoadingOverlay } from '@/components/shared/loaders/LoadingOverlay'
 
 const getQuarter = (dateString: string | null | undefined): string | null => {
   if (!dateString) return null
@@ -61,15 +61,18 @@ export default function ProjectPage() {
 
   const projectName = project?.translation?.projectName || project?.projectName
   const priceText = project?.priceFrom
-    ? `Starting from $${project.priceFrom.toLocaleString()}`
+    ? `${t('projectPage.startingFrom', 'Starting from')} $${project.priceFrom.toLocaleString()}`
     : ''
   const deliveryText = project?.deliveryDate
-    ? `Delivery ${getQuarter(project.deliveryDate)}`
+    ? `${t('projectPage.delivery', 'Delivery')} ${getQuarter(project.deliveryDate)}`
     : ''
 
   const documentTitle = projectName
-    ? `${projectName} | United Construction`
-    : t('meta.project.title', 'Project Details | United Construction')
+    ? `${projectName} | United Construction and Real Estate`
+    : t(
+        'meta.project.title',
+        'Project Details | United Construction and Real Estate'
+      )
 
   const documentDescription = project?.translation?.description
     ? project.translation.description.substring(0, 160)
@@ -80,7 +83,7 @@ export default function ProjectPage() {
 
   const documentKeywords = t(
     'meta.project.keywords',
-    `${projectName || ''}, real estate ${project?.regionName || ''}, apartments ${project?.regionName || ''}, new construction, ${project?.regionName || ''} property`
+    `${projectName || 'project'}, real estate ${project?.regionName || 'Batumi'}, apartments ${project?.regionName || 'Batumi'}, new construction, ${project?.regionName || 'Batumi'} property, developer project`
   )
 
   const documentOgImage = project?.image
@@ -184,14 +187,7 @@ export default function ProjectPage() {
   const isLoading = projectLoading || apartmentsLoading
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-12 h-12 text-blue-900 animate-spin" />
-          <p className="text-gray-600">{t('projectPage.loadingProject')}</p>
-        </div>
-      </div>
-    )
+    return <LoadingOverlay isLoading={isLoading} />
   }
 
   if (error || !project) {

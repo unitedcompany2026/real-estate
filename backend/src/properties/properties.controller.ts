@@ -42,7 +42,7 @@ export class PropertiesController {
 
   @Get('seo-preview/:id')
   @ApiOperation({
-    summary: 'Internal: Get HTML with meta tags for social media bots',
+    summary: 'Get HTML with meta tags for social media bots',
   })
   @ApiParam({ name: 'id', description: 'Property ID' })
   @Header('Content-Type', 'text/html; charset=utf-8')
@@ -56,46 +56,59 @@ export class PropertiesController {
           <html lang="en">
             <head>
               <meta charset="utf-8">
-              <title>Property Not Found</title>
+              <title>Property Not Found | United Construction and Real Estate</title>
+              <meta name="robots" content="noindex">
             </head>
             <body>
               <h1>Property Not Found</h1>
+              <p>The property you're looking for doesn't exist or has been removed.</p>
             </body>
           </html>
         `);
       }
 
-      const title = property.translation?.title || 'Real Estate in Georgia';
-      const description = (
-        property.translation?.description ||
-        'Premium real estate in Georgia - apartments, villas, and commercial properties'
-      ).substring(0, 160);
+      const formatEnumValue = (value: string | null): string => {
+        if (!value) return 'Property';
+        return value
+          .split('_')
+          .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+          .join(' ');
+      };
 
-      // Handle image URL correctly to avoid duplicate /uploads
-      let imageUrl = 'https://api.unitedcompany.ge/uploads/logo.png';
+      const propertyType = formatEnumValue(property.propertyType || null);
+      const roomsText = property.rooms
+        ? `${property.rooms} room${property.rooms > 1 ? 's' : ''}`
+        : '';
+      const areaText = property.totalArea ? `${property.totalArea}m²` : '';
+      const priceText = property.price
+        ? `$${property.price.toLocaleString()}`
+        : 'Price on request';
+
+      const title =
+        property.translation?.title ||
+        `${propertyType} in ${property.regionName || 'Batumi'} | United Construction`;
+
+      const description = property.translation?.description
+        ? property.translation.description.substring(0, 160)
+        : `${propertyType} in ${property.regionName || 'Batumi'}. ${roomsText}${roomsText && areaText ? ', ' : ''}${areaText}. ${priceText}. Contact us for more information.`;
+
+      const keywords = `property ${property.externalId || ''}, ${propertyType} ${property.regionName || ''}, ${roomsText} apartment, real estate ${property.regionName || ''}, ${property.regionName || ''} property for sale`;
+
+      let imageUrl = 'https://unitedcompany.ge/Logo.png';
 
       if (property.galleryImages && property.galleryImages.length > 0) {
         const imgPath = property.galleryImages[0].imageUrl;
 
         if (imgPath) {
-          // If it's already a full URL
           if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
             imageUrl = imgPath;
-          }
-          // If path already contains 'uploads/' anywhere
-          else if (imgPath.includes('uploads/')) {
-            imageUrl = `https://api.unitedcompany.ge/${imgPath.replace(/^\/+/, '')}`; // Remove leading slashes
-          }
-          // If path starts with /uploads/
-          else if (imgPath.startsWith('/uploads/')) {
+          } else if (imgPath.includes('uploads/')) {
+            imageUrl = `https://api.unitedcompany.ge/${imgPath.replace(/^\/+/, '')}`;
+          } else if (imgPath.startsWith('/uploads/')) {
             imageUrl = `https://api.unitedcompany.ge${imgPath}`;
-          }
-          // If path starts with /
-          else if (imgPath.startsWith('/')) {
+          } else if (imgPath.startsWith('/')) {
             imageUrl = `https://api.unitedcompany.ge${imgPath}`;
-          }
-          // Plain filename without path
-          else {
+          } else {
             imageUrl = `https://api.unitedcompany.ge/uploads/${imgPath}`;
           }
         }
@@ -103,7 +116,6 @@ export class PropertiesController {
 
       const canonicalUrl = `https://unitedcompany.ge/properties/${id}`;
 
-      // Escape HTML special characters
       const escapeHtml = (text: string): string => {
         const map: { [key: string]: string } = {
           '&': '&amp;',
@@ -117,66 +129,68 @@ export class PropertiesController {
 
       const safeTitle = escapeHtml(title);
       const safeDescription = escapeHtml(description);
+      const safeKeywords = escapeHtml(keywords);
 
       const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${safeTitle}</title>
-  <meta name="description" content="${safeDescription}" />
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="${canonicalUrl}" />
-  <meta property="og:title" content="${safeTitle}" />
-  <meta property="og:description" content="${safeDescription}" />
-  <meta property="og:image" content="${imageUrl}" />
-  <meta property="og:image:secure_url" content="${imageUrl}" />
-  <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:site_name" content="United Company" />
-  <meta property="og:locale" content="en_US" />
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>${safeTitle}</title>
+      <meta name="description" content="${safeDescription}" />
+      <meta name="keywords" content="${safeKeywords}" />
+      <link rel="canonical" href="${canonicalUrl}" />
+      
+      <!-- Open Graph / Facebook -->
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="${canonicalUrl}" />
+      <meta property="og:title" content="${safeTitle}" />
+      <meta property="og:description" content="${safeDescription}" />
+      <meta property="og:image" content="${imageUrl}" />
+      <meta property="og:image:secure_url" content="${imageUrl}" />
+      <meta property="og:image:type" content="image/jpeg" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:site_name" content="United Construction and Real Estate" />
+      <meta property="og:locale" content="en_US" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${safeTitle}" />
-  <meta name="twitter:description" content="${safeDescription}" />
-  <meta name="twitter:image" content="${imageUrl}" />
-  <meta name="twitter:site" content="@unitedcompany" />
+      <!-- Twitter -->
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="${safeTitle}" />
+      <meta name="twitter:description" content="${safeDescription}" />
+      <meta name="twitter:image" content="${imageUrl}" />
 
-  <!-- Redirect non-bots to React app -->
-  <script>
-    if (!/bot|crawler|spider|crawling|facebookexternalhit|whatsapp|twitter|telegram|linkedin|discord|slack/i.test(navigator.userAgent)) {
-      window.location.href = "${canonicalUrl}";
-    }
-  </script>
-</head>
-<body>
-  <h1>${safeTitle}</h1>
-  <img src="${imageUrl}" alt="${safeTitle}" style="max-width:100%; height:auto;" />
-  <p>${safeDescription}</p>
-  <p>If you're not redirected, <a href="${canonicalUrl}">click here</a>.</p>
-</body>
-</html>`;
+      <!-- Redirect non-bots to React app -->
+      <script>
+        if (!/bot|crawler|spider|crawling|facebookexternalhit|whatsapp|twitter|telegram|linkedin|discord|slack/i.test(navigator.userAgent)) {
+          window.location.href = "${canonicalUrl}";
+        }
+      </script>
+    </head>
+    <body>
+      <h1>${safeTitle}</h1>
+      <img src="${imageUrl}" alt="${safeTitle}" style="max-width:100%; height:auto;" />
+      <p>${safeDescription}</p>
+      <p>If you're not redirected, <a href="${canonicalUrl}">click here</a>.</p>
+    </body>
+    </html>`;
 
       return res.send(html);
     } catch (error) {
       console.error('❌ Error in getSeoPreview:', error);
       return res.status(500).send(`
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <title>Error</title>
-          </head>
-          <body>
-            <h1>Internal Server Error</h1>
-            <p>${error instanceof Error ? error.message : 'Unknown error'}</p>
-          </body>
-        </html>
-      `);
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="utf-8">
+                <title>Error | United Construction and Real Estate</title>
+              </head>
+              <body>
+                <h1>Internal Server Error</h1>
+                <p>${error instanceof Error ? error.message : 'Unknown error'}</p>
+              </body>
+            </html>
+                  `);
     }
   }
 

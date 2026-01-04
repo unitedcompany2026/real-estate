@@ -7,6 +7,7 @@ import { ProjectFilters } from '@/components/pages/projects/ProjectsFilter'
 import { Pagination } from '@/components/shared/pagination/Pagination'
 import { Region } from '@/lib/types/projects'
 import { useDocumentMeta } from '@/lib/hooks/useDocumentMeta'
+import { LoadingOverlay } from '@/components/shared/loaders/LoadingOverlay'
 
 export default function Projects() {
   const { t, i18n } = useTranslation()
@@ -45,38 +46,15 @@ export default function Projects() {
   const meta = projectsResponse?.meta
 
   useDocumentMeta({
-    title: t(
-      'meta.projects.title',
-      'Developer Projects | United Construction and Real Estate'
-    ),
-    description: t(
-      'meta.projects.description',
-      'Browse premium real estate projects from trusted developers in Batumi, Georgia. Find new construction apartments, luxury residential complexes, and investment opportunities.'
-    ),
-    keywords: t(
-      'meta.projects.keywords',
-      'real estate projects Batumi, developer projects Georgia, new construction Batumi, residential complexes, investment property'
-    ),
+    title: t('meta.projects.title'),
+    description: t('meta.projects.description'),
+    keywords: t('meta.projects.keywords'),
     ogImage: '/Logo.png',
     lang: i18n.language,
   })
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-8 py-12">
-          <div className="mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {t('projects.title')}
-            </h1>
-          </div>
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-            <p className="ml-4 text-gray-600">{t('common.loading')}</p>
-          </div>
-        </div>
-      </div>
-    )
+    return <LoadingOverlay isLoading={isLoading} />
   }
 
   if (error) {

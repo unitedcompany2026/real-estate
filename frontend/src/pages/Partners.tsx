@@ -4,6 +4,8 @@ import PartnerCard from '@/components/pages/partners/PartnerCard'
 import { usePartners } from '@/lib/hooks/usePartners'
 import { Pagination } from '@/components/shared/pagination/Pagination'
 import { useDocumentMeta } from '@/lib/hooks/useDocumentMeta'
+import { LoadingOverlay } from '@/components/shared/loaders/LoadingOverlay'
+import IsError from '@/components/shared/loaders/IsError'
 
 export default function Partners() {
   const { t, i18n } = useTranslation()
@@ -21,50 +23,19 @@ export default function Partners() {
   const meta = data?.meta
 
   useDocumentMeta({
-    title: t(
-      'meta.partners.title',
-      'Our Partners | United Construction and Real Estate'
-    ),
-    description: t(
-      'meta.partners.description',
-      'Discover our trusted network of real estate developers and construction partners in Georgia. Browse projects from leading developers in Batumi.'
-    ),
-    keywords: t(
-      'meta.partners.keywords',
-      'real estate developers Georgia, construction partners Batumi, property developers, trusted developers'
-    ),
+    title: t('meta.partners.title'),
+    description: t('meta.partners.description'),
+    keywords: t('meta.partners.keywords'),
     ogImage: '/Logo.png',
     lang: i18n.language,
   })
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen py-12 px-8 lg:px-20">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl text-center sm:text-4xl font-bold text-gray-800 mb-8">
-            {t('partners.title')}
-          </h1>
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-          </div>
-        </div>
-      </div>
-    )
+    return <LoadingOverlay isLoading={isLoading} />
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen py-12 px-8 lg:px-20">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl text-center sm:text-4xl font-bold text-gray-800 mb-8">
-            {t('partners.title')}
-          </h1>
-          <div className="text-center py-12">
-            <p className="text-red-500 text-lg">{t('partners.errorLoading')}</p>
-          </div>
-        </div>
-      </div>
-    )
+    return <IsError />
   }
 
   return (

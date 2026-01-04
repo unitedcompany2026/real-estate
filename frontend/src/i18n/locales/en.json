@@ -263,10 +263,40 @@
   },
 
   "meta": {
+    "home": {
+      "title": "United Construction and Real Estate | Premium Properties in Batumi",
+      "description": "Find your dream property in Batumi, Georgia. Explore apartments, houses, and commercial real estate from trusted developers. Expert construction and real estate services.",
+      "keywords": "real estate Batumi, property Georgia, apartments Batumi, construction Georgia, real estate investment, Batumi developers, buy apartment Batumi, houses for sale Batumi, commercial property Georgia, United Construction"
+    },
     "properties": {
       "title": "All Properties | United Construction and Real Estate",
       "description": "Explore all available properties in Batumi, Georgia. Find apartments, houses, commercial spaces for sale or rent. Filter by location, price, area, and property type.",
       "keywords": "properties Batumi, real estate for sale, apartments for rent, houses Batumi, commercial property Georgia"
+    },
+    "projects": {
+      "title": "Developer Projects | United Construction and Real Estate",
+      "description": "Browse premium real estate projects from trusted developers in Batumi, Georgia. Find new construction apartments, luxury residential complexes, and investment opportunities.",
+      "keywords": "real estate projects Batumi, developer projects Georgia, new construction Batumi, residential complexes, investment property, luxury apartments Batumi, construction projects Georgia"
+    },
+    "partners": {
+      "title": "Our Partners | United Construction and Real Estate",
+      "description": "Discover our trusted network of real estate developers and construction partners in Georgia. Browse projects from leading developers in Batumi.",
+      "keywords": "real estate developers Georgia, construction partners Batumi, property developers, trusted developers, real estate companies Georgia, Batumi developers network"
+    },
+    "contact": {
+      "title": "Contact Us | United Construction and Real Estate",
+      "description": "Get in touch with United Construction and Real Estate. Contact us in Georgia or Israel for property inquiries, consultations, and real estate services.",
+      "keywords": "contact United Construction, real estate Georgia contact, property inquiry Batumi, real estate consultation, contact developer Georgia, property services contact"
+    },
+    "property": {
+      "title": "Property Details | United Construction and Real Estate",
+      "description": "View detailed information about this property in Batumi, Georgia. Check features, amenities, location, and pricing. Contact us for more information.",
+      "keywords": "property details, real estate Batumi, apartment for sale, property information, Batumi real estate"
+    },
+    "project": {
+      "title": "Project Details | United Construction and Real Estate",
+      "description": "Explore this premium real estate project in Batumi, Georgia. View available apartments, project specifications, delivery dates, and pricing information.",
+      "keywords": "real estate project, new construction, developer project Batumi, apartments for sale, residential complex Georgia"
     }
   }
 }
