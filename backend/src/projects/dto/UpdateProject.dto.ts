@@ -64,6 +64,15 @@ export class UpdateProjectDto {
   gallery?: any;
 
   @ApiPropertyOptional({
+    example: '["path/to/image1.jpg", "path/to/image2.jpg"]',
+    description:
+      'JSON stringified array of existing gallery image URLs in desired order',
+  })
+  @IsOptional()
+  @IsString()
+  galleryOrder?: string;
+
+  @ApiPropertyOptional({
     example: 50000,
     description: 'Starting price (integer)',
   })

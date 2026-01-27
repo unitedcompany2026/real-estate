@@ -316,7 +316,36 @@ export class ProjectsService {
       imagePath = FileUtils.generateImageUrl(image, 'projects');
     }
 
+    // Handle gallery images
     let galleryUrls = [...project.gallery];
+
+    // If galleryOrder is provided, reorder existing gallery images
+    if (dto.galleryOrder) {
+      try {
+        const newOrder = JSON.parse(dto.galleryOrder);
+
+        // Validate that all URLs in newOrder exist in current gallery
+        const isValidOrder =
+          Array.isArray(newOrder) &&
+          newOrder.every((url) => project.gallery.includes(url)) &&
+          newOrder.length <= project.gallery.length;
+
+        if (isValidOrder) {
+          galleryUrls = newOrder;
+        } else {
+          throw new BadRequestException('Invalid gallery order provided');
+        }
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          throw error;
+        }
+        throw new BadRequestException(
+          'Invalid galleryOrder format. Must be a JSON array of image URLs.',
+        );
+      }
+    }
+
+    // Add new gallery images if provided
     if (gallery && gallery.length > 0) {
       const newGalleryUrls = gallery
         .map((img) => FileUtils.generateImageUrl(img, 'projects'))

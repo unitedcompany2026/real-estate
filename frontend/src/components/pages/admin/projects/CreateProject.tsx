@@ -1,6 +1,13 @@
 import type React from 'react'
 import { useState } from 'react'
-import { X, Upload, Save, MapPin } from 'lucide-react'
+import {
+  X,
+  Upload,
+  Save,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import { useCreateProject } from '@/lib/hooks/useProjects'
 import { usePartners } from '@/lib/hooks/usePartners'
 import { Button } from '@/components/ui/button'
@@ -96,6 +103,28 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
   const removeGalleryImage = (index: number) => {
     setGalleryFiles(prev => prev.filter((_, i) => i !== index))
     setGalleryPreviews(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const moveGalleryImage = (index: number, direction: 'left' | 'right') => {
+    const newIndex = direction === 'left' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= galleryFiles.length) return
+
+    const newFiles = [...galleryFiles]
+    const newPreviews = [...galleryPreviews]
+
+    // Swap files
+    ;[newFiles[index], newFiles[newIndex]] = [
+      newFiles[newIndex],
+      newFiles[index],
+    ]
+    // Swap previews
+    ;[newPreviews[index], newPreviews[newIndex]] = [
+      newPreviews[newIndex],
+      newPreviews[index],
+    ]
+
+    setGalleryFiles(newFiles)
+    setGalleryPreviews(newPreviews)
   }
 
   const validateForm = (): boolean => {
@@ -535,17 +564,39 @@ export function CreateProject({ onBack, onSuccess }: CreateProjectProps) {
             {galleryPreviews.length > 0 && (
               <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mt-4">
                 {galleryPreviews.map((preview, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative group">
                     <img
                       src={preview}
                       alt={`Gallery ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-md border border-border"
+                      className="w-full h-24 object-cover rounded-md border border-border bg-background"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-1">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => moveGalleryImage(index, 'left')}
+                        disabled={index === 0}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => moveGalleryImage(index, 'right')}
+                        disabled={index === galleryPreviews.length - 1}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
                     <Button
                       type="button"
                       variant="destructive"
                       size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6"
+                      className="absolute -top-2 -right-2 h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-sm"
                       onClick={() => removeGalleryImage(index)}
                     >
                       <X className="w-3 h-3" />

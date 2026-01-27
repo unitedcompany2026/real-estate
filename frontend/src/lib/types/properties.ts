@@ -186,6 +186,7 @@ export interface CreatePropertyDto {
   hasWater?: boolean
   hasElectricity?: boolean
   hasGate?: boolean
+  galleryOrder?: string // JSON stringified array of image IDs for reordering
 }
 
 export type UpdatePropertyDto = Partial<CreatePropertyDto>

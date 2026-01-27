@@ -1,6 +1,15 @@
 import type React from 'react'
 import { useState } from 'react'
-import { X, Upload, Save, Trash2, ImageIcon, MapPin } from 'lucide-react'
+import {
+  X,
+  Upload,
+  Save,
+  Trash2,
+  ImageIcon,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 import {
   useUpdateProject,
   useDeleteProjectGalleryImage,
@@ -44,6 +53,12 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     public: project.public ?? true,
   })
 
+  // Track existing gallery with their original order
+  const [existingGallery, setExistingGallery] = useState<string[]>(
+    project.gallery || []
+  )
+  const [deletedGalleryUrls, setDeletedGalleryUrls] = useState<string[]>([])
+
   const [images, setImages] = useState({
     mainFile: null as File | null,
     mainPreview: project.image
@@ -51,7 +66,6 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
       : null,
     galleryFiles: [] as File[],
     galleryPreviews: [] as string[],
-    deletedGalleryIndices: [] as number[],
   })
 
   const [showMap, setShowMap] = useState(false)
@@ -123,20 +137,52 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     }))
   }
 
-  const markExistingGalleryImageForDeletion = (index: number) => {
+  const moveNewGalleryImage = (index: number, direction: 'left' | 'right') => {
+    const newIndex = direction === 'left' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= images.galleryFiles.length) return
+
+    const newFiles = [...images.galleryFiles]
+    const newPreviews = [...images.galleryPreviews]
+
+    // Swap files
+    ;[newFiles[index], newFiles[newIndex]] = [
+      newFiles[newIndex],
+      newFiles[index],
+    ]
+    // Swap previews
+    ;[newPreviews[index], newPreviews[newIndex]] = [
+      newPreviews[newIndex],
+      newPreviews[index],
+    ]
+
     setImages(prev => ({
       ...prev,
-      deletedGalleryIndices: [...prev.deletedGalleryIndices, index],
+      galleryFiles: newFiles,
+      galleryPreviews: newPreviews,
     }))
   }
 
-  const undoDeleteExistingGalleryImage = (index: number) => {
-    setImages(prev => ({
-      ...prev,
-      deletedGalleryIndices: prev.deletedGalleryIndices.filter(
-        i => i !== index
-      ),
-    }))
+  const markExistingGalleryImageForDeletion = (url: string) => {
+    setDeletedGalleryUrls(prev => [...prev, url])
+  }
+
+  const undoDeleteExistingGalleryImage = (url: string) => {
+    setDeletedGalleryUrls(prev => prev.filter(u => u !== url))
+  }
+
+  const moveExistingGalleryImage = (
+    index: number,
+    direction: 'left' | 'right'
+  ) => {
+    const newIndex = direction === 'left' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= existingGallery.length) return
+
+    const newGallery = [...existingGallery]
+    ;[newGallery[index], newGallery[newIndex]] = [
+      newGallery[newIndex],
+      newGallery[index],
+    ]
+    setExistingGallery(newGallery)
   }
 
   const resetMainImage = () => {
@@ -158,12 +204,16 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
 
   const handleSubmit = async () => {
     try {
-      if (images.deletedGalleryIndices.length > 0) {
-        for (const index of images.deletedGalleryIndices) {
-          await deleteGalleryImage.mutateAsync({
-            id: project.id,
-            imageIndex: index,
-          })
+      // Delete marked images
+      if (deletedGalleryUrls.length > 0) {
+        for (const url of deletedGalleryUrls) {
+          const originalIndex = (project.gallery || []).indexOf(url)
+          if (originalIndex !== -1) {
+            await deleteGalleryImage.mutateAsync({
+              id: project.id,
+              imageIndex: originalIndex,
+            })
+          }
         }
       }
 
@@ -226,6 +276,17 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
         data.append('public', String(formData.public))
       }
 
+      // Check if gallery order changed
+      const originalGallery = project.gallery || []
+      const galleryOrderChanged =
+        existingGallery.length !== originalGallery.length ||
+        existingGallery.some((url, idx) => url !== originalGallery[idx])
+
+      if (galleryOrderChanged) {
+        // Send the reordered existing gallery URLs
+        data.append('galleryOrder', JSON.stringify(existingGallery))
+      }
+
       images.galleryFiles.forEach(file => {
         data.append('gallery', file)
       })
@@ -233,7 +294,8 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
       const hasChanges =
         images.mainFile ||
         images.galleryFiles.length > 0 ||
-        images.deletedGalleryIndices.length > 0 ||
+        deletedGalleryUrls.length > 0 ||
+        galleryOrderChanged ||
         formData.partnerId !== originalPartnerId ||
         formData.location !== originalLocation ||
         formData.street !== originalStreet ||
@@ -268,11 +330,16 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
   const originalApartments = project.numApartments?.toString() || ''
   const originalHotSale = Boolean(project.hotSale)
   const originalPublic = project.public ?? true
+  const originalGallery = project.gallery || []
+  const galleryOrderChanged =
+    existingGallery.length !== originalGallery.length ||
+    existingGallery.some((url, idx) => url !== originalGallery[idx])
 
   const hasChanges =
     images.mainFile ||
     images.galleryFiles.length > 0 ||
-    images.deletedGalleryIndices.length > 0 ||
+    deletedGalleryUrls.length > 0 ||
+    galleryOrderChanged ||
     formData.partnerId !== originalPartnerId ||
     formData.location !== originalLocation ||
     formData.street !== originalStreet ||
@@ -284,10 +351,9 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
     formData.hotSale !== originalHotSale ||
     formData.public !== originalPublic
 
-  const displayGallery =
-    project.gallery?.filter(
-      (_, index) => !images.deletedGalleryIndices.includes(index)
-    ) || []
+  const displayGallery = existingGallery.filter(
+    url => !deletedGalleryUrls.includes(url)
+  )
 
   const coords = getCoordinatesDisplay()
 
@@ -677,21 +743,26 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">
                   Existing Gallery Images
+                  {galleryOrderChanged && (
+                    <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
+                      (Order changed - save to apply)
+                    </span>
+                  )}
                 </Label>
-                {project.gallery && project.gallery.length > 0 ? (
+                {existingGallery && existingGallery.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {project.gallery.map((img, index) => {
+                    {existingGallery.map((img, index) => {
                       const isMarkedForDeletion =
-                        images.deletedGalleryIndices.includes(index)
+                        deletedGalleryUrls.includes(img)
                       return (
-                        <div key={index} className="relative group">
+                        <div key={img} className="relative group">
                           <div
                             className={`relative ${isMarkedForDeletion ? 'opacity-40' : ''}`}
                           >
                             <img
                               src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
                               alt={`Gallery ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-md border border-border"
+                              className="w-full h-32 object-cover rounded-md border border-border bg-background"
                             />
                             {isMarkedForDeletion && (
                               <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
@@ -700,15 +771,45 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                                 </span>
                               </div>
                             )}
+                            {!isMarkedForDeletion && (
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-1">
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() =>
+                                    moveExistingGalleryImage(index, 'left')
+                                  }
+                                  disabled={index === 0}
+                                >
+                                  <ChevronLeft className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() =>
+                                    moveExistingGalleryImage(index, 'right')
+                                  }
+                                  disabled={
+                                    index === existingGallery.length - 1
+                                  }
+                                >
+                                  <ChevronRight className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            )}
                           </div>
                           {isMarkedForDeletion ? (
                             <Button
                               type="button"
                               variant="secondary"
                               size="sm"
-                              className="absolute top-2 right-2 h-8 text-xs"
+                              className="absolute -top-2 -right-2 h-8 text-xs shadow-sm"
                               onClick={() =>
-                                undoDeleteExistingGalleryImage(index)
+                                undoDeleteExistingGalleryImage(img)
                               }
                             >
                               Undo
@@ -718,12 +819,12 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute -top-2 -right-2 h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-sm"
                               onClick={() =>
-                                markExistingGalleryImageForDeletion(index)
+                                markExistingGalleryImageForDeletion(img)
                               }
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <X className="w-3 h-3" />
                             </Button>
                           )}
                         </div>
@@ -762,17 +863,41 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
                 {images.galleryPreviews.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                     {images.galleryPreviews.map((preview, index) => (
-                      <div key={index} className="relative">
+                      <div key={index} className="relative group">
                         <img
                           src={preview}
                           alt={`New ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-md border border-border"
+                          className="w-full h-32 object-cover rounded-md border border-border bg-background"
                         />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-1">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => moveNewGalleryImage(index, 'left')}
+                            disabled={index === 0}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => moveNewGalleryImage(index, 'right')}
+                            disabled={
+                              index === images.galleryPreviews.length - 1
+                            }
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                        </div>
                         <Button
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="absolute -top-2 -right-2 h-6 w-6"
+                          className="absolute -top-2 -right-2 h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-sm"
                           onClick={() => removeNewGalleryImage(index)}
                         >
                           <X className="w-3 h-3" />

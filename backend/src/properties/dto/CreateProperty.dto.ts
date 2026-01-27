@@ -426,6 +426,14 @@ export class CreatePropertyDto {
   hasGate?: boolean;
 
   @ApiPropertyOptional({
+    description: 'Gallery order - JSON stringified array of image IDs',
+    example: '[1, 3, 2, 4]',
+  })
+  @IsString()
+  @IsOptional()
+  galleryOrder?: string;
+
+  @ApiPropertyOptional({
     description: 'Property images (multiple files)',
     type: 'array',
     items: { type: 'string', format: 'binary' },

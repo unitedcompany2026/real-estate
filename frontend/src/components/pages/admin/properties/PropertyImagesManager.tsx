@@ -5,6 +5,8 @@ import {
   CheckCircle,
   XCircle,
   GripVertical,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import {
   useProperty,
@@ -44,6 +46,21 @@ export function PropertyImagesManager({
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([])
   const [message, setMessage] = useState<Message | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+
+  // Track existing gallery order
+  const [existingGalleryOrder, setExistingGalleryOrder] = useState<number[]>([])
+  const [originalOrder, setOriginalOrder] = useState<number[]>([])
+
+  const images = property?.galleryImages || []
+
+  // Initialize order when images load
+  useEffect(() => {
+    if (images.length > 0) {
+      const order = images.map(img => img.id)
+      setExistingGalleryOrder(order)
+      setOriginalOrder(order)
+    }
+  }, [images])
 
   useEffect(() => {
     return () => {
@@ -116,6 +133,19 @@ export function PropertyImagesManager({
     setDraggedIndex(null)
   }
 
+  // Move existing gallery image
+  const moveExistingImage = (index: number, direction: 'left' | 'right') => {
+    const newIndex = direction === 'left' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= existingGalleryOrder.length) return
+
+    const newOrder = [...existingGalleryOrder]
+    ;[newOrder[index], newOrder[newIndex]] = [
+      newOrder[newIndex],
+      newOrder[index],
+    ]
+    setExistingGalleryOrder(newOrder)
+  }
+
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return
 
@@ -145,6 +175,34 @@ export function PropertyImagesManager({
     }
   }
 
+  const handleSaveOrder = async () => {
+    setMessage(null)
+
+    try {
+      await updateProperty.mutateAsync({
+        id: propertyId,
+        data: {
+          galleryOrder: JSON.stringify(existingGalleryOrder),
+        },
+      })
+
+      showMessage('success', 'Gallery order updated successfully')
+      setOriginalOrder(existingGalleryOrder)
+      await refetch()
+      onSuccess?.()
+    } catch (error) {
+      console.error('Error updating order:', error)
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to update order. Please try again.'
+      showMessage('error', errorMsg)
+    }
+  }
+
+  const orderChanged =
+    JSON.stringify(existingGalleryOrder) !== JSON.stringify(originalOrder)
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -153,11 +211,32 @@ export function PropertyImagesManager({
     )
   }
 
-  const images = property?.galleryImages || []
+  // Get ordered images
+  const orderedImages = existingGalleryOrder
+    .map(id => images.find(img => img.id === id))
+    .filter(Boolean) as typeof images
 
   return (
     <div className="space-y-6">
       {message && <MessageAlert type={message.type} text={message.text} />}
+
+      {orderChanged && (
+        <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
+          <AlertDescription className="flex items-center justify-between">
+            <span className="text-amber-800 dark:text-amber-200">
+              Gallery order has been changed. Click "Save Order" to apply
+              changes.
+            </span>
+            <Button
+              size="sm"
+              onClick={handleSaveOrder}
+              disabled={updateProperty.isPending}
+            >
+              {updateProperty.isPending ? 'Saving...' : 'Save Order'}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Header
         hasSelection={selectedFiles.length > 0}
@@ -188,12 +267,13 @@ export function PropertyImagesManager({
         />
       )}
 
-      {images.length === 0 ? (
+      {orderedImages.length === 0 ? (
         <EmptyState />
       ) : (
         <ImageGallery
-          images={images}
+          images={orderedImages}
           onDelete={handleDeleteImage}
+          onMoveImage={moveExistingImage}
           isDeleting={deleteImage.isPending}
         />
       )}
@@ -355,19 +435,24 @@ function EmptyState() {
 function ImageGallery({
   images,
   onDelete,
+  onMoveImage,
   isDeleting,
 }: {
   images: Array<{ id: number; imageUrl: string; order: number }>
   onDelete: (id: number) => void
+  onMoveImage: (index: number, direction: 'left' | 'right') => void
   isDeleting: boolean
 }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {images.map(image => (
+      {images.map((image, index) => (
         <ImageCard
           key={image.id}
           image={image}
+          index={index}
+          totalImages={images.length}
           onDelete={onDelete}
+          onMoveImage={onMoveImage}
           isDeleting={isDeleting}
         />
       ))}
@@ -377,11 +462,17 @@ function ImageGallery({
 
 function ImageCard({
   image,
+  index,
+  totalImages,
   onDelete,
+  onMoveImage,
   isDeleting,
 }: {
   image: { id: number; imageUrl: string; order: number }
+  index: number
+  totalImages: number
   onDelete: (id: number) => void
+  onMoveImage: (index: number, direction: 'left' | 'right') => void
   isDeleting: boolean
 }) {
   return (
@@ -389,28 +480,47 @@ function ImageCard({
       <div className="relative aspect-video">
         <img
           src={`${import.meta.env.VITE_API_IMAGE_URL}/${image.imageUrl}`}
-          alt={`Property image ${image.order + 1}`}
+          alt={`Property image ${index + 1}`}
           className="w-full h-full object-cover"
         />
-        {image.order === 0 && (
+        {index === 0 && (
           <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
             Main Photo
           </div>
         )}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={() => onMoveImage(index, 'left')}
+            disabled={index === 0}
+            className="h-8 w-8"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
           <Button
             variant="destructive"
             size="icon"
             onClick={() => onDelete(image.id)}
             disabled={isDeleting}
+            className="h-8 w-8"
           >
             <Trash2 className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            onClick={() => onMoveImage(index, 'right')}
+            disabled={index === totalImages - 1}
+            className="h-8 w-8"
+          >
+            <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </div>
       <CardContent className="p-2">
         <p className="text-xs text-muted-foreground text-center">
-          Position: {image.order + 1}
+          Position: {index + 1}
         </p>
       </CardContent>
     </Card>

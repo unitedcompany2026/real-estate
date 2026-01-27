@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreatePropertyDto } from './dto/CreateProperty.dto';
 import { UpdatePropertyDto } from './dto/UpdateProperty.dto';
@@ -430,6 +431,11 @@ export class PropertiesService {
   ) {
     const property = await this.prismaService.property.findUnique({
       where: { id },
+      include: {
+        galleryImages: {
+          orderBy: { order: 'asc' },
+        },
+      },
     });
 
     if (!property) {
@@ -520,6 +526,40 @@ export class PropertiesService {
       data: updateData,
     });
 
+    // Handle gallery order reordering
+    if (dto.galleryOrder) {
+      try {
+        const newOrder: number[] = JSON.parse(dto.galleryOrder);
+
+        // Validate that all IDs in newOrder exist in current gallery
+        const currentImageIds = property.galleryImages.map((img) => img.id);
+        const isValidOrder =
+          Array.isArray(newOrder) &&
+          newOrder.every((id) => currentImageIds.includes(id)) &&
+          newOrder.length <= currentImageIds.length;
+
+        if (isValidOrder) {
+          // Update the order field for each image
+          for (let i = 0; i < newOrder.length; i++) {
+            await this.prismaService.propertyGalleryImage.update({
+              where: { id: newOrder[i] },
+              data: { order: i },
+            });
+          }
+        } else {
+          throw new BadRequestException('Invalid gallery order provided');
+        }
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          throw error;
+        }
+        throw new BadRequestException(
+          'Invalid galleryOrder format. Must be a JSON array of image IDs.',
+        );
+      }
+    }
+
+    // Add new images if provided
     if (images && images.length > 0) {
       const existingImages =
         await this.prismaService.propertyGalleryImage.findMany({
