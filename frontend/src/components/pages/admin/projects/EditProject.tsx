@@ -4,7 +4,6 @@ import {
   X,
   Upload,
   Save,
-  Trash2,
   ImageIcon,
   MapPin,
   ChevronLeft,
