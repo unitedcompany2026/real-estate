@@ -113,7 +113,7 @@ export class ApartmentsController {
   @ApiOperation({ summary: 'Create a new apartment' })
   @ApiResponse({ status: 201, description: 'Apartment created successfully' })
   @ApiResponse({ status: 404, description: 'Project not found' })
-  @UseInterceptors(FilesInterceptor('images', 10, multerConfig('apartments')))
+  @UseInterceptors(FilesInterceptor('images', 20, multerConfig('apartments')))
   @ApiBody({ type: CreateApartmentDto })
   async createApartment(
     @Body() dto: CreateApartmentDto,
@@ -130,7 +130,7 @@ export class ApartmentsController {
   @ApiParam({ name: 'id', description: 'Apartment ID', type: 'number' })
   @ApiResponse({ status: 200, description: 'Apartment updated successfully' })
   @ApiResponse({ status: 404, description: 'Apartment not found' })
-  @UseInterceptors(FilesInterceptor('images', 10, multerConfig('apartments')))
+  @UseInterceptors(FilesInterceptor('images', 20, multerConfig('apartments')))
   @ApiBody({
     type: UpdateApartmentDto,
     description: 'Apartment update data',

@@ -33,7 +33,6 @@ export class ApartmentsService {
       },
     });
 
-    // Fallback to English if translation not found
     if (!translation && lang !== 'en') {
       return await this.prismaService.regionTranslations.findFirst({
         where: {
@@ -47,7 +46,7 @@ export class ApartmentsService {
   }
 
   async findAll(params: FindAllParams = {}) {
-    const { lang = 'en', page = 1, limit = 10, projectId, hotSale } = params;
+    const { lang = 'en', page = 1, limit = 40, projectId, hotSale } = params;
 
     const skip = (page - 1) * limit;
 
@@ -65,7 +64,7 @@ export class ApartmentsService {
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
-        translations: true, // ✅ Fetch all translations
+        translations: true,
         project: {
           select: {
             id: true,
@@ -80,13 +79,12 @@ export class ApartmentsService {
             numFloors: true,
             numApartments: true,
             hotSale: true,
-            translations: true, // ✅ Fetch all translations
+            translations: true,
           },
         },
       },
     });
 
-    // Fetch region translations (both requested language and English fallback)
     const uniqueRegions = [
       ...new Set(apartments.map((a) => a.project?.region).filter(Boolean)),
     ] as Region[];
@@ -110,7 +108,6 @@ export class ApartmentsService {
     });
 
     const mappedApartments = apartments.map((apartment) => {
-      // ✅ Get translation with fallback to English (skip empty descriptions)
       const translation =
         apartment.translations.find(
           (t) => t.language === lang && t.description && t.description.trim(),
@@ -119,7 +116,6 @@ export class ApartmentsService {
           (t) => t.language === 'en' && t.description,
         );
 
-      // ✅ Get project translation (projects may have different fields like projectName, street, etc.)
       const projectTranslation =
         apartment.project?.translations.find((t) => t.language === lang) ||
         apartment.project?.translations.find((t) => t.language === 'en');
@@ -162,7 +158,7 @@ export class ApartmentsService {
     const apartment = await this.prismaService.apartments.findUnique({
       where: { id },
       include: {
-        translations: true, // ✅ Fetch all translations
+        translations: true,
         project: {
           select: {
             id: true,
@@ -171,7 +167,7 @@ export class ApartmentsService {
             street: true,
             region: true,
             image: true,
-            translations: true, // ✅ Fetch all translations
+            translations: true,
           },
         },
       },
@@ -181,14 +177,12 @@ export class ApartmentsService {
       throw new NotFoundException(`Apartment with ID "${id}" not found`);
     }
 
-    // ✅ Get translation with fallback to English (skip empty descriptions)
     const translation =
       apartment.translations.find(
         (t) => t.language === lang && t.description && t.description.trim(),
       ) ||
       apartment.translations.find((t) => t.language === 'en' && t.description);
 
-    // ✅ Get project translation (projects may have different fields like projectName, street, etc.)
     const projectTranslation =
       apartment.project?.translations.find((t) => t.language === lang) ||
       apartment.project?.translations.find((t) => t.language === 'en');
@@ -244,8 +238,6 @@ export class ApartmentsService {
       },
     });
 
-    // ✅ Only create English translation initially
-    // Other translations created on-demand when actually filled
     await this.prismaService.apartmentTranslations.create({
       data: {
         apartmentId: apartment.id,
@@ -286,12 +278,10 @@ export class ApartmentsService {
       (url): url is string => url !== null,
     );
 
-    // Handle imageOrder if provided (reorder existing images)
     if (dto.imageOrder) {
       try {
         const parsedOrder = JSON.parse(dto.imageOrder);
         if (Array.isArray(parsedOrder)) {
-          // Validate that all URLs in parsedOrder exist in current images
           const allValid = parsedOrder.every((url) => imageUrls.includes(url));
           if (allValid && parsedOrder.length === imageUrls.length) {
             imageUrls = parsedOrder;
@@ -307,7 +297,6 @@ export class ApartmentsService {
       }
     }
 
-    // Add new images to the end of the array
     if (images && images.length > 0) {
       const newImageUrls = images
         .map((image) => FileUtils.generateImageUrl(image, 'apartments'))
