@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 
 import type { PropertyType } from '@/lib/types/properties'
 import { useCurrency } from '@/lib/context/CurrencyContext'
+import { OptimizedImage } from './OptimizedImage'
 
 interface PropertyCardProps {
   property: {
@@ -33,9 +34,10 @@ interface PropertyCardProps {
     hotSale?: boolean
     dateAdded: string
   }
+  priority?: boolean // For above-the-fold images
 }
 
-const PropertyCard = ({ property }: PropertyCardProps) => {
+const PropertyCard = ({ property, priority = false }: PropertyCardProps) => {
   const { t } = useTranslation()
   const { currency, setCurrency, exchangeRate } = useCurrency()
   const [copied, setCopied] = useState(false)
@@ -44,11 +46,9 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
   const allImages =
     property.galleryImages && property.galleryImages.length > 0
       ? property.galleryImages.map(img => img.imageUrl)
-      : property.galleryImages && property.galleryImages.length > 0
-        ? property.galleryImages
-        : property.image
-          ? [property.image]
-          : []
+      : property.image
+        ? [property.image]
+        : []
 
   const hasMultipleImages = allImages.length > 1
 
@@ -99,19 +99,39 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
 
   return (
     <div className="bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full cursor-pointer shadow-md hover:shadow-lg w-full max-w-[340px] mx-auto">
-      <div className="relative h-52 overflow-hidden rounded-t-xl bg-gray-100">
+      <div className="relative h-52 overflow-hidden rounded-t-xl">
         {allImages.length > 0 ? (
-          <div className="relative h-full bg-gray-900">
-            {allImages.map((img, index) => (
-              <img
-                key={index}
-                src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
-                alt={`${property.title} - Image ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-                  index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-            ))}
+          <div className="relative h-full">
+            {/* Only render current and adjacent images for better performance */}
+            {allImages.map((img, index) => {
+              const isCurrentOrAdjacent =
+                index === currentImageIndex ||
+                index ===
+                  (currentImageIndex - 1 + allImages.length) %
+                    allImages.length ||
+                index === (currentImageIndex + 1) % allImages.length
+
+              if (!isCurrentOrAdjacent) return null
+
+              return (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    index === currentImageIndex
+                      ? 'opacity-100 z-10'
+                      : 'opacity-0 z-0'
+                  }`}
+                >
+                  <OptimizedImage
+                    src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
+                    alt={`${property.title} - Image ${index + 1}`}
+                    className="w-full h-full"
+                    aspectRatio="auto"
+                    priority={priority && index === 0}
+                  />
+                </div>
+              )
+            })}
 
             {hasMultipleImages && (
               <>
@@ -119,7 +139,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
                   onClick={goToPrevious}
                   onPointerDown={e => e.stopPropagation()}
                   onMouseDown={e => e.stopPropagation()}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all z-10"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all z-20"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-4 h-4 text-gray-800" />
@@ -129,15 +149,15 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
                   onClick={goToNext}
                   onPointerDown={e => e.stopPropagation()}
                   onMouseDown={e => e.stopPropagation()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all z-10"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all z-20"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-4 h-4 text-gray-800" />
                 </button>
-                <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full z-10">
+                <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full z-20">
                   {currentImageIndex + 1} / {allImages.length}
                 </div>
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 bg-black/20 backdrop-blur-sm rounded-full px-2.5 py-1.5">
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 bg-black/20 backdrop-blur-sm rounded-full px-2.5 py-1.5">
                   {allImages.map((_, index) => (
                     <button
                       key={index}
@@ -161,12 +181,15 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
             )}
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-gray-400">No image available</p>
-          </div>
+          <OptimizedImage
+            src="https://via.placeholder.com/800x600?text=No+Image"
+            alt="No image available"
+            className="w-full h-full"
+            aspectRatio="auto"
+          />
         )}
         {property.hotSale && (
-          <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-orange-500 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-lg flex items-center gap-1.5 z-20 animate-pulse">
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-orange-500 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-lg flex items-center gap-1.5 z-30 animate-pulse">
             <Flame className="w-4 h-4 text-white" />
             <span className="text-xs font-bold text-white uppercase tracking-wide">
               {t('properties.hotSale', { defaultValue: 'Hot Sale' })}
@@ -174,7 +197,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           </div>
         )}
         <div
-          className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1 shadow-md flex items-center gap-1.5 z-20"
+          className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1 shadow-md flex items-center gap-1.5 z-30"
           onClick={e => e.stopPropagation()}
           onPointerDown={e => e.stopPropagation()}
           onMouseDown={e => e.stopPropagation()}

@@ -146,7 +146,8 @@
     "contactWhatsApp": "تواصل عبر واتساب",
     "availableApartments": "الشقق المتاحة",
     "noApartments": "لا توجد شقق متاحة لهذا المشروع بعد.",
-    "notAvailable": "غير متوفر"
+    "notAvailable": "غير متوفر",
+    "region": "منطقة"
   },
   "apartmentCard": {
     "roomApartment": "شقة {{count}} غرف",

@@ -146,7 +146,8 @@
     "contactWhatsApp": "Написать в WhatsApp",
     "availableApartments": "Доступные квартиры",
     "noApartments": "Для этого проекта пока нет доступных квартир.",
-    "notAvailable": "Н/Д"
+    "notAvailable": "Н/Д",
+    "region": "Область"
   },
   "apartmentCard": {
     "roomApartment": "{{count}}-комнатная квартира",

@@ -104,7 +104,7 @@ export default function Properties() {
         {properties.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 mb-4">
-              {properties.map(property => (
+              {properties.map((property, index) => (
                 <Link
                   key={property.id}
                   to={`/properties/${property.id}?lang=${i18n.language}`}
@@ -127,6 +127,8 @@ export default function Properties() {
                       hotSale: property.hotSale,
                       regionName: property.regionName,
                     }}
+                    // Priority load first 4 images (above the fold)
+                    priority={index < 4}
                   />
                 </Link>
               ))}

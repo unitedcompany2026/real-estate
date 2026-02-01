@@ -146,7 +146,8 @@
     "contactWhatsApp": "კონტაქტი WhatsApp-ით",
     "availableApartments": "ხელმისაწვდომი ბინები",
     "noApartments": "ამ პროექტისთვის ბინები ჯერ არ არის დამატებული.",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "region": "რეგიონი"
   },
   "apartmentCard": {
     "roomApartment": "{{count}}-ოთახიანი ბინა",

@@ -153,7 +153,8 @@
     "contactWhatsApp": "Contact via WhatsApp",
     "availableApartments": "Available Apartments",
     "noApartments": "No apartments available for this project yet.",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "region": "Region"
   },
 
   "apartmentCard": {

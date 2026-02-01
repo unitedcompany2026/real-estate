@@ -142,7 +142,8 @@
     "contactWhatsApp": "צור קשר בוואטסאפ",
     "availableApartments": "דירות זמינות",
     "noApartments": "עדיין אין דירות זמינות לפרויקט זה.",
-    "notAvailable": "לא רלוונטי"
+    "notAvailable": "לא רלוונטי",
+    "region": "אֵזוֹר"
   },
   "apartmentCard": {
     "roomApartment": "דירת {{count}} חדרים",
