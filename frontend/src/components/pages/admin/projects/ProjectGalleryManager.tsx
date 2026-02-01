@@ -1,4 +1,4 @@
-import { Trash2, ImageIcon, Upload, GripVertical, X } from 'lucide-react'
+import { Trash2, Upload, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -109,10 +109,6 @@ export function ProjectGalleryManager({
       })
     }
   }
-
-  const displayGallery = existingGallery.filter(
-    url => !deletedGalleryUrls.includes(url)
-  )
 
   return (
     <div className="space-y-4">

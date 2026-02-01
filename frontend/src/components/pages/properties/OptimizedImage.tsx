@@ -62,7 +62,7 @@ export function OptimizedImage({
   }
 
   // Generate optimized image URL with size parameters
-  const getOptimizedSrc = (originalSrc: string, width?: number) => {
+  const getOptimizedSrc = (originalSrc: string, _?: number) => {
     // If your backend supports image resizing, add query parameters
     // Example: return `${originalSrc}?w=${width}&q=75`
     // For now, just return the original src
