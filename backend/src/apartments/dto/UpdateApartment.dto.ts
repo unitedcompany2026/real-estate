@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsNumber } from 'class-validator';
+import { IsOptional, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UpdateApartmentDto {
@@ -20,6 +20,15 @@ export class UpdateApartmentDto {
   @Type(() => Number)
   @IsNumber()
   projectId?: number;
+
+  @ApiPropertyOptional({
+    description: 'Image order as JSON array of image URLs',
+    example: '["apartments/image1.jpg", "apartments/image2.jpg"]',
+    type: 'string',
+  })
+  @IsOptional()
+  @IsString()
+  imageOrder?: string;
 
   @ApiPropertyOptional({
     type: 'array',

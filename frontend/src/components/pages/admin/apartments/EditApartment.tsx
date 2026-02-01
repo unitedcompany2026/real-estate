@@ -1,13 +1,5 @@
-import type React from 'react'
-import { useState } from 'react'
-import {
-  X,
-  Upload,
-  Save,
-  Trash2,
-  LayoutTemplate,
-  Languages,
-} from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Save, LayoutTemplate, Languages, Upload } from 'lucide-react'
 import {
   useUpdateApartment,
   useDeleteApartmentImage,
@@ -25,7 +17,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ApartmentTranslationsManager } from './ApartmentTranslationsManager'
+
 import type { Apartment } from '@/lib/types/apartments'
+import { ApartmentImagesManager } from './ApartmentimagesManager'
 
 interface EditApartmentProps {
   apartment: Apartment
@@ -47,6 +41,13 @@ export function EditApartment({
     area: apartment.area.toString(),
   })
 
+  const [existingImages, setExistingImages] = useState<string[]>(
+    apartment.images || []
+  )
+  const [originalImages, setOriginalImages] = useState<string[]>(
+    apartment.images || []
+  )
+
   const [images, setImages] = useState({
     newFiles: [] as File[],
     previews: [] as string[],
@@ -55,6 +56,14 @@ export function EditApartment({
   const [activeSection, setActiveSection] = useState<
     'details' | 'images' | 'translations'
   >('details')
+
+  // Update existing images when apartment data changes
+  useEffect(() => {
+    if (apartment.images) {
+      setExistingImages(apartment.images)
+      setOriginalImages(apartment.images)
+    }
+  }, [apartment.images])
 
   const updateApartment = useUpdateApartment()
   const deleteImage = useDeleteApartmentImage()
@@ -65,34 +74,12 @@ export function EditApartment({
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    if (!files.length) return
-
-    setImages(prev => ({ ...prev, newFiles: [...prev.newFiles, ...files] }))
-    files.forEach(file => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImages(prev => ({
-          ...prev,
-          previews: [...prev.previews, reader.result as string],
-        }))
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const removeNewImage = (index: number) => {
-    setImages(prev => ({
-      newFiles: prev.newFiles.filter((_, i) => i !== index),
-      previews: prev.previews.filter((_, i) => i !== index),
-    }))
-  }
-
   const handleDeleteExistingImage = async (index: number) => {
-    if (!window.confirm('Delete this image permanently?')) return
     try {
       await deleteImage.mutateAsync({ id: apartment.id, imageIndex: index })
+      // Update local state after successful deletion
+      setExistingImages(prev => prev.filter((_, i) => i !== index))
+      setOriginalImages(prev => prev.filter((_, i) => i !== index))
     } catch (err) {
       console.error(err)
     }
@@ -119,6 +106,16 @@ export function EditApartment({
       hasUpdates = true
     }
 
+    // Check if image order changed
+    const imageOrderChanged =
+      existingImages.length !== originalImages.length ||
+      existingImages.some((img, idx) => img !== originalImages[idx])
+
+    if (imageOrderChanged) {
+      data.append('imageOrder', JSON.stringify(existingImages))
+      hasUpdates = true
+    }
+
     if (images.newFiles.length > 0) {
       images.newFiles.forEach(file => data.append('images', file))
       hasUpdates = true
@@ -137,15 +134,20 @@ export function EditApartment({
     }
   }
 
+  const imageOrderChanged =
+    existingImages.length !== originalImages.length ||
+    existingImages.some((img, idx) => img !== originalImages[idx])
+
   const hasChanges =
     formData.room !== apartment.room.toString() ||
     formData.area !== apartment.area.toString() ||
     (formData.projectId &&
       formData.projectId !== (apartment.project?.id.toString() || '')) ||
-    images.newFiles.length > 0
+    images.newFiles.length > 0 ||
+    imageOrderChanged
 
   return (
-    <div className="bg-background rounded-lg border border-border shadow-sm p-8  mx-auto">
+    <div className="bg-background rounded-lg border border-border shadow-sm p-8 mx-auto">
       <div className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-3xl font-bold text-foreground tracking-tight flex items-center gap-2">
@@ -185,7 +187,7 @@ export function EditApartment({
           }`}
         >
           <Upload className="w-4 h-4 inline mr-2" />
-          Images ({apartment.images?.length || 0})
+          Images ({existingImages.length + images.newFiles.length})
         </button>
         <button
           onClick={() => setActiveSection('translations')}
@@ -281,80 +283,23 @@ export function EditApartment({
 
         {activeSection === 'images' && (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">
-                Existing Images
-              </Label>
-              {apartment.images && apartment.images.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {apartment.images.map((img, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
-                        alt={`Image ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-md border border-border"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleDeleteExistingImage(index)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
-                  No images yet
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">
-                Add New Images
-              </Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-foreground/40 transition-colors relative bg-muted/30">
-                <div className="py-2">
-                  <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
-                  <p className="text-sm font-medium text-foreground">
-                    Click to upload new images
-                  </p>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-              </div>
-              {images.previews.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  {images.previews.map((preview, i) => (
-                    <div key={i} className="relative">
-                      <img
-                        src={preview}
-                        alt={`New ${i + 1}`}
-                        className="w-full h-32 object-cover rounded-md border border-border"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2 h-6 w-6"
-                        onClick={() => removeNewImage(i)}
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ApartmentImagesManager
+              existingImages={existingImages}
+              newFiles={images.newFiles}
+              newPreviews={images.previews}
+              onDeleteExisting={handleDeleteExistingImage}
+              onNewImagesChange={(files, previews) =>
+                setImages({ newFiles: files, previews })
+              }
+              onRemoveNew={index =>
+                setImages(prev => ({
+                  newFiles: prev.newFiles.filter((_, i) => i !== index),
+                  previews: prev.previews.filter((_, i) => i !== index),
+                }))
+              }
+              onExistingReorder={setExistingImages}
+              orderChanged={imageOrderChanged}
+            />
 
             <div className="flex gap-3 pt-4">
               <Button

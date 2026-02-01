@@ -5,8 +5,6 @@ import {
   CheckCircle,
   XCircle,
   GripVertical,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react'
 import {
   useProperty,
@@ -46,6 +44,9 @@ export function PropertyImagesManager({
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([])
   const [message, setMessage] = useState<Message | null>(null)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [draggedGalleryIndex, setDraggedGalleryIndex] = useState<number | null>(
+    null
+  )
 
   // Track existing gallery order
   const [existingGalleryOrder, setExistingGalleryOrder] = useState<number[]>([])
@@ -110,7 +111,7 @@ export function PropertyImagesManager({
     setSelectedFiles(prev => prev.filter((_, i) => i !== index))
   }
 
-  // Drag handlers for selected files
+  // Drag handlers for selected files (to be uploaded)
   const handleDragStart = (index: number) => {
     setDraggedIndex(index)
   }
@@ -133,17 +134,27 @@ export function PropertyImagesManager({
     setDraggedIndex(null)
   }
 
-  // Move existing gallery image
-  const moveExistingImage = (index: number, direction: 'left' | 'right') => {
-    const newIndex = direction === 'left' ? index - 1 : index + 1
-    if (newIndex < 0 || newIndex >= existingGalleryOrder.length) return
+  // Drag handlers for existing gallery images
+  const handleGalleryDragStart = (index: number) => {
+    setDraggedGalleryIndex(index)
+  }
+
+  const handleGalleryDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedGalleryIndex === null || draggedGalleryIndex === index) return
 
     const newOrder = [...existingGalleryOrder]
-    ;[newOrder[index], newOrder[newIndex]] = [
-      newOrder[newIndex],
-      newOrder[index],
-    ]
+    const draggedId = newOrder[draggedGalleryIndex]
+
+    newOrder.splice(draggedGalleryIndex, 1)
+    newOrder.splice(index, 0, draggedId)
+
     setExistingGalleryOrder(newOrder)
+    setDraggedGalleryIndex(index)
+  }
+
+  const handleGalleryDragEnd = () => {
+    setDraggedGalleryIndex(null)
   }
 
   const handleUpload = async () => {
@@ -273,7 +284,10 @@ export function PropertyImagesManager({
         <ImageGallery
           images={orderedImages}
           onDelete={handleDeleteImage}
-          onMoveImage={moveExistingImage}
+          onDragStart={handleGalleryDragStart}
+          onDragOver={handleGalleryDragOver}
+          onDragEnd={handleGalleryDragEnd}
+          draggedIndex={draggedGalleryIndex}
           isDeleting={deleteImage.isPending}
         />
       )}
@@ -435,27 +449,40 @@ function EmptyState() {
 function ImageGallery({
   images,
   onDelete,
-  onMoveImage,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  draggedIndex,
   isDeleting,
 }: {
   images: Array<{ id: number; imageUrl: string; order: number }>
   onDelete: (id: number) => void
-  onMoveImage: (index: number, direction: 'left' | 'right') => void
+  onDragStart: (index: number) => void
+  onDragOver: (e: React.DragEvent, index: number) => void
+  onDragEnd: () => void
+  draggedIndex: number | null
   isDeleting: boolean
 }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {images.map((image, index) => (
-        <ImageCard
-          key={image.id}
-          image={image}
-          index={index}
-          totalImages={images.length}
-          onDelete={onDelete}
-          onMoveImage={onMoveImage}
-          isDeleting={isDeleting}
-        />
-      ))}
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        💡 Drag images to reorder the gallery
+      </p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {images.map((image, index) => (
+          <ImageCard
+            key={image.id}
+            image={image}
+            index={index}
+            onDelete={onDelete}
+            onDragStart={onDragStart}
+            onDragOver={onDragOver}
+            onDragEnd={onDragEnd}
+            isDragging={draggedIndex === index}
+            isDeleting={isDeleting}
+          />
+        ))}
+      </div>
     </div>
   )
 }
@@ -463,20 +490,32 @@ function ImageGallery({
 function ImageCard({
   image,
   index,
-  totalImages,
   onDelete,
-  onMoveImage,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  isDragging,
   isDeleting,
 }: {
   image: { id: number; imageUrl: string; order: number }
   index: number
-  totalImages: number
   onDelete: (id: number) => void
-  onMoveImage: (index: number, direction: 'left' | 'right') => void
+  onDragStart: (index: number) => void
+  onDragOver: (e: React.DragEvent, index: number) => void
+  onDragEnd: () => void
+  isDragging: boolean
   isDeleting: boolean
 }) {
   return (
-    <Card className="border-border overflow-hidden group">
+    <Card
+      draggable
+      onDragStart={() => onDragStart(index)}
+      onDragOver={e => onDragOver(e, index)}
+      onDragEnd={onDragEnd}
+      className={`border-border overflow-hidden group cursor-move transition-opacity ${
+        isDragging ? 'opacity-50' : ''
+      }`}
+    >
       <div className="relative aspect-video">
         <img
           src={`${import.meta.env.VITE_API_IMAGE_URL}/${image.imageUrl}`}
@@ -488,33 +527,19 @@ function ImageCard({
             Main Photo
           </div>
         )}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={() => onMoveImage(index, 'left')}
-            disabled={index === 0}
-            className="h-8 w-8"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
+        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+          <GripVertical className="w-3 h-3" />
+          {index + 1}
+        </div>
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <Button
             variant="destructive"
             size="icon"
             onClick={() => onDelete(image.id)}
             disabled={isDeleting}
-            className="h-8 w-8"
+            className="h-10 w-10"
           >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={() => onMoveImage(index, 'right')}
-            disabled={index === totalImages - 1}
-            className="h-8 w-8"
-          >
-            <ChevronRight className="w-4 h-4" />
+            <Trash2 className="w-5 h-5" />
           </Button>
         </div>
       </div>

@@ -10,8 +10,8 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Admin login' })
   async login(@Body() credentials: { username: string; password: string }) {
-    const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
     if (
       credentials.username !== adminUsername ||

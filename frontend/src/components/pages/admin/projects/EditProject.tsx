@@ -1,14 +1,6 @@
 import type React from 'react'
 import { useState } from 'react'
-import {
-  X,
-  Upload,
-  Save,
-  ImageIcon,
-  MapPin,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react'
+import { X, Upload, Save, ImageIcon, MapPin } from 'lucide-react'
 import {
   useUpdateProject,
   useDeleteProjectGalleryImage,
@@ -26,6 +18,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { ProjectLocationMapPicker } from '@/components/shared/map/MapPin'
+import { ProjectGalleryManager } from './ProjectGalleryManager'
 
 import { REGION_NAMES, type Project } from '@/lib/types/projects'
 import { ProjectTranslationsManager } from './ProjectTranslationsManager'
@@ -101,87 +94,6 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
       }
       reader.readAsDataURL(file)
     }
-  }
-
-  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    if (files.length > 0) {
-      const newPreviews: string[] = []
-      let loadedCount = 0
-
-      files.forEach(file => {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          newPreviews.push(reader.result as string)
-          loadedCount++
-
-          if (loadedCount === files.length) {
-            setImages(prev => ({
-              ...prev,
-              galleryFiles: [...prev.galleryFiles, ...files],
-              galleryPreviews: [...prev.galleryPreviews, ...newPreviews],
-            }))
-          }
-        }
-        reader.readAsDataURL(file)
-      })
-    }
-  }
-
-  const removeNewGalleryImage = (index: number) => {
-    setImages(prev => ({
-      ...prev,
-      galleryFiles: prev.galleryFiles.filter((_, i) => i !== index),
-      galleryPreviews: prev.galleryPreviews.filter((_, i) => i !== index),
-    }))
-  }
-
-  const moveNewGalleryImage = (index: number, direction: 'left' | 'right') => {
-    const newIndex = direction === 'left' ? index - 1 : index + 1
-    if (newIndex < 0 || newIndex >= images.galleryFiles.length) return
-
-    const newFiles = [...images.galleryFiles]
-    const newPreviews = [...images.galleryPreviews]
-
-    // Swap files
-    ;[newFiles[index], newFiles[newIndex]] = [
-      newFiles[newIndex],
-      newFiles[index],
-    ]
-    // Swap previews
-    ;[newPreviews[index], newPreviews[newIndex]] = [
-      newPreviews[newIndex],
-      newPreviews[index],
-    ]
-
-    setImages(prev => ({
-      ...prev,
-      galleryFiles: newFiles,
-      galleryPreviews: newPreviews,
-    }))
-  }
-
-  const markExistingGalleryImageForDeletion = (url: string) => {
-    setDeletedGalleryUrls(prev => [...prev, url])
-  }
-
-  const undoDeleteExistingGalleryImage = (url: string) => {
-    setDeletedGalleryUrls(prev => prev.filter(u => u !== url))
-  }
-
-  const moveExistingGalleryImage = (
-    index: number,
-    direction: 'left' | 'right'
-  ) => {
-    const newIndex = direction === 'left' ? index - 1 : index + 1
-    if (newIndex < 0 || newIndex >= existingGallery.length) return
-
-    const newGallery = [...existingGallery]
-    ;[newGallery[index], newGallery[newIndex]] = [
-      newGallery[newIndex],
-      newGallery[index],
-    ]
-    setExistingGallery(newGallery)
   }
 
   const resetMainImage = () => {
@@ -739,173 +651,38 @@ export function EditProject({ project, onBack, onSuccess }: EditProjectProps) {
 
           {activeSection === 'gallery' && (
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground">
-                  Existing Gallery Images
-                  {galleryOrderChanged && (
-                    <span className="ml-2 text-xs text-amber-600 dark:text-amber-400">
-                      (Order changed - save to apply)
-                    </span>
-                  )}
-                </Label>
-                {existingGallery && existingGallery.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {existingGallery.map((img, index) => {
-                      const isMarkedForDeletion =
-                        deletedGalleryUrls.includes(img)
-                      return (
-                        <div key={img} className="relative group">
-                          <div
-                            className={`relative ${isMarkedForDeletion ? 'opacity-40' : ''}`}
-                          >
-                            <img
-                              src={`${import.meta.env.VITE_API_IMAGE_URL}/${img}`}
-                              alt={`Gallery ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-md border border-border bg-background"
-                            />
-                            {isMarkedForDeletion && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
-                                <span className="text-white text-xs font-medium">
-                                  Marked for deletion
-                                </span>
-                              </div>
-                            )}
-                            {!isMarkedForDeletion && (
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-1">
-                                <Button
-                                  type="button"
-                                  variant="secondary"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  onClick={() =>
-                                    moveExistingGalleryImage(index, 'left')
-                                  }
-                                  disabled={index === 0}
-                                >
-                                  <ChevronLeft className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="secondary"
-                                  size="icon"
-                                  className="h-7 w-7"
-                                  onClick={() =>
-                                    moveExistingGalleryImage(index, 'right')
-                                  }
-                                  disabled={
-                                    index === existingGallery.length - 1
-                                  }
-                                >
-                                  <ChevronRight className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                          {isMarkedForDeletion ? (
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              className="absolute -top-2 -right-2 h-8 text-xs shadow-sm"
-                              onClick={() =>
-                                undoDeleteExistingGalleryImage(img)
-                              }
-                            >
-                              Undo
-                            </Button>
-                          ) : (
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              className="absolute -top-2 -right-2 h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-sm"
-                              onClick={() =>
-                                markExistingGalleryImageForDeletion(img)
-                              }
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground border border-dashed border-border rounded-lg">
-                    No gallery images yet
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground">
-                  Add New Gallery Images
-                </Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-foreground/40 transition-colors relative bg-muted/30">
-                  <div className="py-2">
-                    <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
-                    <p className="text-sm font-medium text-foreground">
-                      Click to upload multiple images
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      PNG, JPG up to 5MB each
-                    </p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleGalleryChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                </div>
-                {images.galleryPreviews.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    {images.galleryPreviews.map((preview, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={preview}
-                          alt={`New ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-md border border-border bg-background"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-1">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => moveNewGalleryImage(index, 'left')}
-                            disabled={index === 0}
-                          >
-                            <ChevronLeft className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => moveNewGalleryImage(index, 'right')}
-                            disabled={
-                              index === images.galleryPreviews.length - 1
-                            }
-                          >
-                            <ChevronRight className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 h-6 w-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-sm"
-                          onClick={() => removeNewGalleryImage(index)}
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <ProjectGalleryManager
+                existingGallery={existingGallery}
+                deletedGalleryUrls={deletedGalleryUrls}
+                newGalleryFiles={images.galleryFiles}
+                newGalleryPreviews={images.galleryPreviews}
+                onExistingGalleryReorder={setExistingGallery}
+                onMarkForDeletion={url =>
+                  setDeletedGalleryUrls(prev => [...prev, url])
+                }
+                onUndoDelete={url =>
+                  setDeletedGalleryUrls(prev => prev.filter(u => u !== url))
+                }
+                onNewGalleryChange={(files, previews) =>
+                  setImages(prev => ({
+                    ...prev,
+                    galleryFiles: files,
+                    galleryPreviews: previews,
+                  }))
+                }
+                onRemoveNewImage={index =>
+                  setImages(prev => ({
+                    ...prev,
+                    galleryFiles: prev.galleryFiles.filter(
+                      (_, i) => i !== index
+                    ),
+                    galleryPreviews: prev.galleryPreviews.filter(
+                      (_, i) => i !== index
+                    ),
+                  }))
+                }
+                galleryOrderChanged={galleryOrderChanged}
+              />
 
               <div className="flex gap-3 pt-4">
                 <Button

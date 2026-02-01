@@ -55,8 +55,8 @@ export class AuthGuard implements CanActivate {
       );
       const [username, password] = credentials.split(':');
 
-      const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-      const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+      const adminUsername = process.env.ADMIN_USERNAME;
+      const adminPassword = process.env.ADMIN_PASSWORD;
 
       if (username === adminUsername && password === adminPassword) {
         request['user'] = { username, role: 'admin' };

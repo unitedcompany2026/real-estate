@@ -286,6 +286,28 @@ export class ApartmentsService {
       (url): url is string => url !== null,
     );
 
+    // Handle imageOrder if provided (reorder existing images)
+    if (dto.imageOrder) {
+      try {
+        const parsedOrder = JSON.parse(dto.imageOrder);
+        if (Array.isArray(parsedOrder)) {
+          // Validate that all URLs in parsedOrder exist in current images
+          const allValid = parsedOrder.every((url) => imageUrls.includes(url));
+          if (allValid && parsedOrder.length === imageUrls.length) {
+            imageUrls = parsedOrder;
+          } else {
+            throw new BadRequestException(
+              'Invalid imageOrder: URLs do not match existing images',
+            );
+          }
+        }
+      } catch (error) {
+        if (error instanceof BadRequestException) throw error;
+        throw new BadRequestException('Invalid imageOrder format');
+      }
+    }
+
+    // Add new images to the end of the array
     if (images && images.length > 0) {
       const newImageUrls = images
         .map((image) => FileUtils.generateImageUrl(image, 'apartments'))
