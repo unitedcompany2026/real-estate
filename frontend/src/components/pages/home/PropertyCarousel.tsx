@@ -38,6 +38,7 @@ const PropertyCarousel = () => {
     status: property.status,
     hotSale: property.hotSale,
     regionName: property.regionName,
+    viewCount: property.viewCount,
   })
 
   if (isLoading) {

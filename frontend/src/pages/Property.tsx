@@ -9,6 +9,7 @@ import {
   Copy,
   Check,
   MapPin,
+  Eye,
 } from 'lucide-react'
 
 import { Switch } from '@/components/ui/switch'
@@ -389,6 +390,19 @@ export default function PropertyDetail() {
                     {new Date(property.createdAt).toLocaleDateString()}
                   </span>
                 </div>
+                {typeof property.viewCount === 'number' && (
+                  <div className="flex items-center justify-between py-2 border-t border-gray-200">
+                    <span className="text-xs sm:text-sm font-medium text-gray-600">
+                      {t('propertyPage.views', { defaultValue: 'Views' })}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-gray-700">
+                      <Eye className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm font-semibold">
+                        {property.viewCount + 1}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2 pt-3 sm:pt-4">

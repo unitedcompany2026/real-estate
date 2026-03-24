@@ -136,6 +136,7 @@ export interface Property {
   galleryImages: PropertyGalleryImage[]
   createdAt: string
   updatedAt: string
+  viewCount: number
 }
 
 export interface CreatePropertyDto {
@@ -186,7 +187,7 @@ export interface CreatePropertyDto {
   hasWater?: boolean
   hasElectricity?: boolean
   hasGate?: boolean
-  galleryOrder?: string // JSON stringified array of image IDs for reordering
+  galleryOrder?: string
 }
 
 export type UpdatePropertyDto = Partial<CreatePropertyDto>

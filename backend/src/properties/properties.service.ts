@@ -283,6 +283,7 @@ export class PropertiesService {
         galleryImages: {
           orderBy: { order: 'asc' },
         },
+        _count: { select: { views: true } },
       },
     });
 
@@ -353,6 +354,7 @@ export class PropertiesService {
       hasGate: property.hasGate,
       translation: translation || null,
       galleryImages: property.galleryImages,
+      viewCount: property._count.views,
     };
   }
 

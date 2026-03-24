@@ -126,8 +126,8 @@ export default function Properties() {
                       propertyType: property.propertyType,
                       hotSale: property.hotSale,
                       regionName: property.regionName,
+                      viewCount: property.viewCount,
                     }}
-                    // Priority load first 4 images (above the fold)
                     priority={index < 4}
                   />
                 </Link>
