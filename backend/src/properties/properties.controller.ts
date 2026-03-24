@@ -34,7 +34,8 @@ import { CreatePropertyDto } from './dto/CreateProperty.dto';
 import { UpdatePropertyDto } from './dto/UpdateProperty.dto';
 import { AuthGuard } from '@/auth/guards/basic-auth.guard';
 import { Region } from '@prisma/client';
-
+import { Req } from '@nestjs/common';
+import type { Request } from 'express';
 @ApiTags('Properties')
 @Controller('properties')
 export class PropertiesController {
@@ -622,5 +623,17 @@ export class PropertiesController {
     @Param('imageId') imageId: number,
   ) {
     return this.propertiesService.deleteGalleryImage(id, +imageId);
+  }
+
+  @Post(':id/view')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Track a unique property view by IP' })
+  @ApiParam({ name: 'id', description: 'Property ID' })
+  async trackView(@Param('id') id: string, @Req() req: Request) {
+    const ip =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() ??
+      req.socket?.remoteAddress ??
+      'unknown';
+    await this.propertiesService.trackView(id, ip);
   }
 }

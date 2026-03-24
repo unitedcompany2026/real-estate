@@ -50,6 +50,13 @@ export default function PropertyDetail() {
   const [lightboxIndex, setLightboxIndex] = useState(0)
 
   const { data: property, isLoading, error } = useProperty(id!, i18n.language)
+  useEffect(() => {
+    if (!property?.id) return
+
+    fetch(`${import.meta.env.VITE_API_URL}/properties/${property.id}/view`, {
+      method: 'POST',
+    }).catch(() => {})
+  }, [property?.id])
 
   const priceText = property?.price
     ? `$${property.price.toLocaleString()}`

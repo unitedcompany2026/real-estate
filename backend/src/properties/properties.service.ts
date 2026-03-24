@@ -11,6 +11,7 @@ import { FileUtils } from '@/common/utils/file.utils';
 import { TranslationSyncUtil } from '@/common/utils/translation-sync.util';
 import { LANGUAGES } from '@/common/constants/language';
 import { Region } from '@prisma/client';
+import * as crypto from 'crypto';
 
 interface FindAllParams {
   lang?: string;
@@ -52,6 +53,28 @@ export class PropertiesService {
     }
 
     return externalId;
+  }
+
+  private hashIp(ip: string): string {
+    return crypto
+      .createHash('sha256')
+      .update(ip + (process.env.IP_HASH_SALT ?? 'default-salt'))
+      .digest('hex');
+  }
+
+  async trackView(propertyId: string, ip: string): Promise<void> {
+    const property = await this.prismaService.property.findUnique({
+      where: { id: propertyId, public: true },
+    });
+    if (!property) return;
+
+    const ipHash = this.hashIp(ip);
+
+    await this.prismaService.propertyView.upsert({
+      where: { propertyId_ipHash: { propertyId, ipHash } },
+      create: { propertyId, ipHash },
+      update: { viewedAt: new Date() },
+    });
   }
 
   private async getRegionTranslation(region: Region | null, lang: string) {
@@ -139,9 +162,8 @@ export class PropertiesService {
       orderBy: [{ hotSale: 'desc' }, { createdAt: 'desc' }],
       include: {
         translations: true,
-        galleryImages: {
-          orderBy: { order: 'asc' },
-        },
+        galleryImages: { orderBy: { order: 'asc' } },
+        _count: { select: { views: true } },
       },
     });
 

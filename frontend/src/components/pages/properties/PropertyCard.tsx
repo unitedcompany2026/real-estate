@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Flame,
+  Eye,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Switch } from '@/components/ui/switch'
@@ -33,8 +34,9 @@ interface PropertyCardProps {
     propertyType: PropertyType
     hotSale?: boolean
     dateAdded: string
+    viewCount?: number
   }
-  priority?: boolean // For above-the-fold images
+  priority?: boolean
 }
 
 const PropertyCard = ({ property, priority = false }: PropertyCardProps) => {
@@ -284,6 +286,14 @@ const PropertyCard = ({ property, priority = false }: PropertyCardProps) => {
                 <Square className="w-4 h-4" />
                 <span className="text-sm font-medium">
                   {t('home.area')}: {property.totalArea} m²
+                </span>
+              </div>
+            )}
+            {typeof property.viewCount === 'number' && (
+              <div className="flex items-center gap-1.5 text-gray-400 ml-auto">
+                <Eye className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">
+                  {property.viewCount}
                 </span>
               </div>
             )}

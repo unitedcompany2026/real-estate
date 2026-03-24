@@ -221,6 +221,7 @@ model Property {
 
   translations     PropertyTranslations[]
   galleryImages    PropertyGalleryImage[]
+  views            PropertyView[]
 
   @@map("properties")
   @@index([propertyType])
@@ -300,4 +301,18 @@ model MortgageRate {
 
   @@unique([yearFrom, yearTo])
   @@map("mortgage_rates")
+}
+
+
+model PropertyView {
+  id         Int      @id @default(autoincrement())
+  propertyId String   @map("property_id")
+  ipHash     String   @map("ip_hash")
+  viewedAt   DateTime @map("viewed_at") @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, ipHash])
+  @@map("property_views")
+  @@index([propertyId])
 }
