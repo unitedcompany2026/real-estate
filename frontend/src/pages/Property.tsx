@@ -58,7 +58,7 @@ export default function PropertyDetail() {
   useEffect(() => {
     if (!id) return
 
-    fetch(`${import.meta.env.VITE_API_URL}/properties/${id}/view`, {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/properties/${id}/view`, {
       method: 'POST',
     })
       .then(() => {
@@ -385,11 +385,21 @@ export default function PropertyDetail() {
 
                 <div className="flex items-center justify-between py-2 border-b border-gray-200">
                   <span className="text-xs sm:text-sm font-medium text-gray-600">
-                    Property Type
+                    Listed on
                   </span>
-                  <span className="text-sm sm:text-base font-semibold text-blue-900">
-                    {formatEnumValue(property.propertyType)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm sm:text-base font-semibold text-gray-900">
+                      {new Date(property.createdAt).toLocaleDateString()}
+                    </span>
+                    {typeof property.viewCount === 'number' && (
+                      <div className="flex items-center gap-1 text-gray-500">
+                        <Eye className="w-3.5 h-3.5 text-blue-500" />
+                        <span className="text-xs font-semibold">
+                          {property.viewCount}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between py-2">
@@ -400,19 +410,6 @@ export default function PropertyDetail() {
                     {new Date(property.createdAt).toLocaleDateString()}
                   </span>
                 </div>
-                {typeof property.viewCount === 'number' && (
-                  <div className="flex items-center justify-between py-2 border-t border-gray-200">
-                    <span className="text-xs sm:text-sm font-medium text-gray-600">
-                      {t('propertyPage.views', { defaultValue: 'Views' })}
-                    </span>
-                    <div className="flex items-center gap-1.5 text-gray-700">
-                      <Eye className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm font-semibold">
-                        {property.viewCount}
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <div className="space-y-2 pt-3 sm:pt-4">
