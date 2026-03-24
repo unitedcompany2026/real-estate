@@ -10,6 +10,9 @@ import type {
 } from '../types/properties'
 import { propertiesService } from '../services/properties.service'
 
+
+
+
 export const useProperties = (filters?: PropertyFilters) => {
   return useQuery<PropertiesResponse>({
     queryKey: ['properties', filters],

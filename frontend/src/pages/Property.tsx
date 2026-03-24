@@ -28,6 +28,7 @@ import { ConditionUtilitiesSection } from '@/components/pages/properties/Conditi
 import { AmenitiesFeaturesSection } from '@/components/pages/properties/AmenitiesFeatureSection'
 import { useCurrency } from '@/lib/context/CurrencyContext'
 import { useDocumentMeta } from '@/lib/hooks/useDocumentMeta'
+import { useQueryClient } from '@tanstack/react-query'
 
 const PHONE_NUMBER = '+995 595 80 47 95'
 const PHONE_NUMBER_CLEAN = '995595804795'
@@ -51,13 +52,22 @@ export default function PropertyDetail() {
   const [lightboxIndex, setLightboxIndex] = useState(0)
 
   const { data: property, isLoading, error } = useProperty(id!, i18n.language)
-  useEffect(() => {
-    if (!property?.id) return
 
-    fetch(`${import.meta.env.VITE_API_URL}/properties/${property.id}/view`, {
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    if (!id) return
+
+    fetch(`${import.meta.env.VITE_API_URL}/properties/${id}/view`, {
       method: 'POST',
-    }).catch(() => {})
-  }, [property?.id])
+    })
+      .then(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['properties', id, i18n.language],
+        })
+      })
+      .catch(() => {})
+  }, [id])
 
   const priceText = property?.price
     ? `$${property.price.toLocaleString()}`
@@ -398,7 +408,7 @@ export default function PropertyDetail() {
                     <div className="flex items-center gap-1.5 text-gray-700">
                       <Eye className="w-4 h-4 text-blue-500" />
                       <span className="text-sm font-semibold">
-                        {property.viewCount + 1}
+                        {property.viewCount}
                       </span>
                     </div>
                   </div>
