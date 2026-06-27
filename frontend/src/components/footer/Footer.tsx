@@ -39,7 +39,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-8">
           <div className="space-y-5 col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3 group cursor-pointer">
-              <img src="./Logo.png" className="w-24 h-24" alt="Logo" />
+              <img src="/Logo.png" className="w-24 h-24" alt="Logo" />
               <div className="flex flex-col">
                 <span className="text-base font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors duration-200">
                   United
@@ -107,7 +107,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="hidden md:block">
+          <div className="col-span-2 md:col-span-1">
             <h3 className="text-base font-bold mb-5 text-gray-900">
               {t('contact.getInTouch')}
             </h3>
