@@ -33,6 +33,7 @@ interface PropertyCardProps {
     totalArea: number | null
     propertyType: PropertyType
     hotSale?: boolean
+    sold?: boolean
     dateAdded: string
     viewCount?: number
   }
@@ -100,7 +101,13 @@ const PropertyCard = ({ property, priority = false }: PropertyCardProps) => {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full cursor-pointer shadow-md hover:shadow-lg w-full max-w-[340px] mx-auto">
+    <div
+      className={`bg-white rounded-xl border border-gray-300 border-b-[3px] border-b-blue-500 transition-all duration-300 h-full shadow-md w-full max-w-[340px] mx-auto ${
+        property.sold
+          ? 'opacity-60 grayscale cursor-not-allowed select-none'
+          : 'cursor-pointer hover:shadow-lg'
+      }`}
+    >
       <div className="relative h-52 overflow-hidden rounded-t-xl">
         {allImages.length > 0 ? (
           <div className="relative h-full">
@@ -190,7 +197,14 @@ const PropertyCard = ({ property, priority = false }: PropertyCardProps) => {
             aspectRatio="auto"
           />
         )}
-        {property.hotSale && (
+        {property.sold && (
+          <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/30">
+            <span className="bg-red-600 text-white text-base font-extrabold uppercase tracking-widest px-6 py-2 rounded-md shadow-lg -rotate-12">
+              {t('properties.sold', { defaultValue: 'Sold' })}
+            </span>
+          </div>
+        )}
+        {!property.sold && property.hotSale && (
           <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-orange-500 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-lg flex items-center gap-1.5 z-30 animate-pulse">
             <Flame className="w-4 h-4 text-white" />
             <span className="text-xs font-bold text-white uppercase tracking-wide">

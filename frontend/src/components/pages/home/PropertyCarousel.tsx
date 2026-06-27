@@ -37,6 +37,7 @@ const PropertyCarousel = () => {
     propertyType: property.propertyType,
     status: property.status,
     hotSale: property.hotSale,
+    sold: property.sold,
     regionName: property.regionName,
     viewCount: property.viewCount,
   })
@@ -75,7 +76,11 @@ const PropertyCarousel = () => {
                 key={property.id}
                 className="cursor-default basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
               >
-                <Link to={`/properties/${property.id}?lang=${i18n.language}`}>
+                <Link
+                  to={`/properties/${property.id}?lang=${i18n.language}`}
+                  onClick={e => property.sold && e.preventDefault()}
+                  aria-disabled={property.sold}
+                >
                   <PropertyCard property={property} />
                 </Link>
               </CarouselItem>

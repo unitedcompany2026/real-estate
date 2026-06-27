@@ -105,30 +105,24 @@ export default function Header() {
 
         {/* DESKTOP NAV */}
         <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-1 rounded-xl border border-gray-200/70 bg-white/50 p-1 shadow-sm backdrop-blur-sm">
             {navItems.map(item => (
               <Link
                 key={item.path}
                 to={item.isComingSoon ? '#' : withLang(item.path)}
                 onClick={e => item.isComingSoon && e.preventDefault()}
                 className={cn(
-                  'relative px-4 py-2 text-[15px] font-medium transition-all duration-300 group/nav',
+                  'relative px-4 py-2 text-[15px] font-semibold rounded-lg transition-all duration-300',
                   item.isComingSoon
                     ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-700 hover:text-blue-600'
+                    : isActive(item.path)
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-600/30'
+                      : 'text-gray-700 hover:text-blue-700 hover:bg-blue-100/70 active:scale-95'
                 )}
               >
                 <span className={cn(item.isComingSoon && 'line-through')}>
                   {item.label}
                 </span>
-
-                {isActive(item.path) && !item.isComingSoon && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-[calc(100%-2rem)] bg-gradient-to-r from-blue-600 to-blue-700 rounded-full" />
-                )}
-
-                {!item.isComingSoon && !isActive(item.path) && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-0 bg-blue-400 rounded-full transition-all duration-300 group-hover/nav:w-[calc(100%-2rem)]" />
-                )}
 
                 {item.isComingSoon && (
                   <span className="absolute -top-1 -right-1 text-[9px] font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-2 py-0.5 rounded-full shadow-sm">
@@ -189,12 +183,12 @@ export default function Header() {
                     else setMobileMenuOpen(false)
                   }}
                   className={cn(
-                    'px-4 py-3 rounded-lg font-medium',
+                    'px-4 py-3 rounded-lg font-semibold transition-all duration-200',
                     item.isComingSoon
-                      ? 'text-gray-400'
+                      ? 'text-gray-400 line-through'
                       : isActive(item.path)
-                        ? 'text-blue-600 bg-blue-50'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-600/30'
+                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
                   )}
                 >
                   {item.label}

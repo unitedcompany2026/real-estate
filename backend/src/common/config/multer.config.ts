@@ -3,6 +3,11 @@ import { extname } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
+import { BadRequestException } from '@nestjs/common';
+
+// Max upload size per file. Modern phone/camera photos routinely exceed the
+// previous 5 MB cap, which silently caused admin upload failures.
+export const MAX_UPLOAD_SIZE = 25 * 1024 * 1024; // 25 MB
 
 export const multerConfig = (folder: string) => ({
   storage: diskStorage({
@@ -38,10 +43,18 @@ export const multerConfig = (folder: string) => ({
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif|webp|avif)$/)) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+      // Throwing an HttpException here makes Nest return a clean 400 with a
+      // readable message instead of an opaque 500. HEIC/HEIF (iPhone default)
+      // is intentionally rejected because browsers cannot render it.
+      cb(
+        new BadRequestException(
+          `Unsupported file type "${file.mimetype}". Allowed: JPG, PNG, WEBP, GIF, AVIF. (iPhone HEIC photos must be exported as JPG first.)`,
+        ),
+        false,
+      );
     }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: MAX_UPLOAD_SIZE,
   },
 });

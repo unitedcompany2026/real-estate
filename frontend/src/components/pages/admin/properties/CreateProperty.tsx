@@ -38,6 +38,7 @@ const INITIAL_FORM_STATE: CreatePropertyDto = {
   dealType: DealType.SALE,
   title: '',
   hotSale: false,
+  sold: false,
   public: true,
   isNonStandard: false,
 }
@@ -353,6 +354,14 @@ export function CreateProperty({ onBack, onSuccess }: CreatePropertyProps) {
                 checked={formData.public === true}
                 onCheckedChange={checked =>
                   updateField('public', checked === true)
+                }
+              />
+              <CheckboxField
+                id="sold"
+                label="Mark as Sold"
+                checked={formData.sold === true}
+                onCheckedChange={checked =>
+                  updateField('sold', checked === true)
                 }
               />
             </div>

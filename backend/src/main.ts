@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { json, urlencoded } from 'express';
+import { MulterExceptionFilter } from './common/filters/multer-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -13,6 +14,9 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '100mb' }));
 
   app.setGlobalPrefix('api');
+
+  // Turn raw multer upload errors into clean, readable HTTP responses.
+  app.useGlobalFilters(new MulterExceptionFilter());
 
   app.useStaticAssets(join(__dirname, '..', 'public', 'uploads'), {
     prefix: '/uploads/',

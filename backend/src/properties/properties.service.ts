@@ -210,6 +210,7 @@ export class PropertiesService {
         address: property.address,
         price: property.price,
         hotSale: property.hotSale,
+        sold: property.sold,
         public: property.public,
         createdAt: property.createdAt,
         updatedAt: property.updatedAt,
@@ -312,6 +313,7 @@ export class PropertiesService {
       address: property.address,
       price: property.price,
       hotSale: property.hotSale,
+      sold: property.sold,
       public: property.public,
       createdAt: property.createdAt,
       updatedAt: property.updatedAt,
@@ -370,6 +372,7 @@ export class PropertiesService {
         region: dto.region || null,
         address: dto.address || null,
         hotSale: dto.hotSale || false,
+        sold: dto.sold || false,
         public: dto.public !== undefined ? dto.public : true,
         price: dto.price ? parseInt(dto.price as any) : null,
         totalArea: dto.totalArea ? parseInt(dto.totalArea as any) : null,
@@ -507,6 +510,7 @@ export class PropertiesService {
     if (dto.heating !== undefined) updateData.heating = dto.heating;
     if (dto.hotWater !== undefined) updateData.hotWater = dto.hotWater;
     if (dto.parking !== undefined) updateData.parking = dto.parking;
+    if (dto.sold !== undefined) updateData.sold = dto.sold;
 
     if (dto.hasConditioner !== undefined)
       updateData.hasConditioner = dto.hasConditioner;

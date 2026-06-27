@@ -108,6 +108,8 @@ export default function Properties() {
                 <Link
                   key={property.id}
                   to={`/properties/${property.id}?lang=${i18n.language}`}
+                  onClick={e => property.sold && e.preventDefault()}
+                  aria-disabled={property.sold}
                 >
                   <PropertyCard
                     property={{
@@ -125,6 +127,7 @@ export default function Properties() {
                       totalArea: property.totalArea ?? null,
                       propertyType: property.propertyType,
                       hotSale: property.hotSale,
+                      sold: property.sold,
                       regionName: property.regionName,
                       viewCount: property.viewCount,
                     }}

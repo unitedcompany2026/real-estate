@@ -84,6 +84,15 @@ export class CreatePropertyDto {
   public?: boolean;
 
   @ApiPropertyOptional({
+    description: 'Marks the property as sold (shown dimmed/disabled on the site)',
+    example: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  sold?: boolean;
+
+  @ApiPropertyOptional({
     description: 'Total area in square meters',
     example: 85,
   })

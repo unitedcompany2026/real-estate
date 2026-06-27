@@ -178,6 +178,7 @@ model Property {
   address         String?         
   price           Int?
   hotSale         Boolean          @map("hot_sale") @default(false)
+  sold            Boolean          @default(false)
   public          Boolean          @default(true)
   createdAt       DateTime         @map("created_at") @default(now())
   updatedAt       DateTime         @map("updated_at") @updatedAt

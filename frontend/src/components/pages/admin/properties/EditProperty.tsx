@@ -115,6 +115,7 @@ const propertyToFormData = (property: Property): UpdatePropertyDto => ({
   location: property.location || undefined,
   dealType: property.dealType || undefined,
   hotSale: property.hotSale,
+  sold: property.sold,
   public: property.public,
   price: property.price || undefined,
   totalArea: property.totalArea || undefined,
@@ -395,6 +396,14 @@ function DetailsSection({
             checked={formData.public ?? true}
             onCheckedChange={checked =>
               updateField('public', checked as boolean)
+            }
+          />
+          <CheckboxField
+            id="sold"
+            label="Mark as Sold"
+            checked={formData.sold ?? false}
+            onCheckedChange={checked =>
+              updateField('sold', checked as boolean)
             }
           />
         </div>

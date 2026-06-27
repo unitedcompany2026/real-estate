@@ -93,6 +93,7 @@ export interface Property {
   regionName: string | null // Translated region name
   address: string | null // Street address
   hotSale: boolean
+  sold: boolean
   public: boolean
   price: number | null
   totalArea: number | null
@@ -148,6 +149,7 @@ export interface CreatePropertyDto {
   region?: Region
   address?: string // Street address
   hotSale?: boolean
+  sold?: boolean
   public?: boolean
   price?: number
   totalArea?: number
